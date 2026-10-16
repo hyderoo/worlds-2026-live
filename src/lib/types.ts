@@ -4,6 +4,7 @@ export const MATCH_STATES = ["scheduled", "live", "completed", "unverified"] as 
 export type MatchState = (typeof MATCH_STATES)[number];
 
 export const TeamSideSchema = z.object({
+  id: z.string().optional(),
   code: z.string(),
   name: z.string(),
   image: z.string().nullable().optional(),

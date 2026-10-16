@@ -44,7 +44,13 @@ function buildTeams(matches: Match[]): Team[] {
 
 function mergeStats(fromStore: Record<string, GameStats[]>): Record<string, GameStats[]> {
   const seed = seedGames as unknown as Record<string, GameStats[]>;
-  return { ...seed, ...fromStore };
+  const out: Record<string, GameStats[]> = {};
+  for (const id of new Set([...Object.keys(seed), ...Object.keys(fromStore)])) {
+    const byGame = new Map<string, GameStats>();
+    for (const g of [...(seed[id] ?? []), ...(fromStore[id] ?? [])]) byGame.set(g.id, g); // stored (newer) wins over seed
+    out[id] = [...byGame.values()].sort((a, b) => a.n - b.n);
+  }
+  return out;
 }
 
 let lazy: { at: number; promise: Promise<void> } | null = null;

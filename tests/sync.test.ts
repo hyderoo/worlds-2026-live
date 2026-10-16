@@ -13,7 +13,8 @@ const match = (over: Partial<Match> = {}): Match => ({
 });
 const deps = (ms: Match[], fail = false) => ({
   fetchUpstream: async () => { if (fail) throw new Error("boom"); return { matches: ms, attempts: 1, stages: ["Play-Ins"] }; },
-  fetchGames: async () => [],
+  fetchGames: async () => [{ n: 1, id: "g1", state: "completed", vods: [] }],
+  fetchGameStats: async () => null,
   now: () => new Date("2026-10-17T01:00:00Z"),
 });
 
@@ -74,5 +75,24 @@ describe("withRetry", () => {
   });
   it("throws after the last attempt", async () => {
     await expect(withRetry(async () => { throw new Error("nope"); }, { attempts: 2, sleep: async () => {} })).rejects.toThrow("nope");
+  });
+});
+
+describe("champion sync", () => {
+  it("stores champions for new games once and skips them next run", async () => {
+    const store = createMemoryStore();
+    const done = match({ upstreamState: "completed", teams: [{ id: "1", code: "A", name: "A", wins: 3, outcome: "win" }, { id: "2", code: "B", name: "B", wins: 0, outcome: "loss" }] });
+    let calls = 0;
+    const d = { ...deps([done]), fetchGameStats: async (id: string, n: number) => { calls++; return { n, id, blue: { team: "A", picks: [] }, red: { team: "B", picks: [] } }; } };
+    await runSync(store, "t", d);
+    await runSync(store, "t", d);
+    expect(calls).toBe(1);
+    expect((await store.loadGameStats())["m1"]?.length).toBe(1);
+  });
+  it("does not fail the sync when the stats feed errors", async () => {
+    const store = createMemoryStore();
+    const done = match({ upstreamState: "completed", teams: [{ id: "1", code: "A", name: "A", wins: 3, outcome: "win" }, { id: "2", code: "B", name: "B", wins: 0, outcome: "loss" }] });
+    const run = await runSync(store, "t", { ...deps([done]), fetchGameStats: async () => { throw new Error("feed down"); } });
+    expect(run.ok).toBe(true);
   });
 });

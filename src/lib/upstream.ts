@@ -2,9 +2,10 @@ import { z } from "zod";
 import { config } from "./config";
 import { normalizeState } from "./match-state";
 import { withRetry } from "./retry";
-import type { Game, Match, Team, TeamSide } from "./types";
+import type { Game, GameStats, Match, Team, TeamSide } from "./types";
 
 const TeamRaw = z.object({
+  id: z.string().optional(),
   code: z.string(),
   name: z.string(),
   image: z.string().nullish(),
@@ -65,6 +66,7 @@ function side(t: z.infer<typeof TeamRaw>): TeamSide {
   return {
     code: t.code,
     name: t.name,
+    ...(t.id ? { id: t.id } : {}),
     image: https(t.image),
     wins: t.result?.gameWins ?? null,
     outcome,
@@ -146,6 +148,28 @@ export async function fetchGames(matchId: string, fetcher: typeof fetch = fetch)
     state: g.state,
     vods: g.vods.filter((v) => v.provider === "youtube").slice(0, 6),
   }));
+}
+
+const WindowSchema = z.object({
+  gameMetadata: z.object({
+    patchVersion: z.string().optional(),
+    blueTeamMetadata: z.object({ esportsTeamId: z.string(), participantMetadata: z.array(z.object({ role: z.string(), championId: z.string(), summonerName: z.string() })) }),
+    redTeamMetadata: z.object({ esportsTeamId: z.string(), participantMetadata: z.array(z.object({ role: z.string(), championId: z.string(), summonerName: z.string() })) }),
+  }),
+});
+
+/** Champions per side from Riot's live stats feed. Returns null if the feed has nothing for this game. */
+export async function fetchGameStats(gameId: string, n: number, idToCode: Map<string, string>, fetcher: typeof fetch = fetch): Promise<GameStats | null> {
+  const res = await fetcher(`${config.feedBase}/window/${encodeURIComponent(gameId)}`, { signal: AbortSignal.timeout(12_000), cache: "no-store" });
+  if (res.status === 404 || res.status === 204) return null;
+  if (!res.ok) throw new Error(`livestats responded ${res.status}`);
+  const p = WindowSchema.safeParse(await res.json());
+  if (!p.success) return null;
+  const { blueTeamMetadata: b, redTeamMetadata: r, patchVersion } = p.data.gameMetadata;
+  const blue = idToCode.get(b.esportsTeamId), red = idToCode.get(r.esportsTeamId);
+  if (!blue || !red) return null; // do not guess which team is which
+  const picks = (pm: typeof b.participantMetadata) => pm.map((x) => [x.role, x.championId, x.summonerName] as [string, string, string]);
+  return { n, id: gameId, patch: patchVersion, blue: { team: blue, picks: picks(b.participantMetadata) }, red: { team: red, picks: picks(r.participantMetadata) } };
 }
 
 export function fingerprint(m: Match): string {

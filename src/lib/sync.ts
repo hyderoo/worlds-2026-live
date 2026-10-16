@@ -1,15 +1,16 @@
-import { fetchGames, fetchUpstream, fingerprint } from "./upstream";
+import { fetchGameStats, fetchGames, fetchUpstream, fingerprint } from "./upstream";
 import type { Store } from "./store";
 import type { Match, SyncRun } from "./types";
 
 export type SyncDeps = {
   fetchUpstream: typeof fetchUpstream;
   fetchGames: typeof fetchGames;
+  fetchGameStats: typeof fetchGameStats;
   now: () => Date;
   maxGameFetches: number;
 };
 
-const defaults: SyncDeps = { fetchUpstream, fetchGames, now: () => new Date(), maxGameFetches: 6 };
+const defaults: SyncDeps = { fetchUpstream, fetchGames, fetchGameStats, now: () => new Date(), maxGameFetches: 6 };
 
 /**
  * One idempotent sync pass. Rules:
@@ -64,6 +65,7 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     for (const m of withGames) byId.set(m.id, m);
     const toWrite = [...byId.values()];
     await store.upsertMatches(toWrite);
+    await syncChampions(store, [...byId.values(), ...[...existing.values()].filter((e) => !byId.has(e.id))], d);
     run.matchesChanged = changed.length;
     run.ok = true;
   } catch (e) {
@@ -76,4 +78,33 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     /* history is best-effort */
   }
   return run;
+}
+
+/** Champion picks for games we have not stored yet (bounded per run). Failures here never fail the sync. */
+async function syncChampions(store: Store, matches: Match[], d: SyncDeps, budget = 6) {
+  try {
+    const idToCode = new Map<string, string>();
+    for (const m of matches) for (const t of m.teams) if (t.id && t.code !== "TBD") idToCode.set(t.id, t.code);
+    const have = await store.loadGameStats();
+    for (const m of matches) {
+      if (m.upstreamState !== "completed" && m.upstreamState !== "inProgress") continue;
+      const known = new Set((have[m.id] ?? []).map((g) => g.id));
+      const todo = m.games.filter((g) => !known.has(g.id) && (g.state === "completed" || g.state === "inProgress"));
+      if (todo.length === 0) continue;
+      const got = [...(have[m.id] ?? [])];
+      for (const g of todo) {
+        if (budget <= 0) break;
+        budget--;
+        try {
+          const s = await d.fetchGameStats(g.id, g.n, idToCode);
+          if (s) got.push(s);
+        } catch {
+          /* try again next run */
+        }
+      }
+      if (got.length > (have[m.id] ?? []).length) await store.saveGameStats(m.id, got.sort((a, b) => a.n - b.n));
+    }
+  } catch {
+    /* optional enrichment */
+  }
 }
