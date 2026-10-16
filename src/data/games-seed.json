@@ -1,0 +1,723 @@
+{
+ "115660588583171786": [
+  {
+   "n": 1,
+   "id": "115660588583171787",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Rumble",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "LeeSin",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Syndra",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "MissFortune",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Nautilus",
+      "KC Busio"
+     ]
+    ]
+   },
+   "red": {
+    "team": "C9",
+    "picks": [
+     [
+      "top",
+      "Gnar",
+      "C9 Thanatos"
+     ],
+     [
+      "jungle",
+      "XinZhao",
+      "C9 Blaber"
+     ],
+     [
+      "mid",
+      "Locke",
+      "C9 Loki"
+     ],
+     [
+      "bottom",
+      "Ezreal",
+      "C9 Tactical"
+     ],
+     [
+      "support",
+      "Karma",
+      "C9 Vulcan"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "id": "115660588583171788",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "C9",
+    "picks": [
+     [
+      "top",
+      "Camille",
+      "C9 Thanatos"
+     ],
+     [
+      "jungle",
+      "MonkeyKing",
+      "C9 Blaber"
+     ],
+     [
+      "mid",
+      "Akali",
+      "C9 Loki"
+     ],
+     [
+      "bottom",
+      "Kalista",
+      "C9 Tactical"
+     ],
+     [
+      "support",
+      "Renata",
+      "C9 Vulcan"
+     ]
+    ]
+   },
+   "red": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Jayce",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "Vi",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Cassiopeia",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Varus",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Velkoz",
+      "KC Busio"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 3,
+   "id": "115660588583171789",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Kled",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "Naafiri",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Anivia",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Lucian",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Nami",
+      "KC Busio"
+     ]
+    ]
+   },
+   "red": {
+    "team": "C9",
+    "picks": [
+     [
+      "top",
+      "Olaf",
+      "C9 Thanatos"
+     ],
+     [
+      "jungle",
+      "JarvanIV",
+      "C9 Blaber"
+     ],
+     [
+      "mid",
+      "Annie",
+      "C9 Loki"
+     ],
+     [
+      "bottom",
+      "Jhin",
+      "C9 Tactical"
+     ],
+     [
+      "support",
+      "Alistar",
+      "C9 Vulcan"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 4,
+   "id": "116299649500204436",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "C9",
+    "picks": [
+     [
+      "top",
+      "Zaahen",
+      "C9 Thanatos"
+     ],
+     [
+      "jungle",
+      "Sejuani",
+      "C9 Blaber"
+     ],
+     [
+      "mid",
+      "Sylas",
+      "C9 Loki"
+     ],
+     [
+      "bottom",
+      "Yunara",
+      "C9 Tactical"
+     ],
+     [
+      "support",
+      "Lulu",
+      "C9 Vulcan"
+     ]
+    ]
+   },
+   "red": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Renekton",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "Qiyana",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Orianna",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Xayah",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Rakan",
+      "KC Busio"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 5,
+   "id": "116299649500204437",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Ambessa",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "Trundle",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Ahri",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Kaisa",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Rell",
+      "KC Busio"
+     ]
+    ]
+   },
+   "red": {
+    "team": "C9",
+    "picks": [
+     [
+      "top",
+      "KSante",
+      "C9 Thanatos"
+     ],
+     [
+      "jungle",
+      "Lillia",
+      "C9 Blaber"
+     ],
+     [
+      "mid",
+      "Yone",
+      "C9 Loki"
+     ],
+     [
+      "bottom",
+      "Ziggs",
+      "C9 Tactical"
+     ],
+     [
+      "support",
+      "Shen",
+      "C9 Vulcan"
+     ]
+    ]
+   }
+  }
+ ],
+ "115660588583040710": [
+  {
+   "n": 1,
+   "id": "115660588583040711",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "Olaf",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "Vi",
+      "MVK Gury"
+     ],
+     [
+      "mid",
+      "Cassiopeia",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Ashe",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Seraphine",
+      "MVK SiuLoong"
+     ]
+    ]
+   },
+   "red": {
+    "team": "FUR",
+    "picks": [
+     [
+      "top",
+      "Jax",
+      "FUR Guigo"
+     ],
+     [
+      "jungle",
+      "Trundle",
+      "FUR Tatu"
+     ],
+     [
+      "mid",
+      "Galio",
+      "FUR Tutsz"
+     ],
+     [
+      "bottom",
+      "Yunara",
+      "FUR Ayu"
+     ],
+     [
+      "support",
+      "Lulu",
+      "FUR JoJo"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "id": "115660588583171784",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "Rumble",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "LeeSin",
+      "MVK Gury"
+     ],
+     [
+      "mid",
+      "Viktor",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Lucian",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Milio",
+      "MVK SiuLoong"
+     ]
+    ]
+   },
+   "red": {
+    "team": "FUR",
+    "picks": [
+     [
+      "top",
+      "Ornn",
+      "FUR Guigo"
+     ],
+     [
+      "jungle",
+      "MonkeyKing",
+      "FUR Tatu"
+     ],
+     [
+      "mid",
+      "Syndra",
+      "FUR Tutsz"
+     ],
+     [
+      "bottom",
+      "Xayah",
+      "FUR Ayu"
+     ],
+     [
+      "support",
+      "Rakan",
+      "FUR JoJo"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 3,
+   "id": "115660588583171785",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "Zaahen",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "JarvanIV",
+      "MVK Gury"
+     ],
+     [
+      "mid",
+      "KogMaw",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Jhin",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Camille",
+      "MVK SiuLoong"
+     ]
+    ]
+   },
+   "red": {
+    "team": "FUR",
+    "picks": [
+     [
+      "top",
+      "KSante",
+      "FUR Guigo"
+     ],
+     [
+      "jungle",
+      "Naafiri",
+      "FUR Tatu"
+     ],
+     [
+      "mid",
+      "Ryze",
+      "FUR Tutsz"
+     ],
+     [
+      "bottom",
+      "Kaisa",
+      "FUR Ayu"
+     ],
+     [
+      "support",
+      "Leona",
+      "FUR JoJo"
+     ]
+    ]
+   }
+  }
+ ],
+ "115660588583171790": [
+  {
+   "n": 1,
+   "id": "115660588583171791",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Jayce",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "Vi",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Syndra",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Draven",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Nautilus",
+      "KC Busio"
+     ]
+    ]
+   },
+   "red": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "Ambessa",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "Maokai",
+      "MVK Gury"
+     ],
+     [
+      "mid",
+      "KSante",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Tristana",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Lulu",
+      "MVK SiuLoong"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "id": "115660588583171792",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Galio",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "LeeSin",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Ahri",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Ashe",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Seraphine",
+      "KC Busio"
+     ]
+    ]
+   },
+   "red": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "TwistedFate",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "Qiyana",
+      "MVK SanSan"
+     ],
+     [
+      "mid",
+      "Rumble",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Ezreal",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Pyke",
+      "MVK SiuLoong"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 3,
+   "id": "115660588583171793",
+   "patch": "16.20.826.3891",
+   "blue": {
+    "team": "MVK",
+    "picks": [
+     [
+      "top",
+      "Yorick",
+      "MVK Kratos"
+     ],
+     [
+      "jungle",
+      "MonkeyKing",
+      "MVK SanSan"
+     ],
+     [
+      "mid",
+      "KogMaw",
+      "MVK Chika"
+     ],
+     [
+      "bottom",
+      "Lucian",
+      "MVK Harky"
+     ],
+     [
+      "support",
+      "Milio",
+      "MVK SiuLoong"
+     ]
+    ]
+   },
+   "red": {
+    "team": "KC",
+    "picks": [
+     [
+      "top",
+      "Kennen",
+      "KC Canna"
+     ],
+     [
+      "jungle",
+      "JarvanIV",
+      "KC Yike"
+     ],
+     [
+      "mid",
+      "Viktor",
+      "KC kyeahoo"
+     ],
+     [
+      "bottom",
+      "Xayah",
+      "KC Caliste"
+     ],
+     [
+      "support",
+      "Rakan",
+      "KC Busio"
+     ]
+    ]
+   }
+  }
+ ]
+}

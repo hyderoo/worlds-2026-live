@@ -1,0 +1,20 @@
+name: Sync live data
+# Vercel Hobby cron runs once a day at most. This workflow triggers the sync endpoint every 5 minutes.
+# GitHub may delay scheduled runs under load; the site also refreshes lazily on request.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: ${{ vars.SITE_URL != '' }}
+    steps:
+      - name: Call /api/sync
+        env:
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          curl --fail-with-body --retry 3 --retry-delay 5 -sS -X POST \
+            -H "Authorization: Bearer $SYNC_SECRET" \
+            "$SITE_URL/api/sync?trigger=github-actions"

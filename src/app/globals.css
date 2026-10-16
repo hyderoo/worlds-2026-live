@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0d0c11;
+  --color-surface: #15131c;
+  --color-raise: #1d1a27;
+  --color-line: #2c2840;
+  --color-night: #1a0f33;
+  --color-violet: #9b7bf5;
+  --color-violet-dim: #5a43a8;
+  --color-gold: #d9b86c;
+  --color-gold-dim: #8f7a45;
+  --color-ember: #cf4b57;
+  --color-fog: #a9a4bd;
+  --color-snow: #f1eef9;
+  --font-display: var(--nf-display), ui-serif, Georgia, serif;
+  --font-sans: var(--nf-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html { color-scheme: dark; scroll-behavior: smooth; }
+body { background: var(--color-ink); color: var(--color-snow); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgb(95 60 190 / 0.35), transparent 60%),
+    radial-gradient(700px 400px at -5% 10%, rgb(217 184 108 / 0.08), transparent 60%);
+}
+:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 6px; }
+::selection { background: var(--color-violet-dim); }
+
+.card { background: linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0.015)); border: 1px solid var(--color-line); border-radius: 16px; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-gold); font-weight: 600; }
+.display { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.02; }
+.skeleton { background: linear-gradient(90deg, var(--color-raise), #262236, var(--color-raise)); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 10px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: .35; transform: scale(.8);} }
+.live-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+.sr-only-focusable:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

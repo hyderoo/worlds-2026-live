@@ -1,0 +1,724 @@
+[
+ {
+  "code": "GEN",
+  "name": "Gen.G",
+  "league": "LCK",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Kiin",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Canyon",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Chovy",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Ruler",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Duro",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "HLE",
+  "name": "Hanwha Life Esports",
+  "league": "LCK",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Zeus",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Kanavi",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Zeka",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Gumayusi",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Delight",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "T1",
+  "name": "T1",
+  "league": "LCK",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Doran",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Oner",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Faker",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Peyz",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Keria",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "DK",
+  "name": "Dplus KIA",
+  "league": "LCK",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Siwoo",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Lucid",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "ShowMaker",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Smash",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Career",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "AL",
+  "name": "Anyone's Legend",
+  "league": "LPL",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Breathe",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Tarzan",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Shanks",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Hope",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Kael",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "BLG",
+  "name": "Bilibili Gaming",
+  "league": "LPL",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Bin",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Xun",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Knight",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Viper",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "ON",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "TES",
+  "name": "Top Esports",
+  "league": "LPL",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "369",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Tian",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Creme",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "JackeyLove",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Zhuo",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "IG",
+  "name": "Invictus Gaming",
+  "league": "LPL",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "TheShy",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Wei",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Rookie",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "JiaQi",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Meiko",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "G2",
+  "name": "G2 Esports",
+  "league": "LEC",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "BrokenBlade",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "SkewMond",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Caps",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Hans Sama",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Labrov",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "MKOI",
+  "name": "Movistar KOI",
+  "league": "LEC",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Myrwn",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Elyoya",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Jojopyun",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Supa",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Alvaro",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "TL",
+  "name": "Team Liquid Alienware",
+  "league": "LCS",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Morgan",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Josedeodo",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Quid",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Yeon",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "CoreJJ",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "LYON",
+  "name": "LYON",
+  "league": "LCS",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Dhokla",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Inspired",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Saint",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Berserker",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Isles",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "TSW",
+  "name": "Team Secret Whales",
+  "league": "LCP",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Pun",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Hizto",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Dire",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Eddie",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Bie",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "CFO",
+  "name": "CTBC Flying Oyster",
+  "league": "LCP",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Rest",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Shad0w",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "POUT",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Doggo",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Kino",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "LOS",
+  "name": "LOS",
+  "league": "CBLOL",
+  "entry": "Swiss",
+  "players": [
+   {
+    "role": "top",
+    "name": "Zest",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Curse",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Feisty",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Duduhh",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Ackerman",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "KC",
+  "name": "Karmine Corp",
+  "league": "LEC",
+  "entry": "Play-In",
+  "players": [
+   {
+    "role": "top",
+    "name": "Canna",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Yike",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "kyeahoo",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Caliste",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Busio",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "C9",
+  "name": "Cloud9 Kia",
+  "league": "LCS",
+  "entry": "Play-In",
+  "players": [
+   {
+    "role": "top",
+    "name": "Thanatos",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Blaber",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Loki",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Tactical",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Vulcan",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "MVK",
+  "name": "MVK Esports",
+  "league": "LCP",
+  "entry": "Play-In",
+  "players": [
+   {
+    "role": "top",
+    "name": "Kratos",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Gury",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Chika",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Harky",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "SiuLoong",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ },
+ {
+  "code": "FUR",
+  "name": "FURIA",
+  "league": "CBLOL",
+  "entry": "Play-In",
+  "players": [
+   {
+    "role": "top",
+    "name": "Guigo",
+    "official": true,
+    "apiRole": "top"
+   },
+   {
+    "role": "jungle",
+    "name": "Tatu",
+    "official": true,
+    "apiRole": "jungle"
+   },
+   {
+    "role": "mid",
+    "name": "Tutsz",
+    "official": true,
+    "apiRole": "mid"
+   },
+   {
+    "role": "bottom",
+    "name": "Ayu",
+    "official": true,
+    "apiRole": "bottom"
+   },
+   {
+    "role": "support",
+    "name": "Jojo",
+    "official": true,
+    "apiRole": "support"
+   }
+  ]
+ }
+]

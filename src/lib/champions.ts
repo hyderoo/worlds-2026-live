@@ -1,0 +1,3 @@
+const FIX: Record<string, string> = { MonkeyKing: "Wukong", KSante: "K'Sante", JarvanIV: "Jarvan IV", MissFortune: "Miss Fortune", LeeSin: "Lee Sin", XinZhao: "Xin Zhao", Velkoz: "Vel'Koz", Kaisa: "Kai'Sa", KogMaw: "Kog'Maw", Khazix: "Kha'Zix", Chogath: "Cho'Gath", RekSai: "Rek'Sai", AurelionSol: "Aurelion Sol", TwistedFate: "Twisted Fate", DrMundo: "Dr. Mundo", MasterYi: "Master Yi", TahmKench: "Tahm Kench", Belveth: "Bel'Veth", Leblanc: "LeBlanc", RenataGlasc: "Renata Glasc", Nunu: "Nunu & Willump" };
+export const champName = (c: string) => FIX[c] ?? c.replace(/([a-z])([A-Z])/g, "$1 $2");
+export const ROLE_LABEL: Record<string, string> = { top: "Top", jungle: "Jungle", mid: "Mid", bottom: "Bot", support: "Support" };
