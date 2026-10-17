@@ -1,5 +1,6 @@
 import { fetchGameStats, fetchGames, fetchUpstream, fingerprint } from "./upstream";
 import { refreshLiquipedia } from "./liquipedia";
+import { sendDueNotifications } from "./push";
 import type { Store } from "./store";
 import type { Match, SyncRun } from "./types";
 
@@ -69,6 +70,7 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     await syncChampions(store, [...byId.values(), ...[...existing.values()].filter((e) => !byId.has(e.id))], d);
     run.matchesChanged = changed.length;
     run.ok = true;
+    if (trigger !== "lazy" && !deps.fetchUpstream) await sendDueNotifications(store, [...byId.values()], d.now()).catch(() => undefined);
     // Unofficial secondary source, cron/manual ticks only; never affects the official sync result.
     if (trigger !== "lazy" && !deps.fetchUpstream) await refreshLiquipedia(store).catch(() => undefined);
   } catch (e) {
@@ -84,7 +86,7 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
 }
 
 /** Champion picks for games we have not stored yet (bounded per run). Failures here never fail the sync. */
-async function syncChampions(store: Store, matches: Match[], d: SyncDeps, budget = 6) {
+async function syncChampions(store: Store, matches: Match[], d: SyncDeps, budget = 10) {
   try {
     const idToCode = new Map<string, string>();
     for (const m of matches) for (const t of m.teams) if (t.id && t.code !== "TBD") idToCode.set(t.id, t.code);
@@ -92,20 +94,23 @@ async function syncChampions(store: Store, matches: Match[], d: SyncDeps, budget
     for (const m of matches) {
       if (m.upstreamState !== "completed" && m.upstreamState !== "inProgress") continue;
       const known = new Set((have[m.id] ?? []).map((g) => g.id));
-      const todo = m.games.filter((g) => !known.has(g.id) && (g.state === "completed" || g.state === "inProgress"));
+      const byId = new Map((have[m.id] ?? []).map((g) => [g.id, g]));
+      // New games, live games (every tick), and finished games whose last stored frame is not final yet.
+      const todo = m.games.filter((g) => (g.state === "completed" || g.state === "inProgress") && (!known.has(g.id) || g.state === "inProgress" || byId.get(g.id)?.sum?.state !== "finished"));
       if (todo.length === 0) continue;
       const got = [...(have[m.id] ?? [])];
+      let dirty = false;
       for (const g of todo) {
         if (budget <= 0) break;
         budget--;
         try {
           const s = await d.fetchGameStats(g.id, g.n, idToCode);
-          if (s) got.push(s);
+          if (s) { const i = got.findIndex((x) => x.id === s.id); const prev = i >= 0 ? got[i] : undefined; const next = { ...s, sum: s.sum ?? prev?.sum }; if (i >= 0) got[i] = next; else got.push(next); dirty = true; }
         } catch {
           /* try again next run */
         }
       }
-      if (got.length > (have[m.id] ?? []).length) await store.saveGameStats(m.id, got.sort((a, b) => a.n - b.n));
+      if (dirty) await store.saveGameStats(m.id, got.sort((a, b) => a.n - b.n));
     }
   } catch {
     /* optional enrichment */

@@ -150,7 +150,9 @@ export async function fetchGames(matchId: string, fetcher: typeof fetch = fetch)
   }));
 }
 
+const SideFrame = z.object({ totalGold: z.number(), totalKills: z.number(), towers: z.number(), barons: z.number(), dragons: z.array(z.string()), inhibitors: z.number().optional() });
 const WindowSchema = z.object({
+  frames: z.array(z.object({ rfc460Timestamp: z.string(), gameState: z.string(), blueTeam: SideFrame, redTeam: SideFrame })).optional(),
   gameMetadata: z.object({
     patchVersion: z.string().optional(),
     blueTeamMetadata: z.object({ esportsTeamId: z.string(), participantMetadata: z.array(z.object({ role: z.string(), championId: z.string(), summonerName: z.string() })) }),
@@ -160,7 +162,9 @@ const WindowSchema = z.object({
 
 /** Champions per side from Riot's live stats feed. Returns null if the feed has nothing for this game. */
 export async function fetchGameStats(gameId: string, n: number, idToCode: Map<string, string>, fetcher: typeof fetch = fetch): Promise<GameStats | null> {
-  const res = await fetcher(`${config.feedBase}/window/${encodeURIComponent(gameId)}`, { signal: AbortSignal.timeout(12_000), cache: "no-store" });
+  // The feed returns the first frames unless startingTime is given; ask for a recent time (10s aligned) to get the latest frame.
+  const st = new Date(Math.floor((Date.now() - 60_000) / 10_000) * 10_000).toISOString();
+  const res = await fetcher(`${config.feedBase}/window/${encodeURIComponent(gameId)}?startingTime=${encodeURIComponent(st)}`, { signal: AbortSignal.timeout(12_000), cache: "no-store" });
   if (res.status === 404 || res.status === 204) return null;
   if (!res.ok) throw new Error(`livestats responded ${res.status}`);
   const p = WindowSchema.safeParse(await res.json());
@@ -169,7 +173,10 @@ export async function fetchGameStats(gameId: string, n: number, idToCode: Map<st
   const blue = idToCode.get(b.esportsTeamId), red = idToCode.get(r.esportsTeamId);
   if (!blue || !red) return null; // do not guess which team is which
   const picks = (pm: typeof b.participantMetadata) => pm.map((x) => [x.role, x.championId, x.summonerName] as [string, string, string]);
-  return { n, id: gameId, patch: patchVersion, blue: { team: blue, picks: picks(b.participantMetadata) }, red: { team: red, picks: picks(r.participantMetadata) } };
+  const f = p.data.frames?.at(-1);
+  const side = (t: z.infer<typeof SideFrame>) => ({ gold: t.totalGold, kills: t.totalKills, towers: t.towers, barons: t.barons, dragons: t.dragons, inhibitors: t.inhibitors });
+  const sum = f && f.blueTeam.totalGold > 0 ? { at: f.rfc460Timestamp, state: f.gameState, blue: side(f.blueTeam), red: side(f.redTeam) } : undefined;
+  return { n, id: gameId, sum, patch: patchVersion, blue: { team: blue, picks: picks(b.participantMetadata) }, red: { team: red, picks: picks(r.participantMetadata) } };
 }
 
 export function fingerprint(m: Match): string {

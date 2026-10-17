@@ -52,7 +52,11 @@ export const MatchSchema = z.object({
 export type Match = z.infer<typeof MatchSchema>;
 
 export const PickSchema = z.tuple([z.string(), z.string(), z.string()]);
+export const SideSumSchema = z.object({ gold: z.number(), kills: z.number(), towers: z.number(), barons: z.number(), dragons: z.array(z.string()), inhibitors: z.number().optional() });
+export const GameSumSchema = z.object({ at: z.string(), state: z.string(), blue: SideSumSchema, red: SideSumSchema });
+export type GameSum = z.infer<typeof GameSumSchema>;
 export const GameStatsSchema = z.object({
+  sum: GameSumSchema.optional(),
   n: z.number(),
   id: z.string(),
   patch: z.string().optional(),

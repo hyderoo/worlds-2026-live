@@ -105,6 +105,7 @@ export function MatchDetail({ id }: { id: string }) {
       {!(sp.hidden(m.id) && m.state !== "scheduled") && (m.games.length > 0 || stats.length > 0) && (
         <section className="mt-6" aria-labelledby="games">
           <h2 id="games" className="display mb-3 text-2xl">Games</h2>
+          <p className="mb-2 text-sm text-fog">Pick/ban order and bans: unavailable. Riot&apos;s public live stats feed does not include the draft, so none is shown.</p>
           <p className="mb-4 text-sm text-fog">Per-game winners are not published in the official schedule feed, so only the series score is shown as a result. Champions come from Riot&apos;s live stats feed. VODs are official broadcasts on YouTube.</p>
           <div className="grid gap-3">
             {(m.games.length ? m.games : stats.map((s) => ({ n: s.n, id: s.id, state: "completed", vods: [] }))).map((g) => {
@@ -115,6 +116,7 @@ export function MatchDetail({ id }: { id: string }) {
                   <div className="mb-2 flex items-center justify-between"><strong>Game {g.n}</strong>
                     <span className="flex items-center gap-3 text-xs text-fog">{s?.patch && <span>Patch {s.patch.split(".").slice(0, 2).join(".")}</span>}{vod && <a className="text-gold underline" target="_blank" rel="noopener noreferrer" href={`https://www.youtube.com/watch?v=${encodeURIComponent(vod.parameter)}`}>Watch VOD</a>}<span>{g.state}</span></span>
                   </div>
+                  {s?.sum ? <GoldLead sum={s.sum} blue={s.blue.team} red={s.red.team} live={g.state === "inProgress"} teams={m.teams} /> : s ? <p className="mb-2 text-xs text-fog">Gold and objectives: not available from the official feed for this game.</p> : null}
                   {s ? (
                     <div className="grid gap-2 text-sm sm:grid-cols-2">
                       {([s.blue, s.red] as const).map((side, i) => (
@@ -131,5 +133,23 @@ export function MatchDetail({ id }: { id: string }) {
       )}
       <p className="mt-6 text-xs text-fog">MVP: not available. The official feed does not publish it, and we do not guess.</p>
     </article>
+  );
+}
+
+function fmtGold(n: number) { return `${(n / 1000).toFixed(1)}k`; }
+function GoldLead({ sum, blue, red, live, teams }: { sum: import("@/lib/types").GameSum; blue: string; red: string; live: boolean; teams: { code: string; name: string }[] }) {
+  const diff = sum.blue.gold - sum.red.gold;
+  const nm = (c: string) => teams.find((t) => t.code === c)?.name ?? c;
+  const lead = diff === 0 ? "Gold is even" : `${nm(diff > 0 ? blue : red)} lead by ${fmtGold(Math.abs(diff))} gold`;
+  const total = sum.blue.gold + sum.red.gold || 1;
+  const row = (label: string, a: string | number, b: string | number) => <tr><td className="py-0.5 pr-3 text-left tabular-nums">{a}</td><th scope="row" className="px-2 text-xs font-normal text-fog">{label}</th><td className="py-0.5 pl-3 text-right tabular-nums">{b}</td></tr>;
+  return (
+    <div className="mb-3 rounded-lg border border-line bg-white/[0.02] p-3 text-sm">
+      <p className="mb-1 flex flex-wrap justify-between gap-2"><strong>{lead}</strong><span className="text-xs text-fog">{live ? "Live, latest frame" : sum.state === "finished" ? "Final frame" : "Last frame received"} · {new Date(sum.at).toISOString().slice(11, 19)} UTC</span></p>
+      <div className="mb-2 flex h-2 overflow-hidden rounded-full bg-white/10" role="img" aria-label={`Blue ${fmtGold(sum.blue.gold)} gold, red ${fmtGold(sum.red.gold)} gold`}><div className="bg-sky-400" style={{ width: `${(sum.blue.gold / total) * 100}%` }} /><div className="flex-1 bg-rose-400" /></div>
+      <table className="w-full"><caption className="sr-only">Team totals, blue side {blue}, red side {red}</caption><tbody>
+        {row("Gold", fmtGold(sum.blue.gold), fmtGold(sum.red.gold))}{row("Kills", sum.blue.kills, sum.red.kills)}{row("Towers", sum.blue.towers, sum.red.towers)}{row("Dragons", sum.blue.dragons.length, sum.red.dragons.length)}{row("Barons", sum.blue.barons, sum.red.barons)}
+      </tbody></table>
+    </div>
   );
 }

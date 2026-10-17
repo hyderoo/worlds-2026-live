@@ -83,7 +83,7 @@ describe("champion sync", () => {
     const store = createMemoryStore();
     const done = match({ upstreamState: "completed", teams: [{ id: "1", code: "A", name: "A", wins: 3, outcome: "win" }, { id: "2", code: "B", name: "B", wins: 0, outcome: "loss" }] });
     let calls = 0;
-    const d = { ...deps([done]), fetchGameStats: async (id: string, n: number) => { calls++; return { n, id, blue: { team: "A", picks: [] }, red: { team: "B", picks: [] } }; } };
+    const d = { ...deps([done]), fetchGameStats: async (id: string, n: number) => { calls++; const side = { gold: 1, kills: 0, towers: 0, barons: 0, dragons: [] as string[] }; return { n, id, sum: { at: "x", state: "finished", blue: side, red: side }, blue: { team: "A", picks: [] }, red: { team: "B", picks: [] } }; } };
     await runSync(store, "t", d);
     await runSync(store, "t", d);
     expect(calls).toBe(1);

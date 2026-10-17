@@ -25,6 +25,7 @@ export interface Store {
   saveGameStats(matchId: string, g: GameStats[]): Promise<void>;
   loadExtras(): Promise<Record<string, unknown>>;
   saveExtra(key: string, data: unknown): Promise<void>;
+  deleteExtra(key: string): Promise<void>;
   recordRun(r: SyncRun): Promise<void>;
   recentRuns(n: number): Promise<SyncRun[]>;
 }
@@ -54,6 +55,7 @@ export function createMemoryStore(state?: MemState): Store & { state: MemState }
     async saveGameStats(id, g) { s.stats[id] = g; },
     async loadExtras() { return s.extras; },
     async saveExtra(k, d) { s.extras[k] = d; },
+    async deleteExtra(k) { delete s.extras[k]; },
     async recordRun(r) { s.runs.unshift(r); s.runs = s.runs.slice(0, 50); },
     async recentRuns(n) { return s.runs.slice(0, n); },
   };
@@ -103,6 +105,9 @@ export function createSupabaseStore(client: SupabaseClient): Store {
     },
     async saveExtra(key, data) {
       must(await client.from("game_stats").upsert({ match_id: EXTRA_PREFIX + key, data, updated_at: new Date().toISOString() }, { onConflict: "match_id" }));
+    },
+    async deleteExtra(key) {
+      must(await client.from("game_stats").delete().eq("match_id", EXTRA_PREFIX + key));
     },
     async saveGameStats(id, g) {
       must(await client.from("game_stats").upsert({ match_id: id, data: g, updated_at: new Date().toISOString() }, { onConflict: "match_id" }));
@@ -154,6 +159,7 @@ export function createResilientStore(primary: Store, fallback: Store, now: () =>
     saveGameStats: (id, gs) => run((s) => s.saveGameStats(id, gs)),
     loadExtras: () => run((s) => s.loadExtras()),
     saveExtra: (k, d) => run((s) => s.saveExtra(k, d)),
+    deleteExtra: (k) => run((s) => s.deleteExtra(k)),
     recordRun: (r) => run((s) => s.recordRun(r)),
     recentRuns: (n) => run((s) => s.recentRuns(n)),
   };

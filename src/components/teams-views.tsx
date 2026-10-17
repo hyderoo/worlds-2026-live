@@ -8,6 +8,7 @@ import { usePrefs } from "@/lib/prefs";
 import { REGIONS, REGION_BY_LEAGUE } from "@/lib/regions";
 import { ROLE_LABEL } from "@/lib/champions";
 import type { Match, Team } from "@/lib/types";
+import { NotifyPanel } from "@/components/notify-panel";
 import { TeamDetails } from "@/components/team-details";
 
 const involves = (m: Match, code: string) => m.teams.some((t) => t.code === code);
@@ -20,6 +21,7 @@ export function TeamsView() {
   const teams = snap.teams.filter((t) => (region === "all" || REGION_BY_LEAGUE[t.league ?? ""] === region) && (!q || `${t.name} ${t.code}`.toLowerCase().includes(q.toLowerCase())));
   return (
     <div className="mt-6">
+      <NotifyPanel />
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <input aria-label="Search teams" placeholder="Search teams…" value={q} onChange={(e) => setQ(e.target.value)} className="rounded-lg border border-line bg-surface px-3 py-2 text-sm" />
         <Pill active={region === "all"} onClick={() => setRegion("all")}>All</Pill>

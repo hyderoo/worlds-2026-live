@@ -45,6 +45,41 @@ function Zoomable({ children, label }: { children: React.ReactNode; label: strin
   );
 }
 
+
+/** Swiss progress board: where each team sits by official W-L record. No pairings are invented; they appear once the schedule names both teams. */
+function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name: string; entry?: string; image?: string | null }[] }) {
+  const swiss = all.filter((m) => m.stage === "Swiss");
+  const recs = new Map(computeRecords(all, "Swiss").map((r) => [r.code, r]));
+  const field = teams.filter((t) => t.entry === "Swiss");
+  const cell = new Map<string, typeof field>();
+  for (const t of field) { const r = recs.get(t.code); const k = `${r?.w ?? 0}-${r?.l ?? 0}`; cell.set(k, [...(cell.get(k) ?? []), t]); }
+  const known = swiss.filter((m) => m.state !== "completed" && !hasTbd(m));
+  const tbd = swiss.filter((m) => hasTbd(m)).length;
+  const rows = [[0, 1, 2, 3], [0, 1, 2, 3]];
+  return (
+    <section className="mb-6" aria-labelledby="sw-board">
+      <h2 id="sw-board" className="display mb-1 text-2xl">Swiss progress</h2>
+      <p className="mb-3 text-sm text-fog">Rows are series wins, columns are series losses. Three wins advance to the knockouts, three losses eliminate. The Play-In winner takes the 16th Swiss spot.</p>
+      <div role="region" aria-label="Swiss record board" tabIndex={0} className="overflow-x-auto"><div className="grid min-w-[40rem] grid-cols-4 gap-2">
+        {rows[0]!.flatMap((w) => rows[1]!.map((l) => {
+          if (w === 3 && l === 3) return <div key="x" />;
+          const k = `${w}-${l}`, here = cell.get(k) ?? [];
+          const advanced = w === 3, out = l === 3;
+          return (
+            <div key={k} className={clsx("card min-h-20 p-2", advanced && "border-gold/50", out && "opacity-70")}>
+              <p className={clsx("mb-1 text-[0.7rem] uppercase tracking-wider", advanced ? "text-gold" : "text-fog")}>{k}{advanced ? " advanced" : out ? " eliminated" : ""}</p>
+              <div className="flex flex-wrap gap-1.5">{here.map((t) => <Link key={t.code} href={`/teams/${t.code}`} title={t.name} className="flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs hover:text-gold"><TeamLogo team={t} size={16} />{t.code}</Link>)}
+                {k === "0-0" && <span className="rounded-md border border-dashed border-line px-1.5 py-0.5 text-xs text-fog" title="Decided by the Play-In">Play-In winner (TBD)</span>}</div>
+            </div>
+          );
+        }))}
+      </div></div>
+      <p className="mt-3 text-sm text-fog">{known.length > 0 ? `${known.length} upcoming Swiss series with both teams known are listed under Matches.` : `Pairings: not published. The official schedule lists ${tbd} Swiss series with teams still to be decided, and pairings are only drawn after each round. Nothing is guessed here.`}</p>
+      <p className="mt-1 text-xs text-fog">Format (5-round Swiss, 3 wins advance, Play-In winner joins) is from <a className="underline" href="https://liquipedia.net/leagueoflegends/World_Championship/2026" target="_blank" rel="noreferrer">Liquipedia</a> (unofficial, CC-BY-SA 3.0). Records come from official results only.</p>
+    </section>
+  );
+}
+
 function PlayIns({ ms, tz }: { ms: Match[]; tz: string }) {
   const [hot, setHot] = useState<string | null>(null);
   const six = ms.length === 6;
@@ -142,7 +177,7 @@ export function StandingsView() {
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Stage">{STAGES.map((s) => <Pill key={s} active={stage === s} onClick={() => setStage(s)}>{s}</Pill>)}</div>
       <SpoilerGate what="Standings and results">
-      {stage === "Swiss" ? <SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} />
+      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
         : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} /> : <Knockouts ms={ms} tz={prefs.tz} />}
       {stage !== "Swiss" && <div className="card mt-8 overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">{stage} records</caption>
