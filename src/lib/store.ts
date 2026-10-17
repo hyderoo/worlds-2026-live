@@ -102,13 +102,53 @@ export function createSupabaseStore(client: SupabaseClient): Store {
   };
 }
 
-const g = globalThis as unknown as { __memStore?: ReturnType<typeof createMemoryStore>; __sb?: Store };
+export type ResilientStore = Store & { degradedReason: string | null };
 
-export function getStore(): Store {
+/**
+ * Wraps the database store. If the database is unreachable or its tables are missing (for example the
+ * migration has not been run yet), every call falls back to the in-memory store instead of crashing the site.
+ * The database is retried after RETRY_MS.
+ */
+export function createResilientStore(primary: Store, fallback: Store, now: () => number = Date.now, retryMs = 60_000): ResilientStore {
+  let downUntil = 0;
+  let reason: string | null = null;
+  const run = async <T,>(fn: (s: Store) => Promise<T>): Promise<T> => {
+    if (now() >= downUntil) {
+      try {
+        const v = await fn(primary);
+        reason = null;
+        return v;
+      } catch (e) {
+        downUntil = now() + retryMs;
+        reason = e instanceof Error ? e.message.slice(0, 200) : "database error";
+      }
+    }
+    return fn(fallback);
+  };
+  return {
+    get kind() { return now() >= downUntil && reason === null ? primary.kind : "memory"; },
+    get degradedReason() { return reason; },
+    loadMatches: () => run((s) => s.loadMatches()),
+    upsertMatches: (m) => run((s) => s.upsertMatches(m)),
+    loadOverrides: () => run((s) => s.loadOverrides()),
+    saveOverride: (o) => run((s) => s.saveOverride(o)),
+    deleteOverride: (id) => run((s) => s.deleteOverride(id)),
+    loadRecaps: () => run((s) => s.loadRecaps()),
+    saveRecap: (r) => run((s) => s.saveRecap(r)),
+    loadGameStats: () => run((s) => s.loadGameStats()),
+    saveGameStats: (id, gs) => run((s) => s.saveGameStats(id, gs)),
+    recordRun: (r) => run((s) => s.recordRun(r)),
+    recentRuns: (n) => run((s) => s.recentRuns(n)),
+  };
+}
+
+const g = globalThis as unknown as { __memStore?: ReturnType<typeof createMemoryStore>; __sb?: ResilientStore };
+
+export function getStore(): Store & { degradedReason?: string | null } {
+  g.__memStore ??= createMemoryStore();
   if (hasSupabase()) {
-    g.__sb ??= createSupabaseStore(createClient(config.supabaseUrl, config.supabaseServiceKey, { auth: { persistSession: false } }));
+    g.__sb ??= createResilientStore(createSupabaseStore(createClient(config.supabaseUrl, config.supabaseServiceKey, { auth: { persistSession: false } })), g.__memStore);
     return g.__sb;
   }
-  g.__memStore ??= createMemoryStore();
   return g.__memStore;
 }

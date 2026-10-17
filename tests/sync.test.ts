@@ -96,3 +96,21 @@ describe("champion sync", () => {
     expect(run.ok).toBe(true);
   });
 });
+
+import { createResilientStore } from "@/lib/store";
+describe("resilient store", () => {
+  it("falls back to memory when the database tables are missing, then retries later", async () => {
+    let t = 0;
+    const broken = { ...createMemoryStore(), kind: "supabase" as const, loadMatches: async () => { throw new Error('relation "public.matches" does not exist'); } };
+    const mem = createMemoryStore();
+    await mem.upsertMatches([match()]);
+    const s = createResilientStore(broken, mem, () => t, 1000);
+    expect(s.kind).toBe("supabase");
+    expect((await s.loadMatches()).length).toBe(1);
+    expect(s.kind).toBe("memory");
+    expect(s.degradedReason).toContain("does not exist");
+    t = 2000; // retry window elapsed: primary is tried again
+    await s.loadMatches();
+    expect(s.degradedReason).toContain("does not exist");
+  });
+});

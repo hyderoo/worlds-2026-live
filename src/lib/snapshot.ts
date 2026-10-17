@@ -83,10 +83,13 @@ export function deriveSync(runs: SyncRun[], storage: "supabase" | "memory"): Sna
 
 export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<Snapshot> {
   const store = getStore();
-  if (store.kind === "memory" && opts.refresh !== false) await lazyRefresh(store);
-  const [raw, overrides, recaps, stats, runs] = await Promise.all([
-    store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10),
-  ]);
+  const load = () => Promise.all([store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10)]);
+  // Cache-only mode has no cron-fed data; an empty database (first deploy) needs a first fill too.
+  let [raw, overrides, recaps, stats, runs] = await load();
+  if (opts.refresh !== false && (store.kind === "memory" || raw.length === 0)) {
+    await lazyRefresh(store);
+    [raw, overrides, recaps, stats, runs] = await load();
+  }
   const now = new Date();
   const { matches, stale } = applyOverrides(raw, overrides);
   const live = matches
@@ -94,6 +97,8 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
   if (live.some((m) => m.state === "unverified")) notes.push("Some matches report a status that does not fit their schedule. They are shown as unverified until the source confirms them.");
+  const reason = (store as { degradedReason?: string | null }).degradedReason;
+  if (reason) notes.push("The shared database is not ready (" + reason + "). Running in cache-only mode with live official data.");
   if (live.length === 0) notes.push("No match data is available yet. The first successful sync will populate this page.");
   return {
     generatedAt: now.toISOString(),
