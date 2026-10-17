@@ -1,11 +1,17 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
-import { DEFAULT_TZ } from "./format";
+import { DEFAULT_TZ, TIMEZONES } from "./format";
 import { DEFAULT_LANG, LANG_CODES, translate, type Key } from "./i18n";
 
 export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[]; lang: string; tzSet?: boolean; notifyOff: string[]; nkinds: string[] };
 const KEY = "w26:prefs:v1";
 const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], picks: {}, reminders: [], spoiler: false, revealed: [], lang: DEFAULT_LANG, notifyOff: [], nkinds: ["soon", "live", "final"] };
+function browserTz(): string {
+  try {
+    const z = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return z && z !== "UTC" && z !== "Etc/UTC" && TIMEZONES.some((t) => t.id === z) ? z : DEFAULT_TZ;
+  } catch { return DEFAULT_TZ; }
+}
 const listeners = new Set<() => void>();
 let cached: Prefs | null = null;
 
@@ -14,6 +20,8 @@ function read(): Prefs {
   try {
     const raw = typeof window !== "undefined" ? window.localStorage.getItem(KEY) : null;
     cached = raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Prefs>) } : DEFAULTS;
+    // Until the user picks a zone themselves: browser zone if we offer it, otherwise WIB. A bare "UTC" counts as unknown (servers and headless browsers report it).
+    if (typeof window !== "undefined" && !cached.tzSet) cached = { ...cached, tz: browserTz() };
   } catch {
     cached = DEFAULTS;
   }
