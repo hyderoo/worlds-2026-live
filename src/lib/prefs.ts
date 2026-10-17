@@ -3,7 +3,7 @@ import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_TZ } from "./format";
 import { DEFAULT_LANG, LANG_CODES, translate, type Key } from "./i18n";
 
-export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[]; lang: string; notifyOff: string[]; nkinds: string[] };
+export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[]; lang: string; tzSet?: boolean; notifyOff: string[]; nkinds: string[] };
 const KEY = "w26:prefs:v1";
 const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], picks: {}, reminders: [], spoiler: false, revealed: [], lang: DEFAULT_LANG, notifyOff: [], nkinds: ["soon", "live", "final"] };
 const listeners = new Set<() => void>();

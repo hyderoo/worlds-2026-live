@@ -8,7 +8,7 @@ export const DEFAULT_LANG: Lang = "id";
 export const LANG_CODES = LANGS.map((l) => l[0]) as string[];
 
 const en = {
-  "nav.today": "Today", "nav.home": "Home", "nav.matches": "Matches", "nav.standings": "Standings", "nav.teams": "Teams", "nav.recaps": "Recaps", "nav.stats": "Statistics", "nav.predictions": "Predictions", "nav.groups": "Friends league",
+  "nav.today": "Today", "nav.tournament": "Tournament", "hdr.settings": "Settings", "nav.home": "Home", "nav.matches": "Matches", "nav.standings": "Standings", "nav.teams": "Teams", "nav.recaps": "Recaps", "nav.stats": "Statistics", "nav.predictions": "Predictions", "nav.groups": "Friends league",
   "hdr.search": "Search", "hdr.menu": "Menu", "hdr.skip": "Skip to content", "hdr.spoilersHidden": "Spoilers hidden", "hdr.spoilersShown": "Spoilers shown", "hdr.language": "Language", "hdr.timezone": "Time zone", "hdr.moreMatches": "More in Matches",
   "state.live": "Live", "state.final": "Final", "state.scheduled": "Upcoming", "state.tbd": "To be decided",
   "flt.all": "All", "flt.live": "Live", "flt.upcoming": "Upcoming", "flt.completed": "Completed", "flt.list": "List", "flt.calendar": "Calendar", "flt.myTeams": "My teams",
@@ -24,6 +24,7 @@ export type Key = keyof typeof en;
 type Dict = Partial<Record<Key, string>>;
 
 const id: Dict = {
+  "nav.tournament": "Turnamen", "hdr.settings": "Pengaturan",
   "act.shareScore": "Bagikan dengan skor", "act.downloadCard": "Unduh kartu",
   "nav.today": "Hari ini", "nav.home": "Beranda", "nav.matches": "Pertandingan", "nav.standings": "Klasemen", "nav.teams": "Tim", "nav.recaps": "Rangkuman", "nav.stats": "Statistik", "nav.predictions": "Prediksi", "nav.groups": "Liga teman",
   "hdr.search": "Cari", "hdr.menu": "Menu", "hdr.skip": "Langsung ke konten", "hdr.spoilersHidden": "Spoiler disembunyikan", "hdr.spoilersShown": "Spoiler ditampilkan", "hdr.language": "Bahasa", "hdr.timezone": "Zona waktu", "hdr.moreMatches": "Lainnya di Pertandingan",
@@ -38,6 +39,7 @@ const id: Dict = {
   "pred.title": "Prediksiku",
 };
 const ms: Dict = {
+  "nav.tournament": "Kejohanan", "hdr.settings": "Tetapan",
   "act.shareScore": "Kongsi dengan skor", "act.downloadCard": "Muat turun kad",
   "nav.today": "Hari ini", "nav.home": "Utama", "nav.matches": "Perlawanan", "nav.standings": "Kedudukan", "nav.teams": "Pasukan", "nav.recaps": "Rumusan", "nav.stats": "Statistik", "nav.predictions": "Ramalan", "nav.groups": "Liga rakan",
   "hdr.search": "Cari", "hdr.menu": "Menu", "hdr.skip": "Terus ke kandungan", "hdr.spoilersHidden": "Spoiler disembunyikan", "hdr.spoilersShown": "Spoiler dipaparkan", "hdr.language": "Bahasa", "hdr.timezone": "Zon waktu", "hdr.moreMatches": "Lagi dalam Perlawanan",
@@ -52,6 +54,7 @@ const ms: Dict = {
   "pred.title": "Ramalan saya",
 };
 const ja: Dict = {
+  "nav.tournament": "大会", "hdr.settings": "設定",
   "act.shareScore": "スコア付きで共有", "act.downloadCard": "カードを保存",
   "nav.today": "今日", "nav.home": "ホーム", "nav.matches": "試合", "nav.standings": "順位", "nav.teams": "チーム", "nav.recaps": "まとめ", "nav.stats": "統計", "nav.predictions": "予想", "nav.groups": "フレンドリーグ",
   "hdr.search": "検索", "hdr.menu": "メニュー", "hdr.skip": "本文へスキップ", "hdr.spoilersHidden": "ネタバレ非表示", "hdr.spoilersShown": "ネタバレ表示", "hdr.language": "言語", "hdr.timezone": "タイムゾーン", "hdr.moreMatches": "試合のその他",
@@ -66,6 +69,7 @@ const ja: Dict = {
   "pred.title": "私の予想",
 };
 const ko: Dict = {
+  "nav.tournament": "대회", "hdr.settings": "설정",
   "act.shareScore": "점수 포함 공유", "act.downloadCard": "카드 다운로드",
   "nav.today": "오늘", "nav.home": "홈", "nav.matches": "경기", "nav.standings": "순위", "nav.teams": "팀", "nav.recaps": "요약", "nav.stats": "통계", "nav.predictions": "예측", "nav.groups": "친구 리그",
   "hdr.search": "검색", "hdr.menu": "메뉴", "hdr.skip": "본문으로 건너뛰기", "hdr.spoilersHidden": "스포일러 숨김", "hdr.spoilersShown": "스포일러 표시", "hdr.language": "언어", "hdr.timezone": "시간대", "hdr.moreMatches": "경기 더보기",
@@ -80,6 +84,7 @@ const ko: Dict = {
   "pred.title": "내 예측",
 };
 const zh: Dict = {
+  "nav.tournament": "赛事", "hdr.settings": "设置",
   "act.shareScore": "分享（含比分）", "act.downloadCard": "下载卡片",
   "nav.today": "今日", "nav.home": "首页", "nav.matches": "比赛", "nav.standings": "积分榜", "nav.teams": "战队", "nav.recaps": "战报", "nav.stats": "数据", "nav.predictions": "预测", "nav.groups": "好友联赛",
   "hdr.search": "搜索", "hdr.menu": "菜单", "hdr.skip": "跳到内容", "hdr.spoilersHidden": "已隐藏剧透", "hdr.spoilersShown": "已显示剧透", "hdr.language": "语言", "hdr.timezone": "时区", "hdr.moreMatches": "比赛更多",
@@ -94,6 +99,7 @@ const zh: Dict = {
   "pred.title": "我的预测",
 };
 const fr: Dict = {
+  "nav.tournament": "Tournoi", "hdr.settings": "Réglages",
   "act.shareScore": "Partager avec le score", "act.downloadCard": "Télécharger la carte",
   "nav.today": "Aujourd'hui", "nav.home": "Accueil", "nav.matches": "Matchs", "nav.standings": "Classement", "nav.teams": "Équipes", "nav.recaps": "Résumés", "nav.stats": "Statistiques", "nav.predictions": "Pronostics", "nav.groups": "Ligue d'amis",
   "hdr.search": "Rechercher", "hdr.menu": "Menu", "hdr.skip": "Aller au contenu", "hdr.spoilersHidden": "Spoilers masqués", "hdr.spoilersShown": "Spoilers affichés", "hdr.language": "Langue", "hdr.timezone": "Fuseau horaire", "hdr.moreMatches": "Plus dans Matchs",
@@ -108,6 +114,7 @@ const fr: Dict = {
   "pred.title": "Mes pronostics",
 };
 const es: Dict = {
+  "nav.tournament": "Torneo", "hdr.settings": "Ajustes",
   "act.shareScore": "Compartir con marcador", "act.downloadCard": "Descargar tarjeta",
   "nav.today": "Hoy", "nav.home": "Inicio", "nav.matches": "Partidos", "nav.standings": "Clasificación", "nav.teams": "Equipos", "nav.recaps": "Resúmenes", "nav.stats": "Estadísticas", "nav.predictions": "Pronósticos", "nav.groups": "Liga de amigos",
   "hdr.search": "Buscar", "hdr.menu": "Menú", "hdr.skip": "Saltar al contenido", "hdr.spoilersHidden": "Spoilers ocultos", "hdr.spoilersShown": "Spoilers visibles", "hdr.language": "Idioma", "hdr.timezone": "Zona horaria", "hdr.moreMatches": "Más en Partidos",
@@ -122,6 +129,7 @@ const es: Dict = {
   "pred.title": "Mis pronósticos",
 };
 const pt: Dict = {
+  "nav.tournament": "Torneio", "hdr.settings": "Configurações",
   "act.shareScore": "Compartilhar com placar", "act.downloadCard": "Baixar cartão",
   "nav.today": "Hoje", "nav.home": "Início", "nav.matches": "Partidas", "nav.standings": "Classificação", "nav.teams": "Equipes", "nav.recaps": "Resumos", "nav.stats": "Estatísticas", "nav.predictions": "Palpites", "nav.groups": "Liga de amigos",
   "hdr.search": "Buscar", "hdr.menu": "Menu", "hdr.skip": "Ir para o conteúdo", "hdr.spoilersHidden": "Spoilers ocultos", "hdr.spoilersShown": "Spoilers visíveis", "hdr.language": "Idioma", "hdr.timezone": "Fuso horário", "hdr.moreMatches": "Mais em Partidas",
