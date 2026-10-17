@@ -19,6 +19,11 @@ describe("liquipedia parser", () => {
     expect(c9.staff.length).toBe(4);
     expect(m.get("T1")!.staff.some((s) => s.id === "kkOma")).toBe(false);
   });
+  it("handles Person templates with the id after the role", () => {
+    const tl = parseParticipants(wt).get("TL")!;
+    expect(tl.players.map((p) => p.id)).toEqual(["Morgan", "Josedeodo", "Quid", "Yeon", "CoreJJ"]);
+    expect(tl.staff.map((s) => s.id)).toEqual(["Spawn", "Spookz"]);
+  });
   it("reads only safe social handles", () => {
     const s = parseSocials(readFileSync(new URL("./fixtures/infobox.wt", import.meta.url), "utf8") + "\n}}");
     expect(s.find((x) => x.label === "X / Twitter")?.url).toBe("https://x.com/geng");

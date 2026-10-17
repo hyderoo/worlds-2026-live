@@ -112,3 +112,18 @@
 		|{{Person|Caliste|role=bot, captain}}
 		|{{Person|Busio|role=sup}}
 
+
+}}
+|{{Opponent|Team Liquid
+    |players={{Persons
+        |{{Person|role=top|Morgan}}
+        |{{Person|role=jgl|Josedeodo}}
+        |{{Person|role=mid|Quid}}
+        |{{Person|role=bot|Yeon}}
+        |{{Person|role=sup|CoreJJ|trophies=1}}
+
+        |{{Person|Spawn|role=head coach|type=staff}}
+		|{{Person|Spookz|role=assistant coach|type=staff}}
+    }}
+	|qualification={{Qualification|method=qual|page=LCS/2026/Summer|placement=1}}
+}}

@@ -43,9 +43,11 @@ export function parseParticipants(wikitext: string): Map<string, Pick<TeamExtras
     const block = text.slice(m.index!, starts[i + 1]?.index ?? text.length);
     const players: TeamExtras["players"] = [];
     const staff: TeamExtras["staff"] = [];
-    for (const p of block.matchAll(/\{\{Person\|([^|{}]+)((?:\|[^{}]*)?)\}\}/g)) {
-      const id = p[1]!.trim();
-      const a = params(p[2] ?? "");
+    for (const p of block.matchAll(/\{\{Person\|([^{}]*)\}\}/g)) {
+      const segs = p[1]!.split("|");
+      const id = (segs.find((x) => !x.includes("=")) ?? "").trim();
+      if (!id) continue;
+      const a = params(segs.filter((x) => x.includes("=")).join("|"));
       const roleRaw = (a.role ?? "").toLowerCase();
       if (a.type?.toLowerCase() === "staff") {
         staff.push({ id, role: (a.role ?? "staff").replace(/\s+/g, " ").toLowerCase() });
@@ -106,7 +108,8 @@ export async function refreshLiquipedia(store: Store, opts: { contact?: string; 
     const teams = (key: string) => extras[key] as TeamExtras | undefined;
     const rosterAge = Math.min(...Object.values(extras).filter((x): x is TeamExtras => !!x && (x as TeamExtras).source === "liquipedia").map((x) => (x.rosterFetchedAt ? now.getTime() - new Date(x.rosterFetchedAt).getTime() : Infinity)), Infinity);
     await store.saveExtra(META, { lastRequestAt: now.toISOString() });
-    if (rosterAge > ROSTER_TTL_MS) {
+    const missing = new Set(Object.values(NAME_TO_CODE)).size > Object.values(extras).filter((x) => (x as TeamExtras | undefined)?.rosterFetchedAt).length;
+    if (missing || rosterAge > ROSTER_TTL_MS) {
       const parsed = parseParticipants(await fetcher(WORLDS_PAGE, contact));
       for (const [code, v] of parsed) {
         const prev = teams(code);

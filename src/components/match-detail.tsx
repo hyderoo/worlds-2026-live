@@ -85,7 +85,7 @@ export function MatchDetail({ id }: { id: string }) {
           <h2 id="pred" className="display text-2xl">Your prediction</h2>
           <p className="mb-3 text-sm text-fog">A personal opinion saved on this device. It is not a forecast and not shared with anyone.</p>
           <div className="flex gap-2">
-            {m.teams.map((t) => <button key={t.code} aria-pressed={pick === t.code} onClick={() => set({ picks: { ...prefs.picks, [m.id]: pick === t.code ? "" : t.code } })} className={`rounded-full border px-4 py-2 text-sm ${pick === t.code ? "border-gold bg-gold/10 text-gold" : "border-line text-fog hover:text-snow"}`}>{t.name}</button>)}
+            {m.teams.map((t) => <button key={t.code} aria-pressed={pick === t.code} onClick={() => set({ picks: { ...prefs.picks, [m.id]: pick === t.code ? "" : t.code } })} className={`rounded-full border px-4 py-2 text-sm ${pick === t.code ? "border-gold bg-gold/10 text-gold" : "border-line text-fog hover:text-snow"}`}><span className="inline-flex items-center gap-2"><TeamLogo team={t} size={20} />{t.name}</span></button>)}
           </div>
         </section>
       )}
