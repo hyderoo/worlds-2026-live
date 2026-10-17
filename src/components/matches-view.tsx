@@ -6,13 +6,14 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, MatchCard, Pill } from "./ui";
 import { dayKey, fmtDayLong, fmtTime } from "@/lib/format";
-import { usePrefs } from "@/lib/prefs";
+import { usePrefs, useT } from "@/lib/prefs";
 import { REGIONS, REGION_BY_LEAGUE } from "@/lib/regions";
 import type { Match } from "@/lib/types";
 
-const STATUSES = [["all", "All"], ["live", "Live"], ["scheduled", "Upcoming"], ["completed", "Completed"]] as const;
+const STATUSES = [["all", "flt.all"], ["live", "flt.live"], ["scheduled", "flt.upcoming"], ["completed", "flt.completed"]] as const;
 
 export function MatchesView() {
+  const { t } = useT();
   const { snap } = useSnapshot();
   const { prefs } = usePrefs();
   const tz = prefs.tz;
@@ -52,11 +53,11 @@ export function MatchesView() {
     <div>
       <div className="card mt-6 grid gap-4 p-4">
         <div className="flex flex-wrap items-center gap-2">
-          {STATUSES.map(([id, label]) => <Pill key={id} active={status === id} onClick={() => set({ status: id })}>{label}{id === "live" && snap.matches.some((m) => m.state === "live") ? " •" : ""}</Pill>)}
+          {STATUSES.map(([id, label]) => <Pill key={id} active={status === id} onClick={() => set({ status: id })}>{t(label)}{id === "live" && snap.matches.some((m) => m.state === "live") ? " •" : ""}</Pill>)}
           <span className="mx-2 hidden h-5 w-px bg-line sm:block" />
-          <Pill active={view === "list"} onClick={() => set({ view: "list" })}>List</Pill>
-          <Pill active={view === "calendar"} onClick={() => set({ view: "calendar" })}>Calendar</Pill>
-          <Pill active={mine} onClick={() => set({ mine: mine ? null : "1" })}>My teams</Pill>
+          <Pill active={view === "list"} onClick={() => set({ view: "list" })}>{t("flt.list")}</Pill>
+          <Pill active={view === "calendar"} onClick={() => set({ view: "calendar" })}>{t("flt.calendar")}</Pill>
+          <Pill active={mine} onClick={() => set({ mine: mine ? null : "1" })}>{t("flt.myTeams")}</Pill>
         </div>
         <div className="grid gap-3 sm:grid-cols-4">
           <input aria-label="Search team" placeholder="Search team…" defaultValue={q} onChange={(e) => set({ q: e.target.value })} className="rounded-lg border border-line bg-surface px-3 py-2 text-sm" />

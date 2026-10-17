@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const s = await buildSnapshot({ refresh: false });
   const base = config.siteUrl;
-  const pages = ["", "/matches", "/standings", "/teams", "/recaps", "/stats", "/compare", "/about"].map((p) => ({ url: `${base}${p}`, changeFrequency: "hourly" as const }));
+  const pages = ["", "/today", "/matches", "/predictions", "/standings", "/teams", "/recaps", "/stats", "/compare", "/about"].map((p) => ({ url: `${base}${p}`, changeFrequency: "hourly" as const }));
   return [
     ...pages,
     ...s.teams.map((t) => ({ url: `${base}/teams/${t.code}`, changeFrequency: "daily" as const })),

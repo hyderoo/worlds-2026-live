@@ -1,10 +1,11 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_TZ } from "./format";
+import { DEFAULT_LANG, LANG_CODES, translate, type Key } from "./i18n";
 
-export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[] };
+export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[]; lang: string };
 const KEY = "w26:prefs:v1";
-const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], picks: {}, reminders: [], spoiler: false, revealed: [] };
+const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], picks: {}, reminders: [], spoiler: false, revealed: [], lang: DEFAULT_LANG };
 const listeners = new Set<() => void>();
 let cached: Prefs | null = null;
 
@@ -58,4 +59,11 @@ export function useSpoiler() {
     revealSession: () => { sessionAll = true; sessionListeners.forEach((l) => l()); },
     toggle: () => { sessionAll = false; sessionListeners.forEach((l) => l()); set({ spoiler: !prefs.spoiler, revealed: [] }); },
   };
+}
+
+/** Translate a core UI string using the saved language (default Indonesian). Falls back to English. */
+export function useT() {
+  const { prefs } = usePrefs();
+  const lang = LANG_CODES.includes(prefs.lang) ? prefs.lang : DEFAULT_LANG;
+  return { t: (k: Key) => translate(lang, k), lang };
 }

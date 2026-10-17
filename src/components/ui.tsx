@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import clsx from "clsx";
 import { countdownParts, fmtDateTime } from "@/lib/format";
-import { useSpoiler } from "@/lib/prefs";
+import { useSpoiler, useT } from "@/lib/prefs";
 import type { Match, MatchState, Team, TeamSide } from "@/lib/types";
 
 export function TeamLogo({ team, size = 40 }: { team: Pick<TeamSide, "code" | "image"> | Pick<Team, "code" | "image">; size?: number }) {
@@ -31,11 +31,13 @@ const STATE_META: Record<MatchState, { label: string; cls: string; hint: string 
 };
 
 export function StateBadge({ state }: { state: MatchState }) {
+  const { t } = useT();
   const m = STATE_META[state];
+  const label = state === "live" ? t("state.live") : state === "completed" ? t("state.final") : state === "scheduled" ? t("state.scheduled") : m.label;
   return (
     <span title={m.hint} className={clsx("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wider", m.cls)}>
       {state === "live" && <span className="live-dot size-1.5 rounded-full bg-ember" aria-hidden />}
-      {m.label}
+      {label}
     </span>
   );
 }
@@ -43,17 +45,19 @@ export function StateBadge({ state }: { state: MatchState }) {
 /** Replaces results-revealing content while spoiler-free mode is on. */
 export function SpoilerGate({ children, what = "Results" }: { children: ReactNode; what?: string }) {
   const sp = useSpoiler();
+  const { t } = useT();
   if (!sp.on) return <>{children}</>;
   return (
     <div role="status" className="card p-6 text-center">
-      <p className="font-medium">{what} are hidden (spoiler-free mode).</p>
-      <button onClick={sp.revealSession} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">Show for this session</button>
+      <p className="font-medium" data-what={what}>{t("spoiler.hidden")}</p>
+      <button onClick={sp.revealSession} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">{t("act.showSession")}</button>
     </div>
   );
 }
 
 export function MatchCard({ m, tz, compact }: { m: Match; tz: string; compact?: boolean }) {
   const sp = useSpoiler();
+  const { t: tr } = useT();
   const hide = sp.hidden(m.id) && (m.state === "completed" || m.state === "live");
   const done = m.state === "completed" && !hide;
   return (
@@ -69,12 +73,12 @@ export function MatchCard({ m, tz, compact }: { m: Match; tz: string; compact?: 
         <div key={i} className={clsx("flex items-center justify-between py-1.5", done && t.outcome === "loss" && "opacity-55")}>
           <span className="flex min-w-0 items-center gap-3">
             <TeamLogo team={t} size={compact ? 28 : 36} />
-            <span className={clsx("truncate font-medium", t.outcome === "win" && !hide && "text-gold")}>{t.code === "TBD" ? "To be decided" : t.name}</span>
+            <span className={clsx("truncate font-medium", t.outcome === "win" && !hide && "text-gold")}>{t.code === "TBD" ? tr("state.tbd") : t.name}</span>
           </span>
           <span className={clsx("tabular-nums text-xl font-semibold", t.outcome === "win" && !hide ? "text-gold" : "text-fog")}>{hide ? "·" : done || m.state === "live" ? (t.wins ?? 0) : "–"}</span>
         </div>
       ))}
-      {hide && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sp.reveal(m.id); }} className="mt-2 rounded-full border border-line px-3 py-1 text-xs text-fog hover:border-gold hover:text-gold">Show result</button>}
+      {hide && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sp.reveal(m.id); }} className="mt-2 rounded-full border border-line px-3 py-1 text-xs text-fog hover:border-gold hover:text-gold">{tr("act.showResult")}</button>}
     </Link>
   );
 }
