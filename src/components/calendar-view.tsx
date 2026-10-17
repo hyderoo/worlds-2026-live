@@ -17,7 +17,7 @@ export function CalendarView() {
   const [copied, setCopied] = useState(false);
   useEffect(() => { const x = setTimeout(() => setOrigin(window.location.origin), 0); return () => clearTimeout(x); }, []);
   const chosen = sel ?? prefs.watch.filter((c) => teams.some((x) => x.code === c));
-  const toggle = (c: string) => setSel(chosen.includes(c) ? chosen.filter((x) => x !== c) : [...chosen, c]);
+  const toggle = (c: string) => setSel((prev) => { const cur = prev ?? chosen; return cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]; });
   const q = new URLSearchParams();
   if (chosen.length) q.set("teams", chosen.join(","));
   if (alarm) q.set("alarm", String(alarm));

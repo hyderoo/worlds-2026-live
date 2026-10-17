@@ -70,7 +70,7 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     await syncChampions(store, [...byId.values(), ...[...existing.values()].filter((e) => !byId.has(e.id))], d);
     run.matchesChanged = changed.length;
     run.ok = true;
-    if (trigger !== "lazy" && !deps.fetchUpstream) await sendDueNotifications(store, [...byId.values()], d.now()).catch(() => undefined);
+    if (trigger !== "lazy" && !deps.fetchUpstream) await sendDueNotifications(store, [...[...existing.values()].map((e) => byId.get(e.id) ?? e), ...[...byId.values()].filter((m) => !existing.has(m.id))], d.now()).catch(() => undefined);
     // Unofficial secondary source, cron/manual ticks only; never affects the official sync result.
     if (trigger !== "lazy" && !deps.fetchUpstream) await refreshLiquipedia(store).catch(() => undefined);
   } catch (e) {
