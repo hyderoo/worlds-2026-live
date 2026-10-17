@@ -50,24 +50,49 @@ export function Splash() {
   );
 }
 
-/** Original SVG recreation of a chrome Summoner's Cup crest (not Riot artwork): bevelled metal rim, copper reflections, light sweep. */
+/** Original SVG drawing of a Summoner's-Cup-style trophy (not Riot artwork, no photo embedded): faceted silver bowl, crown prongs, blue shield gem, tiered stem, stepped base, cool glow and a light sweep. */
 function MetalCup() {
-  const d = "M10 62 L38 22 L62 54 L100 14 L138 54 L162 22 L190 62 L190 112 Q190 152 100 178 Q10 152 10 112 Z";
-  const inner = "M26 70 L40 48 L64 76 L100 40 L136 76 L160 48 L174 70 L174 110 Q174 140 100 162 Q26 140 26 110 Z";
+  const prong = "M63 74 C40 72 33 48 45 20 C50 42 58 52 72 60 Z M72 62 C66 50 66 40 72 26 C78 42 82 52 86 64 Z";
+  const bowl = "M63 74 L137 74 C139 112 124 140 100 154 C76 140 61 112 63 74 Z";
+  const stem = "M92 154 L108 154 L106 176 L112 184 L108 196 L113 206 L87 206 L92 196 L88 184 L94 176 Z";
+  const base = "M70 206 L130 206 L136 218 L146 220 L150 238 L50 238 L54 220 L64 218 Z";
   return (
-    <svg viewBox="0 0 200 190" className="splash-cup h-40 drop-shadow-[0_6px_22px_rgba(0,0,0,.7)]">
+    <svg viewBox="0 0 200 250" className="splash-cup h-48 drop-shadow-[0_0_26px_rgba(120,180,255,.45)]">
       <defs>
-        <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f4f4f6" /><stop offset=".22" stopColor="#6b6d75" /><stop offset=".4" stopColor="#15151a" /><stop offset=".55" stopColor="#c9c9d0" /><stop offset=".72" stopColor="#8a5a3a" /><stop offset=".85" stopColor="#1a1a20" /><stop offset="1" stopColor="#e6e6ea" /></linearGradient>
-        <linearGradient id="void" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0a0a0f" /><stop offset=".6" stopColor="#14110f" /><stop offset="1" stopColor="#3a2418" /></linearGradient>
-        <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".95" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
-        <mask id="ring"><path d={d} fill="#fff" /><path d={inner} fill="#000" /></mask>
+        <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stopColor="#7fb8ff" stopOpacity=".55" /><stop offset="1" stopColor="#7fb8ff" stopOpacity="0" /></radialGradient>
+        <linearGradient id="sil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset=".3" stopColor="#b9c9e0" /><stop offset=".55" stopColor="#5f7396" /><stop offset=".8" stopColor="#dbe7f7" /><stop offset="1" stopColor="#7d93b8" /></linearGradient>
+        <linearGradient id="sild" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8fa6c8" /><stop offset=".5" stopColor="#33466b" /><stop offset="1" stopColor="#a9bdd9" /></linearGradient>
+        <linearGradient id="gem" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#bfe4ff" /><stop offset=".45" stopColor="#3d86f0" /><stop offset="1" stopColor="#1c3fa0" /></linearGradient>
+        <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".9" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+        <path id="pr" d={prong} />
+        <clipPath id="cupclip">
+          <path d={bowl} /><path d={stem} /><path d={base} /><use href="#pr" /><use href="#pr" transform="translate(200 0) scale(-1 1)" />
+        </clipPath>
       </defs>
-      <path d={d} fill="url(#chrome)" />
-      <path d={inner} fill="url(#void)" />
-      <path d={d} fill="none" stroke="#fff" strokeOpacity=".75" strokeWidth="1.6" strokeLinejoin="round" pathLength={1} className="splash-draw" />
-      <path d={inner} fill="none" stroke="#d9a078" strokeOpacity=".85" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M40 48 L64 76 L100 40" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="1" />
-      <g mask="url(#ring)"><rect x="-80" y="0" width="60" height="190" fill="url(#sweep)" transform="skewX(-20)" className="splash-sweep" /></g>
+      <ellipse cx="100" cy="120" rx="95" ry="115" fill="url(#glow)" />
+      {/* base */}
+      <path d={base} fill="url(#sil)" />
+      <path d="M100 206 L100 238 M76 207 L64 218 M124 207 L136 218 M54 220 L146 220" stroke="#2a3a5c" strokeOpacity=".55" strokeWidth="1" fill="none" />
+      <path d="M150 238 L146 220 L136 218 L130 206 L100 206 L100 238 Z" fill="url(#sild)" opacity=".55" />
+      <ellipse cx="100" cy="228" rx="16" ry="6" fill="none" stroke="#eaf3ff" strokeOpacity=".8" strokeWidth="1.3" />
+      {/* stem */}
+      <path d={stem} fill="url(#sil)" />
+      <path d="M100 154 L100 206 M94 176 L106 176 M88 184 L112 184 M92 196 L108 196" stroke="#2a3a5c" strokeOpacity=".5" strokeWidth="1" fill="none" />
+      <path d="M100 154 L108 154 L106 176 L112 184 L108 196 L113 206 L100 206 Z" fill="url(#sild)" opacity=".5" />
+      <path d="M100 178 L104 184 L100 190 L96 184 Z" fill="url(#gem)" />
+      {/* prongs */}
+      <use href="#pr" fill="url(#sil)" />
+      <use href="#pr" fill="url(#sild)" transform="translate(200 0) scale(-1 1)" />
+      {/* bowl */}
+      <path d={bowl} fill="url(#sil)" />
+      <path d="M100 74 L137 74 C139 112 124 140 100 154 Z" fill="url(#sild)" opacity=".7" />
+      <path d="M63 74 L100 100 L137 74 M70 112 L100 100 L130 112 M78 130 L100 120 L122 130 M100 100 L100 154" stroke="#1f2f52" strokeOpacity=".55" strokeWidth="1" fill="none" />
+      <path d="M63 74 L100 66 L137 74" stroke="#fff" strokeOpacity=".9" strokeWidth="1.6" fill="none" strokeLinejoin="round" className="splash-draw" pathLength={1} />
+      {/* shield gem */}
+      <path d="M100 84 L117 90 L115 112 Q112 124 100 130 Q88 124 85 112 L83 90 Z" fill="url(#gem)" stroke="#eaf3ff" strokeWidth="1.6" />
+      <path d="M100 92 L108 96 L107 110 Q105 117 100 120 Z" fill="#fff" opacity=".35" />
+      <path d="M100 98 l3 6 6 .5 -4.5 4 1.5 6 -6 -3.5 -6 3.5 1.5 -6 -4.5 -4 6 -.5z" fill="#fff" opacity=".9" transform="translate(0 -2) scale(1)" />
+      <g clipPath="url(#cupclip)"><rect x="-80" y="0" width="60" height="250" fill="url(#sweep)" transform="skewX(-20)" className="splash-sweep" /></g>
     </svg>
   );
 }
