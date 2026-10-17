@@ -1,5 +1,9 @@
 export const TIMEZONES = [
   { id: "Asia/Jakarta", label: "WIB (Jakarta)", short: "WIB" },
+  { id: "Asia/Makassar", label: "WITA (Makassar)", short: "WITA" },
+  { id: "Asia/Jayapura", label: "WIT (Jayapura)", short: "WIT" },
+  { id: "Asia/Singapore", label: "SGT (Singapore)", short: "SGT" },
+  { id: "Asia/Tokyo", label: "JST (Tokyo)", short: "JST" },
   { id: "UTC", label: "UTC", short: "UTC" },
   { id: "Asia/Seoul", label: "KST (Seoul)", short: "KST" },
   { id: "Europe/Paris", label: "CET/CEST (Paris)", short: "CET" },
