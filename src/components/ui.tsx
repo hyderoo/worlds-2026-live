@@ -7,16 +7,19 @@ import { countdownParts, fmtDateTime } from "@/lib/format";
 import type { Match, MatchState, Team, TeamSide } from "@/lib/types";
 
 export function TeamLogo({ team, size = 40 }: { team: Pick<TeamSide, "code" | "image"> | Pick<Team, "code" | "image">; size?: number }) {
-  const [bad, setBad] = useState(false);
+  // Bundled official team logos first (public/logos/<CODE>.png), then the feed's own image URL, then initials.
+  const [stage, setStage] = useState<0 | 1 | 2>(0);
   const tbd = team.code === "TBD";
-  if (!team.image || bad || tbd) {
+  const local = `/logos/${team.code}.png`;
+  const src = stage === 0 ? local : stage === 1 ? team.image : null;
+  if (tbd || !src) {
     return (
       <span aria-hidden className="grid shrink-0 place-items-center rounded-full border border-line bg-raise text-[0.6rem] font-semibold text-fog" style={{ width: size, height: size }}>
         {tbd ? "?" : team.code.slice(0, 3)}
       </span>
     );
   }
-  return <Image src={team.image} alt="" width={size} height={size} unoptimized onError={() => setBad(true)} className="shrink-0 object-contain" style={{ width: size, height: size }} />;
+  return <Image key={src} src={src} alt="" width={size} height={size} unoptimized onError={() => setStage((v) => (v === 0 && team.image ? 1 : 2))} className="shrink-0 object-contain" style={{ width: size, height: size }} />;
 }
 
 const STATE_META: Record<MatchState, { label: string; cls: string; hint: string }> = {

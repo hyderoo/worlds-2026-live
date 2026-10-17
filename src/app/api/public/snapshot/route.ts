@@ -1,16 +1,19 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { buildSnapshot } from "@/lib/snapshot";
-import { corsHeaders } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
-export function OPTIONS(req: Request) {
-  return new NextResponse(null, { status: 204, headers: corsHeaders(req.headers.get("origin")) });
+// Public, read-only, credential-free data: any origin may read it. Hosted Instinct pages run on a per-revision
+// subdomain (*.instinctusercontent.com), so an origin allowlist cannot work for them.
+const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "content-type, if-none-match", "Access-Control-Expose-Headers": "etag" };
+
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS });
 }
 
 export async function GET(req: Request) {
-  const headers = corsHeaders(req.headers.get("origin"));
+  const headers = CORS;
   try {
     const snap = await buildSnapshot();
     // ETag ignores generatedAt so unchanged data returns 304

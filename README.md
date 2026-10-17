@@ -69,7 +69,9 @@ The Instinct-hosted page is a static File with no backend or database. It can on
 2. fetches `/api/public/snapshot` on load and every minute,
 3. falls back to its baked snapshot if the fetch fails, and labels it as stale.
 
-`CORS_ALLOW_ORIGINS` must include the Instinct file origin (default `https://files.instinct.com`).
+`/api/public/snapshot` is public, read-only and credential-free, so it answers with `Access-Control-Allow-Origin: *` (hosted pages run on per-revision `*.instinctusercontent.com` subdomains, so an allowlist cannot work). `CORS_ALLOW_ORIGINS` is no longer needed.
+
+Team logos in `public/logos` are the official team images from the LoL Esports team data; they belong to their owners.
 
 ### Secondary source (Liquipedia)
 
