@@ -6,24 +6,24 @@ import { useSnapshot } from "./providers";
 import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
 import { computeRecords, hasTbd } from "@/lib/match-state";
 import { fmtDateTime } from "@/lib/format";
-import { usePrefs } from "@/lib/prefs";
+import { usePrefs, useT } from "@/lib/prefs";
 import type { Match } from "@/lib/types";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"] as const;
 
 function BracketCard({ m, tz, hot, setHot, note }: { m: Match; tz: string; hot: string | null; setHot: (c: string | null) => void; note?: string }) {
   return (
-    <Link href={`/matches/${m.id}`} className="card block w-60 shrink-0 p-3 text-sm transition hover:border-violet-dim">
-      <div className="mb-2 flex items-center justify-between text-[0.7rem] text-fog"><span>{fmtDateTime(m.startTime, tz)}</span><StateBadge state={m.state} /></div>
+    <div className="card block w-60 shrink-0 p-3 text-sm transition hover:border-violet-dim">
+      <div className="mb-2 flex items-center justify-between text-[0.7rem] text-fog"><Link href={`/matches/${m.id}`} className="underline-offset-2 hover:underline">{fmtDateTime(m.startTime, tz)} ›</Link><StateBadge state={m.state} /></div>
       {m.teams.map((t, i) => (
-        <div key={i} onMouseEnter={() => t.code !== "TBD" && setHot(t.code)} onMouseLeave={() => setHot(null)} onFocus={() => t.code !== "TBD" && setHot(t.code)} onBlur={() => setHot(null)}
-          className={clsx("flex items-center justify-between rounded-md px-1.5 py-1", hot === t.code && "bg-violet/15", m.state === "completed" && t.outcome === "loss" && "opacity-50")}>
+        <button key={i} type="button" disabled={t.code === "TBD"} aria-pressed={hot === t.code} onClick={() => setHot(hot === t.code ? null : t.code)}
+          className={clsx("flex w-full items-center justify-between rounded-md px-1.5 py-1 text-left", hot === t.code && "bg-violet/25 ring-1 ring-violet/60", m.state === "completed" && t.outcome === "loss" && "opacity-50")}>
           <span className="flex items-center gap-2"><TeamLogo team={t} size={22} /><span className={clsx(t.outcome === "win" && "text-gold")}>{t.code === "TBD" ? "TBD" : t.code}</span></span>
           <span className="tabular-nums">{m.state === "completed" || m.state === "live" ? t.wins ?? 0 : "–"}</span>
-        </div>
+        </button>
       ))}
       {note && <p className="mt-2 text-[0.68rem] leading-snug text-fog">{note}</p>}
-    </Link>
+    </div>
   );
 }
 
@@ -80,8 +80,7 @@ function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name:
   );
 }
 
-function PlayIns({ ms, tz }: { ms: Match[]; tz: string }) {
-  const [hot, setHot] = useState<string | null>(null);
+function PlayIns({ ms, tz, hot, setHot }: { ms: Match[]; tz: string; hot: string | null; setHot: (c: string | null) => void }) {
   const six = ms.length === 6;
   // Double-elimination format of the 4-team Play-In, in schedule order. Labels shown only when the shape matches.
   const notes = six
@@ -106,8 +105,7 @@ function PlayIns({ ms, tz }: { ms: Match[]; tz: string }) {
   );
 }
 
-function Knockouts({ ms, tz }: { ms: Match[]; tz: string }) {
-  const [hot, setHot] = useState<string | null>(null);
+function Knockouts({ ms, tz, hot, setHot }: { ms: Match[]; tz: string; hot: string | null; setHot: (c: string | null) => void }) {
   const blocks = [...new Set(ms.map((m) => m.block))];
   return (
     <Zoomable label="Knockout bracket">
@@ -166,10 +164,43 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
   );
 }
 
+/** Pick a team (tap a team in any bracket card, or use the list) to see its whole Worlds path from official results. */
+function TeamPath({ all, teams, pin, setPin, tz }: { all: Match[]; teams: { code: string; name: string }[]; pin: string | null; setPin: (c: string | null) => void; tz: string }) {
+  const { t } = useT();
+  const list = pin ? all.filter((m) => m.teams.some((x) => x.code === pin)).sort((a, b) => a.startTime.localeCompare(b.startTime)) : [];
+  return (
+    <section className="card mt-8 p-5" aria-labelledby="tp">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="tp" className="display text-2xl">{t("path.title")}</h2>
+        <select aria-label={t("path.title")} value={pin ?? ""} onChange={(e) => setPin(e.target.value || null)} className="rounded-lg border border-line bg-surface px-3 py-2 text-sm">
+          <option value="">{t("path.pick")}</option>
+          {[...teams].sort((a, b) => a.name.localeCompare(b.name)).filter((x) => x.code !== "TBD").map((x) => <option key={x.code} value={x.code}>{x.name}</option>)}
+        </select>
+      </div>
+      {!pin ? <p className="mt-3 text-sm text-fog">{t("path.hint")}</p> : (
+        <ol className="mt-4 grid gap-2">
+          {list.map((m) => {
+            const me = m.teams.find((x) => x.code === pin)!, opp = m.teams.find((x) => x !== me)!;
+            const res = m.state === "completed" ? (me.outcome === "win" ? "W" : "L") : m.state === "live" ? "•" : "";
+            return (
+              <li key={m.id}><Link href={`/matches/${m.id}`} className="flex items-center justify-between gap-3 rounded-lg border border-line px-3 py-2 text-sm hover:border-gold">
+                <span className="flex items-center gap-2"><span className={clsx("w-5 text-center font-semibold", res === "W" ? "text-gold" : res === "L" ? "text-ember" : "text-fog")}>{res}</span>vs {opp.code === "TBD" ? "TBD" : opp.name}</span>
+                <span className="text-xs text-fog">{m.state === "completed" ? `${me.wins ?? 0}-${opp.wins ?? 0} · ` : ""}{m.stage} · {fmtDateTime(m.startTime, tz)}</span>
+              </Link></li>
+            );
+          })}
+        </ol>
+      )}
+      <p className="mt-3 text-xs text-fog">{t("path.note")}</p>
+    </section>
+  );
+}
+
 export function StandingsView() {
   const { snap } = useSnapshot();
   const { prefs } = usePrefs();
   const [stage, setStage] = useState<(typeof STAGES)[number]>("Play-Ins");
+  const [pin, setPin] = useState<string | null>(null);
   const ms = snap.matches.filter((m) => m.stage === stage);
   const live = snap.matches.some((m) => m.state === "live");
   void live;
@@ -179,11 +210,12 @@ export function StandingsView() {
       <SpoilerGate what="Standings and results">
       {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
-        : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} /> : <Knockouts ms={ms} tz={prefs.tz} />}
+        : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} /> : <Knockouts ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} />}
       {stage !== "Swiss" && <div className="card mt-8 overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">{stage} records</caption>
         <thead className="border-b border-line text-xs uppercase tracking-wider text-fog"><tr><th className="px-3 py-2 text-left">Team</th><th className="px-3 py-2 text-left">W</th><th className="px-3 py-2 text-left">L</th><th className="px-3 py-2 text-left">Games</th></tr></thead>
         <tbody>{computeRecords(snap.matches, stage).map((r) => <tr key={r.code} className="border-b border-line/50 last:border-0"><td className="px-3 py-2"><Link className="flex items-center gap-2 hover:text-gold" href={`/teams/${r.code}`}><TeamLogo team={r} size={22} />{r.name}</Link></td><td className="px-3 py-2 tabular-nums">{r.w}</td><td className="px-3 py-2 tabular-nums">{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gw}-{r.gl}</td></tr>)}
           {computeRecords(snap.matches, stage).length === 0 && <tr><td colSpan={4} className="px-3 py-4 text-fog">No completed matches yet.</td></tr>}</tbody></table></div>}
+      <TeamPath all={snap.matches} teams={snap.teams} pin={pin} setPin={setPin} tz={prefs.tz} />
       {ms.some(hasTbd) && <p className="mt-3 text-xs text-fog">TBD slots are filled automatically as official results arrive.</p>}
       </SpoilerGate>
     </div>
