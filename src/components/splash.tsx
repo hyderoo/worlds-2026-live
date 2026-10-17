@@ -55,16 +55,18 @@ function MetalCup() {
   const d = "M10 62 L38 22 L62 54 L100 14 L138 54 L162 22 L190 62 L190 112 Q190 152 100 178 Q10 152 10 112 Z";
   const inner = "M26 70 L40 48 L64 76 L100 40 L136 76 L160 48 L174 70 L174 110 Q174 140 100 162 Q26 140 26 110 Z";
   return (
-    <svg viewBox="0 0 200 190" className="splash-cup h-28 drop-shadow-[0_6px_22px_rgba(0,0,0,.7)]">
+    <svg viewBox="0 0 200 190" className="splash-cup h-40 drop-shadow-[0_6px_22px_rgba(0,0,0,.7)]">
       <defs>
         <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f4f4f6" /><stop offset=".22" stopColor="#6b6d75" /><stop offset=".4" stopColor="#15151a" /><stop offset=".55" stopColor="#c9c9d0" /><stop offset=".72" stopColor="#8a5a3a" /><stop offset=".85" stopColor="#1a1a20" /><stop offset="1" stopColor="#e6e6ea" /></linearGradient>
+        <linearGradient id="void" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0a0a0f" /><stop offset=".6" stopColor="#14110f" /><stop offset="1" stopColor="#3a2418" /></linearGradient>
         <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".95" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
         <mask id="ring"><path d={d} fill="#fff" /><path d={inner} fill="#000" /></mask>
       </defs>
       <path d={d} fill="url(#chrome)" />
-      <path d={inner} fill="#07070b" />
+      <path d={inner} fill="url(#void)" />
       <path d={d} fill="none" stroke="#fff" strokeOpacity=".75" strokeWidth="1.6" strokeLinejoin="round" pathLength={1} className="splash-draw" />
-      <path d={inner} fill="none" stroke="#c98a5a" strokeOpacity=".7" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d={inner} fill="none" stroke="#d9a078" strokeOpacity=".85" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M40 48 L64 76 L100 40" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="1" />
       <g mask="url(#ring)"><rect x="-80" y="0" width="60" height="190" fill="url(#sweep)" transform="skewX(-20)" className="splash-sweep" /></g>
     </svg>
   );
