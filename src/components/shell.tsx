@@ -9,8 +9,39 @@ import { TIMEZONES, ago } from "@/lib/format";
 import { usePrefs, useSpoiler } from "@/lib/prefs";
 
 const NAV = [
-  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"], ["/predictions", "Predictions"],
+  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"],
 ] as const;
+/** Pages grouped under the Matches dropdown. */
+const MATCH_MENU = [["/matches", "Matches"], ["/predictions", "Predictions"]] as const;
+const PALETTE_PAGES = [...NAV, ["/predictions", "Predictions"]] as const;
+
+function MatchesMenu({ path }: { path: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const active = path.startsWith("/matches") || path.startsWith("/predictions");
+  useEffect(() => { const t = setTimeout(() => setOpen(false), 0); return () => clearTimeout(t); }, [path]);
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  return (
+    <div ref={ref} className="relative" onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
+      <div className={clsx("flex items-center rounded-full text-sm text-fog", active && "bg-white/[0.07] text-snow")}>
+        <Link href="/matches" aria-current={path.startsWith("/matches") ? "page" : undefined} className="rounded-l-full py-1.5 pl-3 pr-1 hover:text-snow">Matches</Link>
+        <button aria-haspopup="menu" aria-expanded={open} aria-label="More in Matches" onClick={() => setOpen((o) => !o)} className="rounded-r-full py-1.5 pl-1 pr-2.5 hover:text-snow"><span aria-hidden className="text-[0.65rem]">▾</span></button>
+      </div>
+      {open && (
+        <ul role="menu" aria-label="Matches" className="absolute left-0 top-full z-50 mt-2 min-w-40 rounded-xl border border-line bg-surface p-1 shadow-2xl">
+          {MATCH_MENU.map(([href, label]) => (
+            <li key={href} role="none"><Link role="menuitem" href={href} aria-current={path === href ? "page" : undefined} onClick={() => setOpen(false)} className={clsx("block rounded-lg px-3 py-2 text-sm text-fog hover:bg-white/5 hover:text-snow", path === href && "text-snow")}>{label}</Link></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function Freshness() {
   const { snap, offline, refreshing } = useSnapshot();
@@ -48,7 +79,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   useEffect(() => ref.current?.focus(), []);
   const items = useMemo(() => {
     const all: { key: string; label: string; sub: string; href: string; team?: (typeof snap.teams)[number] }[] = [
-      ...NAV.map(([href, label]) => ({ key: href, label, sub: "Page", href })),
+      ...PALETTE_PAGES.map(([href, label]) => ({ key: href, label, sub: "Page", href })),
       ...snap.teams.map((t) => ({ key: `t-${t.code}`, label: t.name, sub: `Team · ${t.league ?? ""}`, href: `/teams/${t.code}`, team: t })),
       ...snap.matches.filter((m) => m.teams.every((t) => t.code !== "TBD")).map((m) => ({ key: m.id, label: `${m.teams[0].code} vs ${m.teams[1].code}`, sub: `Match · ${m.block}`, href: `/matches/${m.id}` })),
     ];
@@ -108,7 +139,7 @@ export function Header() {
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
           <Link href="/" className="display text-xl"><span className="text-gold">Worlds</span> 2026</Link>
           <nav aria-label="Primary" className="hidden flex-1 items-center gap-1 md:flex">
-            {NAV.map(([href, label]) => (
+            {NAV.map(([href, label]) => href === "/matches" ? <MatchesMenu key={href} path={path} /> : (
               <Link key={href} href={href} aria-current={path === href || (href !== "/" && path.startsWith(href)) ? "page" : undefined}
                 className={clsx("rounded-full px-3 py-1.5 text-sm text-fog hover:text-snow", (path === href || (href !== "/" && path.startsWith(href))) && "bg-white/[0.07] text-snow")}>{label}</Link>
             ))}
@@ -128,7 +159,12 @@ export function Header() {
         </div>
         {menu && (
           <nav id="mnav" aria-label="Mobile" className="grid gap-1 border-t border-line p-3 md:hidden">
-            {NAV.map(([href, label]) => <Link key={href} href={href} onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-white/5">{label}</Link>)}
+            {NAV.map(([href, label]) => (
+              <div key={href} className="grid gap-1">
+                <Link href={href} onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-white/5">{label}</Link>
+                {href === "/matches" && <Link href="/predictions" onClick={() => setMenu(false)} className="rounded-lg py-2 pl-8 pr-3 text-sm text-fog hover:bg-white/5 hover:text-snow">Predictions</Link>}
+              </div>
+            ))}
             <select aria-label="Time zone" value={prefs.tz} onChange={(e) => set({ tz: e.target.value })} className="mt-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm">
               {TIMEZONES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
