@@ -47,7 +47,7 @@ export function HomeView() {
 
       <PrizePoolCard prize={snap.prize} />
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-5">
+      <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-5 [&>*]:min-w-0">
         <div className="card p-6 lg:col-span-3">
           {live.length > 0 ? (
             <>

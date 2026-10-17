@@ -191,11 +191,11 @@ export function Header() {
             </button>
             <div className="hidden md:block"><SettingsMenu path={path} /></div>
             <Freshness />
-            <button className="rounded-full border border-line px-3 py-1.5 text-xs md:hidden" aria-expanded={menu} aria-controls="mnav" onClick={() => setMenu(!menu)}>{t("hdr.menu")}</button>
+            <button className="rounded-full border border-line px-3 py-1.5 text-xs md:hidden" aria-expanded={menu} aria-controls="mnav" onClick={() => setMenu(!menu)}>{sp.enabled && <span className="mr-1.5 inline-block size-1.5 rounded-full bg-gold align-middle" aria-hidden />}{t("hdr.menu")}</button>
           </div>
         </div>
         {menu && (
-          <nav id="mnav" aria-label="Mobile" className="grid gap-1 border-t border-line p-3 md:hidden">
+          <nav id="mnav" aria-label="Mobile" className="grid max-h-[calc(100dvh-4.5rem)] gap-1 overflow-y-auto border-t border-line p-3 md:hidden">
             <Link href="/" onClick={() => setMenu(false)} className="rounded-lg px-3 py-2 hover:bg-white/5">{t("nav.home")}</Link>
             {([["nav.matches", MATCH_MENU], ["nav.tournament", TOURNAMENT_MENU]] as const).map(([h, items]) => (
               <div key={h} className="grid gap-1"><p className="px-3 pt-2 text-xs font-semibold uppercase tracking-wider text-gold">{t(h)}</p>
@@ -232,7 +232,7 @@ function InstallApp() {
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-line">
+    <footer className="mt-12 border-t border-line sm:mt-24">
       <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 text-sm text-fog sm:grid-cols-2">
         <p>Fan-made tracker. Not affiliated with or endorsed by Riot Games. League of Legends and Worlds are trademarks of Riot Games, Inc. Champion icons and favicon: Riot Data Dragon. Trophy is an original illustration.</p>
         <p className="sm:text-right">Match data: Riot Games LoL Esports. Optional extras may cite Liquipedia (CC-BY-SA 3.0) and are always labeled unofficial. <Link href="/about" className="underline hover:text-snow">Data and sync</Link></p>
