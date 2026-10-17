@@ -1,4 +1,4 @@
-import type { TeamExtras } from "./types";
+import type { PrizePool, TeamExtras } from "./types";
 import type { Store } from "./store";
 
 /**
@@ -88,6 +88,21 @@ export async function fetchWikitext(page: string, contact: string): Promise<stri
   return t;
 }
 
+export function parsePrize(wikitext: string, fetchedAt: string): PrizePool | null {
+  const total = wikitext.match(/\|prizepoolusd=([\d,]+)/);
+  if (!total) return null;
+  const totalUsd = Number(total[1]!.replace(/,/g, ""));
+  const sec = wikitext.match(/\{\{TeamPrizePool([\s\S]*?)\n\|adjacentContent|\{\{TeamPrizePool([\s\S]*?)\n\}\}/);
+  const body = (sec?.[1] ?? sec?.[2] ?? "");
+  const slots: PrizePool["slots"] = [];
+  for (const m of body.matchAll(/\{\{Slot\|place=([\d\-]+)\|percentage=([\d.]+)%\}\}/g)) {
+    const percentage = Number(m[2]);
+    slots.push({ place: m[1]!, percentage, usd: Math.round((totalUsd * percentage) / 100) });
+  }
+  if (!Number.isFinite(totalUsd) || totalUsd <= 0) return null;
+  return { source: "liquipedia", page: "https://liquipedia.net/leagueoflegends/World_Championship/2026", fetchedAt, totalUsd, slots };
+}
+
 const META = "__lp_meta";
 type Meta = { lastRequestAt: string; backoffUntil?: string };
 
@@ -108,9 +123,12 @@ export async function refreshLiquipedia(store: Store, opts: { contact?: string; 
     const teams = (key: string) => extras[key] as TeamExtras | undefined;
     const rosterAge = Math.min(...Object.values(extras).filter((x): x is TeamExtras => !!x && (x as TeamExtras).source === "liquipedia").map((x) => (x.rosterFetchedAt ? now.getTime() - new Date(x.rosterFetchedAt).getTime() : Infinity)), Infinity);
     await store.saveExtra(META, { lastRequestAt: now.toISOString() });
-    const missing = new Set(Object.values(NAME_TO_CODE)).size > Object.values(extras).filter((x) => (x as TeamExtras | undefined)?.rosterFetchedAt).length;
+    const missing = !extras["__prize"] || new Set(Object.values(NAME_TO_CODE)).size > Object.values(extras).filter((x) => (x as TeamExtras | undefined)?.rosterFetchedAt).length;
     if (missing || rosterAge > ROSTER_TTL_MS) {
-      const parsed = parseParticipants(await fetcher(WORLDS_PAGE, contact));
+      const wt = await fetcher(WORLDS_PAGE, contact);
+      const parsed = parseParticipants(wt);
+      const prize = parsePrize(wt, now.toISOString());
+      if (prize) await store.saveExtra("__prize", prize);
       for (const [code, v] of parsed) {
         const prev = teams(code);
         await store.saveExtra(code, { code, source: "liquipedia", pageTitle: prev?.pageTitle ?? "", rosterFetchedAt: now.toISOString(), socialsFetchedAt: prev?.socialsFetchedAt ?? null, socials: prev?.socials ?? [], ...v } satisfies TeamExtras);

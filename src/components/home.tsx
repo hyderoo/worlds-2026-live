@@ -7,6 +7,7 @@ import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-stat
 import { fmtDateTime } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
 import { HeroTrophy } from "@/components/hero-trophy";
+import { PrizePoolCard } from "@/components/prize-pool";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"];
 
@@ -33,6 +34,7 @@ export function HomeView() {
           <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tz === "Asia/Jakarta" ? "WIB" : "your chosen zone"}.</p>
           <div className="mt-8 flex flex-wrap items-center gap-3 text-sm">
             <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
+            {snap.prize && <span className="rounded-full border border-line px-3 py-1 text-fog">Prize pool: ${snap.prize.totalUsd.toLocaleString("en-US")} (unofficial)</span>}
             {STAGES.map((s) => {
               const p = stageProgress(snap.matches, s);
               return <span key={s} className="rounded-full border border-line px-3 py-1 text-fog">{s}: {p.done}/{p.total} played</span>;
@@ -42,6 +44,8 @@ export function HomeView() {
           <div className="order-first mx-auto w-56 lg:order-none lg:w-full"><HeroTrophy /></div>
         </motion.div>
       </section>
+
+      <PrizePoolCard prize={snap.prize} />
 
       <div className="mt-6 grid gap-4 lg:grid-cols-5">
         <div className="card p-6 lg:col-span-3">

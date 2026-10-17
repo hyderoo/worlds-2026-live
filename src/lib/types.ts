@@ -114,6 +114,7 @@ export type Snapshot = {
   /** Matches where a manual override is held back because upstream changed later. */
   staleOverrides: string[];
   dataNotes: string[];
+  prize: PrizePool | null;
 };
 
 /** Unofficial roster/staff/socials from Liquipedia (CC-BY-SA 3.0). Always labeled; ranks below official Riot data. */
@@ -127,4 +128,13 @@ export type TeamExtras = {
   staff: { id: string; role: string }[];
   socialsFetchedAt: string | null;
   socials: { label: string; url: string }[];
+};
+
+/** Prize pool as published on Liquipedia (unofficial). Dollar amounts are derived: percentage x total. */
+export type PrizePool = {
+  source: "liquipedia";
+  page: string;
+  fetchedAt: string;
+  totalUsd: number;
+  slots: { place: string; percentage: number; usd: number }[];
 };

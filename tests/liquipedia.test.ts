@@ -40,3 +40,13 @@ describe("liquipedia parser", () => {
     expect(calls).toBe(1);
   });
 });
+
+describe("prize pool", () => {
+  it("reads total and per-placement percentages, derives dollars", async () => {
+    const { parsePrize } = await import("../src/lib/liquipedia");
+    const p = parsePrize("|prizepoolusd=5,000,000\n==Prize Pool==\n{{TeamPrizePool|cutafter=8\n|{{Slot|place=1|percentage=20%}}\n|{{Slot|place=3-4|percentage=8%}}\n|adjacentContent=x", "t")!;
+    expect(p.totalUsd).toBe(5_000_000);
+    expect(p.slots).toEqual([{ place: "1", percentage: 20, usd: 1_000_000 }, { place: "3-4", percentage: 8, usd: 400_000 }]);
+    expect(parsePrize("no prize here", "t")).toBeNull();
+  });
+});

@@ -83,7 +83,7 @@ export function deriveSync(runs: SyncRun[], storage: "supabase" | "memory"): Sna
 
 export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<Snapshot> {
   const store = getStore();
-  const load = () => Promise.all([store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10), store.loadExtras().catch(() => ({}))]);
+  const load = () => Promise.all([store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10), store.loadExtras().catch((): Record<string, unknown> => ({}))]);
   // Cache-only mode has no cron-fed data; an empty database (first deploy) needs a first fill too.
   let [raw, overrides, recaps, stats, runs, extras] = await load();
   if (opts.refresh !== false && (store.kind === "memory" || raw.length === 0)) {
@@ -109,5 +109,6 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     sync: deriveSync(runs, store.kind),
     staleOverrides: stale,
     dataNotes: notes,
+    prize: (extras["__prize"] as Snapshot["prize"]) ?? null,
   };
 }
