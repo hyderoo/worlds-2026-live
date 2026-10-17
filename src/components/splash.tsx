@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Short in-app intro for installed-app launches. Champion splash art comes straight from Riot's Data Dragon CDN
@@ -14,6 +15,7 @@ export function Splash() {
   const [champ, setChamp] = useState<string | null>(null);
   const [out, setOut] = useState(false);
   const [cupOk, setCupOk] = useState(true);
+  const path = usePathname();
 
   useEffect(() => {
     const force = new URLSearchParams(location.search).get("splash") === "1";
@@ -31,7 +33,7 @@ export function Splash() {
     return () => { clearTimeout(a); clearTimeout(b); };
   }, []);
 
-  if (!champ) return null;
+  if (!champ || path === "/next") return null;
   return (
     <div aria-hidden data-testid="splash" onClick={() => setOut(true)} className={`fixed inset-0 z-[100] overflow-hidden bg-[#0b0a10] transition-opacity duration-500 ${out ? "pointer-events-none opacity-0" : "opacity-100"}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}

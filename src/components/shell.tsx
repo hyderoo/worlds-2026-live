@@ -174,6 +174,7 @@ export function Header() {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
+  if (path === "/next") return null;
   return (
     <>
       <a href="#main" className="sr-only-focusable fixed left-3 top-3 z-[70] rounded bg-gold px-3 py-2 text-ink">{t("hdr.skip")}</a>
@@ -231,6 +232,8 @@ function InstallApp() {
 }
 
 export function Footer() {
+  const path = usePathname();
+  if (path === "/next") return null;
   return (
     <footer className="mt-12 border-t border-line sm:mt-24">
       <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 text-sm text-fog sm:grid-cols-2">
