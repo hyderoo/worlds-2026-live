@@ -52,12 +52,12 @@ export function Splash() {
 
 /** Original SVG drawing of a Summoner's-Cup-style trophy (not Riot artwork, no photo embedded): faceted silver bowl, crown prongs, blue shield gem, tiered stem, stepped base, cool glow and a light sweep. */
 function MetalCup() {
-  const prong = "M63 74 C40 72 33 48 45 20 C50 42 58 52 72 60 Z M72 62 C66 50 66 40 72 26 C78 42 82 52 86 64 Z";
+  const prong = "M62 76 C32 76 22 40 36 4 C44 36 54 50 72 60 Z M70 64 C60 46 62 26 72 6 C80 32 86 50 90 66 Z M100 52 L95 70 L105 70 Z";
   const bowl = "M63 74 L137 74 C139 112 124 140 100 154 C76 140 61 112 63 74 Z";
   const stem = "M92 154 L108 154 L106 176 L112 184 L108 196 L113 206 L87 206 L92 196 L88 184 L94 176 Z";
   const base = "M70 206 L130 206 L136 218 L146 220 L150 238 L50 238 L54 220 L64 218 Z";
   return (
-    <svg viewBox="0 0 200 250" className="splash-cup h-48 drop-shadow-[0_0_26px_rgba(120,180,255,.45)]">
+    <svg viewBox="0 0 200 250" className="splash-cup h-56 drop-shadow-[0_0_26px_rgba(120,180,255,.45)]">
       <defs>
         <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stopColor="#7fb8ff" stopOpacity=".55" /><stop offset="1" stopColor="#7fb8ff" stopOpacity="0" /></radialGradient>
         <linearGradient id="sil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset=".3" stopColor="#b9c9e0" /><stop offset=".55" stopColor="#5f7396" /><stop offset=".8" stopColor="#dbe7f7" /><stop offset="1" stopColor="#7d93b8" /></linearGradient>
