@@ -6,6 +6,7 @@ import { Countdown, Empty, StateBadge, TeamLogo } from "./ui";
 import { fmtDateTime } from "@/lib/format";
 import { buildIcs } from "@/lib/ics";
 import { usePrefs } from "@/lib/prefs";
+import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
 import { hasTbd } from "@/lib/match-state";
@@ -116,7 +117,7 @@ export function MatchDetail({ id }: { id: string }) {
                     <div className="grid gap-2 text-sm sm:grid-cols-2">
                       {([s.blue, s.red] as const).map((side, i) => (
                         <div key={i}><p className="mb-1 text-xs text-fog">{i === 0 ? "Blue" : "Red"} side · {side.team}</p>
-                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex justify-between gap-2"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span>{champName(champ)}</span><span className="text-fog">{player}</span></li>)}</ul></div>
+                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex items-center justify-between gap-2"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={champ} size={22} /> {champName(champ)}</span><span className="text-fog">{player}</span></li>)}</ul></div>
                       ))}
                     </div>
                   ) : <p className="text-sm text-fog">Champion data not available for this game yet.</p>}

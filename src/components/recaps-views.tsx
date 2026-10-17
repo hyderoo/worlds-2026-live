@@ -5,6 +5,7 @@ import { useSnapshot } from "./providers";
 import { Empty, Pill, StateBadge, TeamLogo } from "./ui";
 import { fmtDateTime } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
+import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
 import { computeRecords } from "@/lib/match-state";
@@ -61,7 +62,7 @@ export function RecapDetail({ id }: { id: string }) {
       <section className="mt-6"><h2 className="display mb-3 text-2xl">Champions by game</h2>
         {stats.length === 0 ? <Empty title="Champion data not available for this series yet" /> : (
           <div className="grid gap-3">{stats.map((g) => (
-            <div key={g.id} className="card p-4"><strong>Game {g.n}</strong><div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">{([g.blue, g.red] as const).map((s, i) => <ul key={i}><li className="mb-1 text-xs text-fog">{i === 0 ? "Blue" : "Red"} · {s.team}</li>{s.picks.map(([role, c, p]) => <li key={role} className="flex justify-between"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span>{champName(c)}</span><span className="text-fog">{p}</span></li>)}</ul>)}</div></div>
+            <div key={g.id} className="card p-4"><strong>Game {g.n}</strong><div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">{([g.blue, g.red] as const).map((s, i) => <ul key={i}><li className="mb-1 text-xs text-fog">{i === 0 ? "Blue" : "Red"} · {s.team}</li>{s.picks.map(([role, c, p]) => <li key={role} className="flex items-center justify-between"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={c} size={22} /> {champName(c)}</span><span className="text-fog">{p}</span></li>)}</ul>)}</div></div>
           ))}</div>
         )}
         <p className="mt-3 text-xs text-fog">Source: Riot lolesports live stats. MVP and per-game winners are not in the official feed, so they are not shown.</p>
@@ -85,7 +86,7 @@ export function StatsView() {
     <div className="mt-6 grid gap-6">
       <div className="grid gap-4 sm:grid-cols-4">{[["Series played", done.length], ["Games played", games], ["Sweeps", sweeps], ["Games with champion data", gamesWithData]].map(([l, v]) => <div key={l as string} className="card p-5"><p className="display text-4xl tabular-nums">{v}</p><p className="eyebrow !text-fog">{l}</p></div>)}</div>
       <section className="card p-6"><h2 className="display text-2xl">Most picked champions</h2>
-        {top.length === 0 ? <p className="mt-2 text-fog">No champion data yet.</p> : <ol className="mt-4 grid gap-2">{top.map(([c, n]) => <li key={c} className="grid grid-cols-[8rem_1fr_2rem] items-center gap-3 text-sm"><span>{champName(c)}</span><span className="h-2 rounded-full bg-raise"><span className="block h-2 rounded-full bg-gradient-to-r from-violet to-gold" style={{ width: `${(n / (top[0]?.[1] ?? 1)) * 100}%` }} /></span><span className="tabular-nums text-fog">{n}</span></li>)}</ol>}
+        {top.length === 0 ? <p className="mt-2 text-fog">No champion data yet.</p> : <ol className="mt-4 grid gap-2">{top.map(([c, n]) => <li key={c} className="grid grid-cols-[11rem_1fr_2rem] items-center gap-3 text-sm"><span className="flex items-center gap-2"><ChampIcon id={c} size={24} />{champName(c)}</span><span className="h-2 rounded-full bg-raise"><span className="block h-2 rounded-full bg-gradient-to-r from-violet to-gold" style={{ width: `${(n / (top[0]?.[1] ?? 1)) * 100}%` }} /></span><span className="tabular-nums text-fog">{n}</span></li>)}</ol>}
         <p className="mt-3 text-xs text-fog">Counts picks across {gamesWithData} games that have official live-stats champion data. Small sample.</p></section>
       <section className="card overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">Team records</caption><thead className="border-b border-line text-xs uppercase tracking-wider text-fog"><tr><th className="px-3 py-2 text-left">Team</th><th className="px-3 py-2 text-left">W-L</th><th className="px-3 py-2 text-left">Game diff</th></tr></thead>
         <tbody>{recs.map((r) => <tr key={r.code} className="border-b border-line/50 last:border-0"><td className="px-3 py-2"><Link className="hover:text-gold" href={`/teams/${r.code}`}>{r.name}</Link></td><td className="px-3 py-2 tabular-nums">{r.w}-{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gw - r.gl > 0 ? "+" : ""}{r.gw - r.gl}</td></tr>)}{recs.length === 0 && <tr><td colSpan={3} className="px-3 py-4 text-fog">No completed matches yet.</td></tr>}</tbody></table></section>

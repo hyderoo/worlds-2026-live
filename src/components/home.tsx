@@ -6,6 +6,7 @@ import { Countdown, Empty, MatchCard, Section, StateBadge, TeamLogo } from "./ui
 import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-state";
 import { fmtDateTime } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
+import { HeroTrophy } from "@/components/hero-trophy";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"];
 
@@ -25,7 +26,8 @@ export function HomeView() {
     <>
       <section className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-6 py-14 sm:px-12 sm:py-20 mt-6">
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-violet/20 blur-3xl" />
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+        <motion.div className="relative grid items-center gap-10 lg:grid-cols-[1fr_20rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+          <div>
           <p className="eyebrow mb-4">League of Legends World Championship</p>
           <h1 className="display text-6xl sm:text-8xl">Worlds <span className="text-gold">2026</span></h1>
           <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tz === "Asia/Jakarta" ? "WIB" : "your chosen zone"}.</p>
@@ -36,6 +38,8 @@ export function HomeView() {
               return <span key={s} className="rounded-full border border-line px-3 py-1 text-fog">{s}: {p.done}/{p.total} played</span>;
             })}
           </div>
+          </div>
+          <div className="order-first mx-auto w-56 lg:order-none lg:w-full"><HeroTrophy /></div>
         </motion.div>
       </section>
 
