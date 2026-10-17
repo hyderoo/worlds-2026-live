@@ -13,6 +13,7 @@ const KEY = "w26.splash.at";
 export function Splash() {
   const [champ, setChamp] = useState<string | null>(null);
   const [out, setOut] = useState(false);
+  const [cupOk, setCupOk] = useState(true);
 
   useEffect(() => {
     const force = new URLSearchParams(location.search).get("splash") === "1";
@@ -37,7 +38,10 @@ export function Splash() {
       <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ}_0.jpg`} alt="" className="splash-art absolute -inset-[6%] size-[112%] max-w-none object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b0a10]/70 via-[#1a1438]/40 to-[#0b0a10]/95" />
       <div className="absolute inset-x-0 bottom-[20%] flex flex-col items-center gap-4 text-center">
-        <MetalCup />
+        {cupOk ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/cup.webp" alt="" className="splash-cup h-60 w-auto drop-shadow-[0_0_28px_rgba(110,170,255,.4)]" onError={() => setCupOk(false)} />
+        ) : <MetalCup />}
         <div className="font-[family-name:var(--nf-bold)] text-[3.6rem] uppercase leading-none tracking-[0.02em] text-white" aria-label="Worlds 2026">
           {"Worlds".split("").map((c, i) => <span key={i} className="splash-letter" style={{ animationDelay: `${0.55 + i * 0.05}s` }}>{c}</span>)}
           <span className="splash-letter">&nbsp;</span>
@@ -45,7 +49,7 @@ export function Splash() {
         </div>
         <div className="splash-rise text-[11px] uppercase tracking-[0.25em] text-white/70" style={{ animationDelay: "1.15s" }}>League of Legends World Championship</div>
       </div>
-      <div className="absolute inset-x-0 bottom-4 text-center text-[10px] text-white/45">Splash art: {champ} © Riot Games, via Data Dragon. Fan-made, unofficial.</div>
+      <div className="absolute inset-x-0 bottom-4 text-center text-[10px] text-white/45">Splash art and cup image © Riot Games (champion art via Data Dragon). Fan-made, unofficial, non-commercial.</div>
     </div>
   );
 }
