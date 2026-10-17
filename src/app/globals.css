@@ -46,3 +46,10 @@ html, body { overflow-x: clip; }
   button, select, input:not([type="checkbox"]):not([type="radio"]) { min-height: 40px; }
   header button, header select { min-height: 40px; }
 }
+
+/* Installed-app intro (see components/splash.tsx) */
+@keyframes splash-zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes splash-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.splash-art { animation: splash-zoom 2s ease-out both; }
+.splash-rise { animation: splash-rise 0.7s 0.15s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .splash-art, .splash-rise { animation: none; } }

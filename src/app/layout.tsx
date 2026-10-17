@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { Splash } from "@/components/splash";
 import { Footer, Header } from "@/components/shell";
 import { buildSnapshot } from "@/lib/snapshot";
 import { config } from "@/lib/config";
@@ -27,6 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body>
         <Providers initial={snap}>
+          <Splash />
           <Header />
           <main id="main" className="mx-auto max-w-6xl px-4 pb-8">{children}</main>
           <Footer />
