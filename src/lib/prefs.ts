@@ -2,9 +2,9 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_TZ } from "./format";
 
-export type Prefs = { tz: string; watch: string[]; picks: Record<string, string>; reminders: string[]; spoiler: boolean; revealed: string[] };
+export type Prefs = { tz: string; watch: string[]; reminders: string[]; spoiler: boolean; revealed: string[] };
 const KEY = "w26:prefs:v1";
-const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], picks: {}, reminders: [], spoiler: false, revealed: [] };
+const DEFAULTS: Prefs = { tz: DEFAULT_TZ, watch: [], reminders: [], spoiler: false, revealed: [] };
 const listeners = new Set<() => void>();
 let cached: Prefs | null = null;
 
@@ -13,6 +13,7 @@ function read(): Prefs {
   try {
     const raw = typeof window !== "undefined" ? window.localStorage.getItem(KEY) : null;
     cached = raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Prefs>) } : DEFAULTS;
+    if (cached && "picks" in cached) delete (cached as Record<string, unknown>).picks; // removed feature: drop leftovers
   } catch {
     cached = DEFAULTS;
   }

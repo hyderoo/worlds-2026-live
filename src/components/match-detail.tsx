@@ -33,7 +33,6 @@ export function MatchDetail({ id }: { id: string }) {
   const stats = snap.gameStats[m.id] ?? [];
   const recap = snap.recaps.find((r) => r.matchId === m.id);
   const summary = autoSummary(m);
-  const pick = prefs.picks[m.id];
 
   const download = () => {
     const blob = new Blob([buildIcs([m], window.location.origin)], { type: "text/calendar" });
@@ -82,15 +81,6 @@ export function MatchDetail({ id }: { id: string }) {
         <button onClick={() => navigator.share?.({ title: `${m.teams[0].code} vs ${m.teams[1].code}`, url: window.location.href }).catch(() => {}) ?? navigator.clipboard?.writeText(window.location.href)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">Share</button>
       </div>
 
-      {m.state !== "completed" && !hasTbd(m) && (
-        <section className="card mt-6 p-6" aria-labelledby="pred">
-          <h2 id="pred" className="display text-2xl">Your prediction</h2>
-          <p className="mb-3 text-sm text-fog">A personal opinion saved on this device. It is not a forecast and not shared with anyone.</p>
-          <div className="flex gap-2">
-            {m.teams.map((t) => <button key={t.code} aria-pressed={pick === t.code} onClick={() => set({ picks: { ...prefs.picks, [m.id]: pick === t.code ? "" : t.code } })} className={`rounded-full border px-4 py-2 text-sm ${pick === t.code ? "border-gold bg-gold/10 text-gold" : "border-line text-fog hover:text-snow"}`}><span className="inline-flex items-center gap-2"><TeamLogo team={t} size={20} />{t.name}</span></button>)}
-          </div>
-        </section>
-      )}
 
       {m.state === "completed" && !sp.hidden(m.id) && (
         <section className="card mt-6 p-6" aria-labelledby="rc">
@@ -98,7 +88,6 @@ export function MatchDetail({ id }: { id: string }) {
           {recap && <div className="mt-3"><p className="eyebrow">Editorial · {recap.author}</p><h3 className="mt-1 font-medium">{recap.title}</h3><p className="mt-2 whitespace-pre-line text-fog">{recap.body}</p></div>}
           {summary && <p className="mt-3 text-fog">{summary}</p>}
           <p className="mt-3 text-xs text-fog">Summary lines are generated from verified result data only. Editorial text is written by an admin and labeled as such.</p>
-          {pick && pick !== "" && <p className="mt-3 text-sm">Your pick: <strong className={m.teams.find((t) => t.code === pick)?.outcome === "win" ? "text-gold" : "text-ember"}>{pick}</strong> {m.teams.find((t) => t.code === pick)?.outcome === "win" ? "was right" : "missed"}.</p>}
         </section>
       )}
 
