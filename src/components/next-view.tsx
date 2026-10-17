@@ -63,7 +63,7 @@ export function NextView() {
         <span className="order-2 text-sm font-semibold uppercase tracking-widest text-fog">vs</span>
       </div>
       <p className="mt-6 text-lg">{fmtDay(m.startTime, tz)} · <span className="tabular-nums">{fmtTime(m.startTime, tz)}</span> {tzShort(tz)}</p>
-      <p className="mt-1 text-xs text-fog">{m.stage} · {m.block} · Bo{m.bestOf}</p>
+      <p className="mt-1 text-xs text-fog">{[m.stage, m.block !== m.stage ? m.block : ""].filter(Boolean).join(" · ")} · Bo{m.bestOf}</p>
       {live ? (
         <p className="mt-8 text-sm text-fog">{t.noScore}</p>
       ) : started ? null : (
