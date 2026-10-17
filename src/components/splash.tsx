@@ -38,10 +38,13 @@ export function Splash() {
       <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ}_0.jpg`} alt="" className="splash-art absolute -inset-[6%] size-[112%] max-w-none object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b0a10]/70 via-[#1a1438]/40 to-[#0b0a10]/95" />
       <div className="absolute inset-x-0 bottom-[20%] flex flex-col items-center gap-4 text-center">
+        <div className="relative">
+        <div className="absolute -inset-x-16 -inset-y-10 -z-10 rounded-full bg-[radial-gradient(closest-side,rgba(6,8,18,.92),rgba(6,8,18,.7)_55%,transparent)]" />
         {cupOk ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/cup.webp" alt="" className="splash-cup h-60 w-auto drop-shadow-[0_0_28px_rgba(110,170,255,.4)]" onError={() => setCupOk(false)} />
         ) : <MetalCup />}
+        </div>
         <div className="font-[family-name:var(--nf-bold)] text-[3.6rem] uppercase leading-none tracking-[0.02em] text-white" aria-label="Worlds 2026">
           {"Worlds".split("").map((c, i) => <span key={i} className="splash-letter" style={{ animationDelay: `${0.55 + i * 0.05}s` }}>{c}</span>)}
           <span className="splash-letter">&nbsp;</span>
