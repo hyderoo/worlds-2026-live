@@ -86,4 +86,5 @@ Liquipedia's terms require a custom User-Agent with contact info, at most 1 requ
 - Rate limiting is per serverless instance, not global.
 - Browser reminders only fire while the tab is open; the `.ics` download is the durable option.
 - Play-In round labels follow the 4-team double-elimination format in schedule order; the feed does not publish bracket links. Knockout rounds are shown as columns without connector lines for the same reason.
+- No community predictions: predictions are personal and stored on the device.
 - Team logos are loaded from Riot's static CDN as supplied by the official feed.

@@ -9,7 +9,7 @@ import { TIMEZONES, ago } from "@/lib/format";
 import { usePrefs, useSpoiler } from "@/lib/prefs";
 
 const NAV = [
-  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"],
+  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"], ["/predictions", "Predictions"],
 ] as const;
 
 export function Freshness() {
