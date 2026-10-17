@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { useSnapshot } from "./providers";
 import { Countdown, Empty, MatchCard, Section, StateBadge, TeamLogo } from "./ui";
 import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-state";
-import { fmtDateTime } from "@/lib/format";
+import { fmtDateTime, tzLabel } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
 import { HeroTrophy } from "@/components/hero-trophy";
 import { PrizePoolCard } from "@/components/prize-pool";
@@ -31,7 +31,7 @@ export function HomeView() {
           <div>
           <p className="eyebrow mb-4">League of Legends World Championship</p>
           <h1 className="display text-6xl sm:text-8xl">Worlds <span className="text-gold">2026</span></h1>
-          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tz === "Asia/Jakarta" ? "WIB" : "your chosen zone"}.</p>
+          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
           <div className="mt-8 flex flex-wrap items-center gap-3 text-sm">
             <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
             {snap.prize && <span className="rounded-full border border-line px-3 py-1 text-fog">Prize pool: ${snap.prize.totalUsd.toLocaleString("en-US")} (unofficial)</span>}

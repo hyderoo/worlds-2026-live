@@ -9,6 +9,7 @@ export const TIMEZONES = [
 export type TzId = (typeof TIMEZONES)[number]["id"];
 export const DEFAULT_TZ: TzId = "Asia/Jakarta";
 export const tzShort = (tz: string) => TIMEZONES.find((t) => t.id === tz)?.short ?? tz;
+export const tzLabel = (tz: string) => TIMEZONES.find((t) => t.id === tz)?.label ?? tz;
 
 const cache = new Map<string, Intl.DateTimeFormat>();
 function fmt(tz: string, key: string, opts: Intl.DateTimeFormatOptions) {
