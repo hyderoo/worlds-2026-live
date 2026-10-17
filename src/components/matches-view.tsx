@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, MatchCard, Pill } from "./ui";
 import { dayKey, fmtDayLong, fmtTime } from "@/lib/format";
-import { usePrefs, useT } from "@/lib/prefs";
+import { usePrefs, useSpoiler, useT } from "@/lib/prefs";
 import { REGIONS, REGION_BY_LEAGUE } from "@/lib/regions";
 import type { Match } from "@/lib/types";
 
@@ -14,6 +14,7 @@ const STATUSES = [["all", "flt.all"], ["live", "flt.live"], ["scheduled", "flt.u
 
 export function MatchesView() {
   const { t } = useT();
+  const spo = useSpoiler();
   const { snap } = useSnapshot();
   const { prefs } = usePrefs();
   const tz = prefs.tz;
@@ -85,7 +86,7 @@ export function MatchesView() {
                     <Link href={`/matches/${m.id}`} className={clsx("flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white/5", m.state === "live" && "text-ember")}>
                       <span className="tabular-nums text-fog">{fmtTime(m.startTime, tz)}</span>
                       <span className="flex-1 truncate">{m.teams[0].code} vs {m.teams[1].code}</span>
-                      {m.state === "completed" && <span className="tabular-nums text-gold">{m.teams[0].wins}-{m.teams[1].wins}</span>}
+                      {m.state === "completed" && !spo.hidden(m.id) && <span className="tabular-nums text-gold">{m.teams[0].wins}-{m.teams[1].wins}</span>}
                     </Link>
                   </li>
                 ))}

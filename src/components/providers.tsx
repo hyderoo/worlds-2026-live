@@ -9,6 +9,7 @@ const SnapCtx = createContext<Ctx | null>(null);
 async function fetchSnapshot(): Promise<Snapshot> {
   const res = await fetch("/api/public/snapshot", { cache: "no-store" });
   if (!res.ok) throw new Error(`snapshot ${res.status}`);
+  if (res.headers.get("x-w26-offline")) throw new Error("served from offline cache");
   return res.json();
 }
 
@@ -48,6 +49,7 @@ function SnapshotProvider({ initial, children }: { initial: Snapshot; children: 
 
 export function Providers({ initial, children }: { initial: Snapshot; children: ReactNode }) {
   const [client] = useState(() => new QueryClient());
+  useEffect(() => { if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined); }, []);
   return (
     <QueryClientProvider client={client}>
       <SnapshotProvider initial={initial}>{children}</SnapshotProvider>

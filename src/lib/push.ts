@@ -5,7 +5,7 @@ import type { Store } from "./store";
 import type { Match } from "./types";
 
 export type PushSub = { endpoint: string; keys: { p256dh: string; auth: string } };
-export type PushRecord = { sub: PushSub; watch: string[]; spoiler: boolean; createdAt: string };
+export type PushRecord = { sub: PushSub; watch: string[]; spoiler: boolean; kinds?: string[]; createdAt: string };
 
 const SUB_PREFIX = "push:sub:";
 export const MAX_SUBS = 500;
@@ -78,6 +78,7 @@ export async function sendDueNotifications(store: Store, matches: Match[], now: 
     const codes = new Set(e.match.teams.map((t) => t.code));
     for (const [k, rec] of subs) {
       if (!rec.watch.some((c) => codes.has(c))) continue;
+      if (rec.kinds && !rec.kinds.includes(e.kind)) continue;
       try {
         await webpush.sendNotification(rec.sub, JSON.stringify(payloadFor(e, rec.spoiler, now)), { TTL: 600, urgency: "normal", timeout: 8000 });
         n++;

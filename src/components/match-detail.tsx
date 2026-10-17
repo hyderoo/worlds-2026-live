@@ -5,7 +5,7 @@ import { useSnapshot } from "./providers";
 import { Countdown, Empty, StateBadge, TeamLogo } from "./ui";
 import { fmtDateTime } from "@/lib/format";
 import { buildIcs } from "@/lib/ics";
-import { usePrefs, useSpoiler } from "@/lib/prefs";
+import { usePrefs, useSpoiler, useT } from "@/lib/prefs";
 import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
@@ -15,6 +15,8 @@ export function MatchDetail({ id }: { id: string }) {
   const { snap } = useSnapshot();
   const { prefs, set } = usePrefs();
   const sp = useSpoiler();
+  const { t: tr } = useT();
+  const [shared, setShared] = useState(false);
   const [perm, setPerm] = useState<string>("default");
   useEffect(() => { const t = setTimeout(() => { if (typeof Notification !== "undefined") setPerm(Notification.permission); }, 0); return () => clearTimeout(t); }, []);
   const m = snap.matches.find((x) => x.id === id);
@@ -29,6 +31,13 @@ export function MatchDetail({ id }: { id: string }) {
   }, [reminded, perm, m]);
 
   if (!m) return <div className="mt-10"><Empty title="Match not found">It may not be scheduled yet. <Link className="underline" href="/matches">Back to matches</Link></Empty></div>;
+  const share = (withScore: boolean) => {
+    const url = new URL(`/matches/${m.id}`, window.location.origin);
+    if (withScore) url.searchParams.set("score", "1");
+    const done = () => { setShared(true); setTimeout(() => setShared(false), 1800); };
+    if (navigator.share) navigator.share({ title: `${m.teams[0].code} vs ${m.teams[1].code}`, url: url.toString() }).catch(() => undefined);
+    else navigator.clipboard?.writeText(url.toString()).then(done, () => undefined);
+  };
   const tz = prefs.tz;
   const stats = snap.gameStats[m.id] ?? [];
   const recap = snap.recaps.find((r) => r.matchId === m.id);
@@ -79,7 +88,9 @@ export function MatchDetail({ id }: { id: string }) {
           {reminded && <span className="rounded-full border border-gold/40 px-4 py-2 text-sm text-gold">Reminder on (works while this tab stays open)</span>}
         </>}
         {m.teams.every((t) => t.code !== "TBD") && <Link href={`/compare?a=${m.teams[0].code}&b=${m.teams[1].code}`} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">Head-to-head</Link>}
-        <button onClick={() => navigator.share?.({ title: `${m.teams[0].code} vs ${m.teams[1].code}`, url: window.location.href }).catch(() => {}) ?? navigator.clipboard?.writeText(window.location.href)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">Share</button>
+        <button onClick={() => share(false)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{shared ? tr("act.copied") : tr("act.share")}</button>
+        {m.state === "completed" && <button onClick={() => share(true)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{tr("act.shareScore")}</button>}
+        <a href={`/card/${m.id}${m.state === "completed" ? "?score=1" : ""}`} download={`worlds2026-${m.teams[0].code}-vs-${m.teams[1].code}.png`} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{tr("act.downloadCard")}</a>
       </div>
 
       {m.state !== "completed" && !hasTbd(m) && (

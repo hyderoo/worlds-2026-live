@@ -105,7 +105,7 @@ export function CompareView({ a: ia, b: ib }: { a?: string; b?: string }) {
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-3">{sel(a, setA, "Team A")}{sel(b, setB, "Team B")}</div>
       {!ta || !tb ? <Empty title="Pick two teams">Stats use verified Worlds 2026 results only.</Empty> : (
-        <>
+        <SpoilerGate what="Head-to-head results">
           <div className="card grid grid-cols-3 items-center p-6 text-center">
             <div className="grid justify-items-center gap-2"><TeamLogo team={ta} size={72} /><span className="display text-2xl">{ta.name}</span></div>
             <span className="display text-3xl text-fog">vs</span>
@@ -120,7 +120,7 @@ export function CompareView({ a: ia, b: ib }: { a?: string; b?: string }) {
           <Section title="Head-to-head at Worlds 2026" eyebrow="Meetings">
             {h2h.length === 0 ? <Empty title="No meetings in this tournament yet">Past-year head-to-head is not included because it is not in the verified data set.</Empty> : <div className="grid gap-4 sm:grid-cols-2">{h2h.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div>}
           </Section>
-        </>
+        </SpoilerGate>
       )}
     </div>
   );

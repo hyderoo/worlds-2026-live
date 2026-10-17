@@ -190,12 +190,32 @@ export function Header() {
   );
 }
 
+type InstallEvent = Event & { prompt: () => Promise<void> };
+function InstallApp() {
+  const [ev, setEv] = useState<InstallEvent | null>(null);
+  const [ios, setIos] = useState(false);
+  const [installed, setInstalled] = useState(false);
+  useEffect(() => {
+    const h = (e: Event) => { e.preventDefault(); setEv(e as InstallEvent); };
+    window.addEventListener("beforeinstallprompt", h);
+    window.addEventListener("appinstalled", () => setInstalled(true));
+    const standalone = window.matchMedia("(display-mode: standalone)").matches;
+    const tm = setTimeout(() => { setInstalled(standalone); setIos(/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone); }, 0);
+    return () => { window.removeEventListener("beforeinstallprompt", h); clearTimeout(tm); };
+  }, []);
+  if (installed) return null;
+  if (ev) return <button onClick={() => { void ev.prompt(); setEv(null); }} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">Install app</button>;
+  if (ios) return <p className="mt-3 text-xs">Install: tap Share, then Add to Home Screen.</p>;
+  return null;
+}
+
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-line">
       <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 text-sm text-fog sm:grid-cols-2">
         <p>Fan-made tracker. Not affiliated with or endorsed by Riot Games. League of Legends and Worlds are trademarks of Riot Games, Inc. Champion icons and favicon: Riot Data Dragon. Trophy is an original illustration.</p>
         <p className="sm:text-right">Match data: Riot Games LoL Esports. Optional extras may cite Liquipedia (CC-BY-SA 3.0) and are always labeled unofficial. <Link href="/about" className="underline hover:text-snow">Data and sync</Link></p>
+        <div><InstallApp /></div>
       </div>
     </footer>
   );
