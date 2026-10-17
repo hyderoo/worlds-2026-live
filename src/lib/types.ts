@@ -70,7 +70,7 @@ export const TeamSchema = z.object({
   image: z.string().nullable().optional(),
   players: z.array(PlayerSchema).optional(),
 });
-export type Team = z.infer<typeof TeamSchema>;
+export type Team = z.infer<typeof TeamSchema> & { extras?: TeamExtras | null };
 
 export const RecapSchema = z.object({
   matchId: z.string(),
@@ -114,4 +114,17 @@ export type Snapshot = {
   /** Matches where a manual override is held back because upstream changed later. */
   staleOverrides: string[];
   dataNotes: string[];
+};
+
+/** Unofficial roster/staff/socials from Liquipedia (CC-BY-SA 3.0). Always labeled; ranks below official Riot data. */
+export type TeamExtras = {
+  code: string;
+  source: "liquipedia";
+  pageTitle: string;
+  /** When the roster was last read from the Worlds participants page. */
+  rosterFetchedAt: string | null;
+  players: { id: string; role: string; sub: boolean; captain: boolean }[];
+  staff: { id: string; role: string }[];
+  socialsFetchedAt: string | null;
+  socials: { label: string; url: string }[];
 };

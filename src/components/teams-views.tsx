@@ -8,6 +8,7 @@ import { usePrefs } from "@/lib/prefs";
 import { REGIONS, REGION_BY_LEAGUE } from "@/lib/regions";
 import { ROLE_LABEL } from "@/lib/champions";
 import type { Match, Team } from "@/lib/types";
+import { TeamDetails } from "@/components/team-details";
 
 const involves = (m: Match, code: string) => m.teams.some((t) => t.code === code);
 
@@ -73,6 +74,7 @@ export function TeamProfile({ code }: { code: string }) {
           <p className="mt-2 text-xs text-fog">Roster from Riot team data; players marked unconfirmed are not verified as the starting five.</p>
         </Section>
       )}
+      <TeamDetails team={t} stats={snap.gameStats} />
       {next.length > 0 && <Section eyebrow="Schedule" title="Upcoming"><div className="grid gap-4 sm:grid-cols-2">{next.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div></Section>}
       <Section eyebrow="History" title="Results">{done.length === 0 ? <Empty title="No finished matches yet" /> : <div className="grid gap-4 sm:grid-cols-2">{done.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div>}</Section>
       <p className="mt-8"><Link className="text-gold underline" href={`/compare?a=${code}`}>Compare with another team</Link></p>

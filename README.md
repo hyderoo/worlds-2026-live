@@ -10,7 +10,7 @@ Fan project. Not affiliated with or endorsed by Riot Games.
 - Champion picks per game come from Riot's live stats feed (ingested by the sync job for new games, with a seed in `src/data/games-seed.json`; winners per game are not in the feed).
 - Per-game winners and MVP are not in the official feed, so they are not shown.
 - Without Supabase the app still works in **cache-only mode** (live upstream data, short in-memory cache, no admin edits, no sync history).
-- Liquipedia is **not enabled**. See "Secondary source" below.
+- Liquipedia (unofficial) fills rosters, substitutes, coaches/analysts and social links when `LIQUIPEDIA_CONTACT` is set. See "Secondary source" below.
 
 ## Architecture
 
@@ -75,7 +75,7 @@ Team logos in `public/logos` are the official team images from the LoL Esports t
 
 ### Secondary source (Liquipedia)
 
-Liquipedia's terms require a custom User-Agent with contact info, at most 1 request per 2 s (1 per 30 s for `action=parse`), aggressive caching, CC-BY-SA attribution, and no automated access to HTML pages. The LiquipediaDB API needs an approved key. Because no contact/key has been provided, the adapter is intentionally **not wired in**. When enabled it must only fill gaps (for example MVP), be labeled unofficial, and rank below official data.
+Liquipedia's terms require a custom User-Agent with contact info, at most 1 request per 2 s (1 per 30 s for `action=parse`), caching, CC-BY-SA attribution, and no HTML scraping. The adapter (`src/lib/liquipedia.ts`) uses only the MediaWiki API (`action=parse&prop=wikitext`), makes at most one request per cron/manual sync tick and at least 2 minutes apart, and backs off 30 minutes on HTTP 429. It reads the "World Championship/2026" participants page (starters, substitutes, coaches, analysts for every team, one request every 6 h) and one team infobox per tick for social links (each refreshed weekly). Set `LIQUIPEDIA_CONTACT` (an email or URL) as an environment variable; it is never committed. Without it the adapter is off and the UI shows "unavailable". Data is stored in the shared database under reserved `game_stats` keys (`__extra:*`), shown labeled "Unofficial", and ranks below official Riot data. The LiquipediaDB API (needs an approved key) is not used.
 
 ## Tests
 

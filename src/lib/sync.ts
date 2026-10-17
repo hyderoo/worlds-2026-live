@@ -1,4 +1,5 @@
 import { fetchGameStats, fetchGames, fetchUpstream, fingerprint } from "./upstream";
+import { refreshLiquipedia } from "./liquipedia";
 import type { Store } from "./store";
 import type { Match, SyncRun } from "./types";
 
@@ -68,6 +69,8 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     await syncChampions(store, [...byId.values(), ...[...existing.values()].filter((e) => !byId.has(e.id))], d);
     run.matchesChanged = changed.length;
     run.ok = true;
+    // Unofficial secondary source, cron/manual ticks only; never affects the official sync result.
+    if (trigger !== "lazy" && !deps.fetchUpstream) await refreshLiquipedia(store).catch(() => undefined);
   } catch (e) {
     run.error = e instanceof Error ? e.message.slice(0, 300) : "unknown error";
   }

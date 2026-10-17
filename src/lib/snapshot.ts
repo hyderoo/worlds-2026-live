@@ -35,11 +35,11 @@ function seedTeamList(): Team[] {
 }
 
 /** Teams: seed roster data (from Riot's official team data) enriched with logos seen in matches. */
-function buildTeams(matches: Match[]): Team[] {
+function buildTeams(matches: Match[], extras: Record<string, unknown> = {}): Team[] {
   const teams = seedTeamList();
   const img = new Map<string, string>();
   for (const m of matches) for (const t of m.teams) if (t.image && t.code !== "TBD") img.set(t.code, t.image);
-  return teams.map((t) => ({ ...t, image: img.get(t.code) ?? null }));
+  return teams.map((t) => ({ ...t, image: img.get(t.code) ?? null, extras: (extras[t.code] as Team["extras"]) ?? null }));
 }
 
 function mergeStats(fromStore: Record<string, GameStats[]>): Record<string, GameStats[]> {
@@ -83,12 +83,12 @@ export function deriveSync(runs: SyncRun[], storage: "supabase" | "memory"): Sna
 
 export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<Snapshot> {
   const store = getStore();
-  const load = () => Promise.all([store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10)]);
+  const load = () => Promise.all([store.loadMatches(), store.loadOverrides(), store.loadRecaps(), store.loadGameStats(), store.recentRuns(10), store.loadExtras().catch(() => ({}))]);
   // Cache-only mode has no cron-fed data; an empty database (first deploy) needs a first fill too.
-  let [raw, overrides, recaps, stats, runs] = await load();
+  let [raw, overrides, recaps, stats, runs, extras] = await load();
   if (opts.refresh !== false && (store.kind === "memory" || raw.length === 0)) {
     await lazyRefresh(store);
-    [raw, overrides, recaps, stats, runs] = await load();
+    [raw, overrides, recaps, stats, runs, extras] = await load();
   }
   const now = new Date();
   const { matches, stale } = applyOverrides(raw, overrides);
@@ -103,7 +103,7 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
   return {
     generatedAt: now.toISOString(),
     matches: live,
-    teams: buildTeams(live),
+    teams: buildTeams(live, extras),
     gameStats: mergeStats(stats),
     recaps,
     sync: deriveSync(runs, store.kind),

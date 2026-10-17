@@ -1,0 +1,114 @@
+{{TeamParticipantsControls|showplayerinfo=true}}
+===Swiss Stage Teams===
+{{TeamParticipants
+|{{Opponent|Gen.G Esports
+    |players={{Persons
+        |{{Person|Kiin|role=top}}
+        |{{Person|Canyon|role=jgl|trophies=1}}
+        |{{Person|Chovy|role=mid}}
+        |{{Person|Ruler|role=bot, captain|trophies=1}}
+        |{{Person|Duro|role=sup}}
+
+        |{{Person|Ryu|role=head coach|type=staff}}
+        |{{Person|Lyn|role=coach|type=staff}}
+	    |{{Person|Nova|link=Nova (Park Chan-ho)|role=coach|type=staff}}
+    }}
+	|qualification={{Qualification|method=qual|page=LCK/2026|placement=1}}
+}}
+|{{Opponent|Hanwha Life Esports
+	|players={{Persons
+		|{{Person|Zeus|role=top|trophies=2}}
+		|{{Person|Kanavi|role=jgl, captain}}
+		|{{Person|Zeka|role=mid|trophies=1}}
+		|{{Person|Gumayusi|role=bot|trophies=3}}
+		|{{Person|Delight|role=sup}}
+
+		<!--|{{Person|Bluffing|role=sup|status=sub}}-->
+
+		|{{Person|Homme|role=head coach|type=staff}}
+		|{{Person|Mowgli|role=coach|type=staff|trophies=1}}
+		|{{Person|Sin|role=coach|type=staff|link=Sin (Korean player)}}
+	}}
+	|qualification={{Qualification|method=qual|page=Mid-Season Invitational/2026|placement=1}}
+	|notes={{Notes
+		|{{Notes|[[Hanwha Life Esports]] qualified for Worlds as the MSI Champions by reaching [[LCK/2026/Playoffs|LCK Playoffs]]. Their seeding was later determined based on their regional results.}}
+	}}
+}}
+|{{Opponent|T1
+    |players={{Persons
+        |{{Person|Doran|role=top|trophies=1}}
+        |{{Person|Oner|role=jgl|trophies=3}}
+        |{{Person|Faker|role=mid, captain|trophies=6}}
+        |{{Person|Peyz|role=bot}}
+        |{{Person|Keria|role=sup|trophies=3}}
+
+        <!--|{{Person|kkOma|role=head coach|type=staff|trophies=5}}-->
+        |{{Person|Tom|role=head coach|type=staff|trophies=3}}
+        |{{Person|Mata|role=coach|type=staff|trophies=2}}
+	    |{{Person|Easyhoon|role=coach|type=staff|trophies=1}}
+    }}
+	|qualification={{Qualification|method=qual|page=LCK/2026|placement=3}}
+}}
+|{{Opponent|Dplus
+	|players={{Persons
+		|{{Person|Siwoo|role=top}}
+		|{{Person|Lucid|role=jgl}}
+		|{{Person|ShowMaker|role=mid, captain|trophies=1}}
+		|{{Person|Smash|role=bot}}
+		|{{Person|Career|role=sup}}
+
+		|{{Person|cvMax|role=head coach|type=staff}}
+		|{{Person|Hachani|role=coach|type=staff}}
+		|{{Person|PoohManDu|role=coach|type=staff|trophies=2}}
+	}}
+	|qualification={{Qualification|method=qual|page=LCK/2026|placement=4}}
+	|notes={{Notes
+		|{{Notes|Since [[Hanwha Life Esports]] secured their spot in the top 3 of [[LCK/2026|LCK Season]], this slot was passed down to [[Dplus]].}}
+	}}
+}}
+|{{Opponent|Anyone's Legend
+	|players={{Persons
+		|{{Person|Breathe|role=top}}
+		|{{Person|Tarzan|role=jgl|link=Tarzan (Korean player)}}
+		|{{Person|Shanks|role=mid}}
+		|{{Person|Hope|role=bot, captain|link=Hope (Chinese player)}}
+		|{{Person|Kael|role=sup|link=Kael (Korean player)}}
+
+		|{{Person|BigWei|role=head coach|type=staff}}
+		|{{Person|Teacherma|role=assistant coach|type=staff}}
+		|{{Person|Despa1r|role=assistant coach|type=staff|trophies=1}}
+		|{{Person|May|role=analyst|type=staff}}
+	}}
+	|qualification={{Qualification|method=qual|page=LPL/2026/Split 3|placement=1}}
+}}
+|{{Opponent|Bilibili Gaming
+	|players={{Persons
+		|{{Person|Bin|role=top}}
+===Play-In Teams===
+{{TeamParticipants
+|{{Opponent|Cloud9
+	|players={{Persons
+		|{{Person|Thanatos|role=top}}
+		|{{Person|Blaber|role=jgl}}
+		|{{Person|Loki|role=mid}}
+		|{{Person|Tactical|role=bot}}
+		|{{Person|Vulcan|role=sup}}
+
+		|{{Person|APA|role=mid|status=sub|played=false}}
+		|{{Person|Zven|role=bot|status=sub|played=false}}
+
+		|{{Person|IWillDominate|role=head coach|type=staff}}
+		|{{Person|Veigarv2|role=assistant coach|type=staff}}
+		|{{Person|Arrow|role=assistant coach|type=staff}}
+		|{{Person|YamatoCannon|role=assistant coach|type=staff}}
+	}}
+	|qualification={{Qualification|method=qual|page=LCS/2026/Summer|placement=3}}
+}}
+|{{Opponent|Karmine Corp
+	|players={{Persons
+		|{{Person|Canna|role=top}}
+		|{{Person|Yike|role=jgl}}
+		|{{Person|kyeahoo|role=mid}}
+		|{{Person|Caliste|role=bot, captain}}
+		|{{Person|Busio|role=sup}}
+

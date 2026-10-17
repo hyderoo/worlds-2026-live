@@ -2,6 +2,9 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config, hasSupabase } from "./config";
 import type { GameStats, Match, Recap, SyncRun } from "./types";
 
+/** Reserved game_stats keys for unofficial extras (Liquipedia), so no extra migration is needed. */
+export const EXTRA_PREFIX = "__extra:";
+
 export type Override = {
   matchId: string;
   patch: { startTime?: string; bestOf?: number; wins?: [number, number]; note?: string };
@@ -20,6 +23,8 @@ export interface Store {
   saveRecap(r: Recap): Promise<void>;
   loadGameStats(): Promise<Record<string, GameStats[]>>;
   saveGameStats(matchId: string, g: GameStats[]): Promise<void>;
+  loadExtras(): Promise<Record<string, unknown>>;
+  saveExtra(key: string, data: unknown): Promise<void>;
   recordRun(r: SyncRun): Promise<void>;
   recentRuns(n: number): Promise<SyncRun[]>;
 }
@@ -29,11 +34,12 @@ type MemState = {
   overrides: Map<string, Override>;
   recaps: Map<string, Recap>;
   stats: Record<string, GameStats[]>;
+  extras: Record<string, unknown>;
   runs: SyncRun[];
 };
 
 export function createMemoryStore(state?: MemState): Store & { state: MemState } {
-  const s: MemState = state ?? { matches: new Map(), overrides: new Map(), recaps: new Map(), stats: {}, runs: [] };
+  const s: MemState = state ?? { matches: new Map(), overrides: new Map(), recaps: new Map(), stats: {}, extras: {}, runs: [] };
   return {
     kind: "memory",
     state: s,
@@ -46,6 +52,8 @@ export function createMemoryStore(state?: MemState): Store & { state: MemState }
     async saveRecap(r) { s.recaps.set(r.matchId, r); },
     async loadGameStats() { return s.stats; },
     async saveGameStats(id, g) { s.stats[id] = g; },
+    async loadExtras() { return s.extras; },
+    async saveExtra(k, d) { s.extras[k] = d; },
     async recordRun(r) { s.runs.unshift(r); s.runs = s.runs.slice(0, 50); },
     async recentRuns(n) { return s.runs.slice(0, n); },
   };
@@ -87,7 +95,14 @@ export function createSupabaseStore(client: SupabaseClient): Store {
     },
     async loadGameStats() {
       const rows = must(await client.from("game_stats").select("match_id,data")) as { match_id: string; data: GameStats[] }[];
-      return Object.fromEntries(rows.map((r) => [r.match_id, r.data]));
+      return Object.fromEntries(rows.filter((r) => !r.match_id.startsWith(EXTRA_PREFIX)).map((r) => [r.match_id, r.data]));
+    },
+    async loadExtras() {
+      const rows = must(await client.from("game_stats").select("match_id,data").like("match_id", `${EXTRA_PREFIX}%`)) as { match_id: string; data: unknown }[];
+      return Object.fromEntries(rows.map((r) => [r.match_id.slice(EXTRA_PREFIX.length), r.data]));
+    },
+    async saveExtra(key, data) {
+      must(await client.from("game_stats").upsert({ match_id: EXTRA_PREFIX + key, data, updated_at: new Date().toISOString() }, { onConflict: "match_id" }));
     },
     async saveGameStats(id, g) {
       must(await client.from("game_stats").upsert({ match_id: id, data: g, updated_at: new Date().toISOString() }, { onConflict: "match_id" }));
@@ -137,6 +152,8 @@ export function createResilientStore(primary: Store, fallback: Store, now: () =>
     saveRecap: (r) => run((s) => s.saveRecap(r)),
     loadGameStats: () => run((s) => s.loadGameStats()),
     saveGameStats: (id, gs) => run((s) => s.saveGameStats(id, gs)),
+    loadExtras: () => run((s) => s.loadExtras()),
+    saveExtra: (k, d) => run((s) => s.saveExtra(k, d)),
     recordRun: (r) => run((s) => s.recordRun(r)),
     recentRuns: (n) => run((s) => s.recentRuns(n)),
   };
