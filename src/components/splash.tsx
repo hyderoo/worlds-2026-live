@@ -39,7 +39,6 @@ export function Splash() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b0a10]/70 via-[#1a1438]/40 to-[#0b0a10]/95" />
       <div className="absolute inset-x-0 bottom-[20%] flex flex-col items-center gap-4 text-center">
         <div className="relative">
-        <div className="absolute -inset-x-16 -inset-y-10 -z-10 rounded-full bg-[radial-gradient(closest-side,rgba(6,8,18,.92),rgba(6,8,18,.7)_55%,transparent)]" />
         {cupOk ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/cup.webp" alt="" className="splash-cup h-60 w-auto drop-shadow-[0_0_28px_rgba(110,170,255,.4)]" onError={() => setCupOk(false)} />
