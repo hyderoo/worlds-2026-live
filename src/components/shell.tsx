@@ -6,10 +6,10 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { TeamLogo } from "./ui";
 import { TIMEZONES, ago } from "@/lib/format";
-import { usePrefs } from "@/lib/prefs";
+import { usePrefs, useSpoiler } from "@/lib/prefs";
 
 const NAV = [
-  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"],
+  ["/", "Home"], ["/matches", "Matches"], ["/standings", "Standings"], ["/teams", "Teams"], ["/recaps", "Recaps"], ["/stats", "Statistics"], ["/predictions", "Predictions"],
 ] as const;
 
 export function Freshness() {
@@ -90,6 +90,7 @@ function Palette({ onClose }: { onClose: () => void }) {
 export function Header() {
   const path = usePathname();
   const { prefs, set } = usePrefs();
+  const sp = useSpoiler();
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   useEffect(() => {
@@ -120,6 +121,7 @@ export function Header() {
             <select id="tz" value={prefs.tz} onChange={(e) => set({ tz: e.target.value })} className="hidden rounded-full border border-line bg-surface px-2.5 py-1.5 text-xs text-fog sm:block">
               {TIMEZONES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
+            <button aria-pressed={sp.enabled} onClick={sp.toggle} title="Hide scores and results until you click" className={clsx("rounded-full border px-2.5 py-1.5 text-xs", sp.enabled ? "border-gold/60 bg-gold/10 text-gold" : "border-line text-fog hover:text-snow")}>Spoilers {sp.enabled ? "hidden" : "shown"}</button>
             <Freshness />
             <button className="rounded-full border border-line px-3 py-1.5 text-xs md:hidden" aria-expanded={menu} aria-controls="mnav" onClick={() => setMenu(!menu)}>Menu</button>
           </div>

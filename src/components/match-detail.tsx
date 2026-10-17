@@ -5,7 +5,7 @@ import { useSnapshot } from "./providers";
 import { Countdown, Empty, StateBadge, TeamLogo } from "./ui";
 import { fmtDateTime } from "@/lib/format";
 import { buildIcs } from "@/lib/ics";
-import { usePrefs } from "@/lib/prefs";
+import { usePrefs, useSpoiler } from "@/lib/prefs";
 import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
@@ -14,6 +14,7 @@ import { hasTbd } from "@/lib/match-state";
 export function MatchDetail({ id }: { id: string }) {
   const { snap } = useSnapshot();
   const { prefs, set } = usePrefs();
+  const sp = useSpoiler();
   const [perm, setPerm] = useState<string>("default");
   useEffect(() => { const t = setTimeout(() => { if (typeof Notification !== "undefined") setPerm(Notification.permission); }, 0); return () => clearTimeout(t); }, []);
   const m = snap.matches.find((x) => x.id === id);
@@ -62,7 +63,8 @@ export function MatchDetail({ id }: { id: string }) {
             </div>
           ))}
           <div className="order-2 text-center">
-            <p className="display text-5xl tabular-nums sm:text-7xl">{m.state === "completed" || m.state === "live" ? `${m.teams[0].wins ?? 0} : ${m.teams[1].wins ?? 0}` : "vs"}</p>
+            <p className="display text-5xl tabular-nums sm:text-7xl">{(m.state === "completed" || m.state === "live") && !sp.hidden(m.id) ? `${m.teams[0].wins ?? 0} : ${m.teams[1].wins ?? 0}` : "vs"}</p>
+            {(m.state === "completed" || m.state === "live") && sp.hidden(m.id) && <button onClick={() => sp.reveal(m.id)} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">Show result</button>}
             {m.state === "unverified" && <p className="mt-2 text-xs text-fog">Score hidden until the source confirms the status</p>}
           </div>
         </div>
@@ -90,7 +92,7 @@ export function MatchDetail({ id }: { id: string }) {
         </section>
       )}
 
-      {m.state === "completed" && (
+      {m.state === "completed" && !sp.hidden(m.id) && (
         <section className="card mt-6 p-6" aria-labelledby="rc">
           <h2 id="rc" className="display text-2xl">Recap</h2>
           {recap && <div className="mt-3"><p className="eyebrow">Editorial · {recap.author}</p><h3 className="mt-1 font-medium">{recap.title}</h3><p className="mt-2 whitespace-pre-line text-fog">{recap.body}</p></div>}
@@ -100,7 +102,7 @@ export function MatchDetail({ id }: { id: string }) {
         </section>
       )}
 
-      {(m.games.length > 0 || stats.length > 0) && (
+      {!(sp.hidden(m.id) && m.state !== "scheduled") && (m.games.length > 0 || stats.length > 0) && (
         <section className="mt-6" aria-labelledby="games">
           <h2 id="games" className="display mb-3 text-2xl">Games</h2>
           <p className="mb-4 text-sm text-fog">Per-game winners are not published in the official schedule feed, so only the series score is shown as a result. Champions come from Riot&apos;s live stats feed. VODs are official broadcasts on YouTube.</p>

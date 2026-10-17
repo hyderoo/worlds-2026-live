@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSnapshot } from "./providers";
-import { Empty, MatchCard, Pill, Section, TeamLogo } from "./ui";
+import { Empty, MatchCard, Pill, Section, SpoilerGate, TeamLogo } from "./ui";
 import { computeRecords } from "@/lib/match-state";
 import { usePrefs } from "@/lib/prefs";
 import { REGIONS, REGION_BY_LEAGUE } from "@/lib/regions";
@@ -63,11 +63,11 @@ export function TeamProfile({ code }: { code: string }) {
         </div>
         <button aria-pressed={on} onClick={() => toggleWatch(code)} className={`rounded-full border px-5 py-2 text-sm ${on ? "border-gold bg-gold/10 text-gold" : "border-line hover:text-gold"}`}>{on ? "Following" : "Follow team"}</button>
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-4">
+      <div className="mt-4"><SpoilerGate what="Records"><div className="grid gap-4 sm:grid-cols-4">
         {[["Series won", rec?.w ?? 0], ["Series lost", rec?.l ?? 0], ["Games won", rec?.gw ?? 0], ["Games lost", rec?.gl ?? 0]].map(([l, v]) => (
           <div key={l as string} className="card p-5"><p className="display text-4xl tabular-nums">{v}</p><p className="eyebrow !text-fog">{l}</p></div>
         ))}
-      </div>
+      </div></SpoilerGate></div>
       {t.players && t.players.length > 0 && (
         <Section eyebrow="Roster" title="Players">
           <ul className="grid gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card p-4"><p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
@@ -76,7 +76,7 @@ export function TeamProfile({ code }: { code: string }) {
       )}
       <TeamDetails team={t} stats={snap.gameStats} />
       {next.length > 0 && <Section eyebrow="Schedule" title="Upcoming"><div className="grid gap-4 sm:grid-cols-2">{next.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div></Section>}
-      <Section eyebrow="History" title="Results">{done.length === 0 ? <Empty title="No finished matches yet" /> : <div className="grid gap-4 sm:grid-cols-2">{done.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div>}</Section>
+      <Section eyebrow="History" title="Results"><SpoilerGate what="Results">{done.length === 0 ? <Empty title="No finished matches yet" /> : <div className="grid gap-4 sm:grid-cols-2">{done.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div>}</SpoilerGate></Section>
       <p className="mt-8"><Link className="text-gold underline" href={`/compare?a=${code}`}>Compare with another team</Link></p>
     </article>
   );

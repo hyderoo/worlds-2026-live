@@ -2,9 +2,9 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSnapshot } from "./providers";
-import { Empty, Pill, StateBadge, TeamLogo } from "./ui";
+import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
 import { fmtDateTime } from "@/lib/format";
-import { usePrefs } from "@/lib/prefs";
+import { usePrefs, useSpoiler } from "@/lib/prefs";
 import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
@@ -13,6 +13,7 @@ import { computeRecords } from "@/lib/match-state";
 export function RecapsList() {
   const { snap } = useSnapshot();
   const { prefs } = usePrefs();
+  const sp = useSpoiler();
   const [q, setQ] = useState("");
   const [stage, setStage] = useState("all");
   const done = useMemo(() => snap.matches.filter((m) => m.state === "completed").reverse(), [snap.matches]);
@@ -32,8 +33,8 @@ export function RecapsList() {
             return (
               <li key={m.id}><Link href={`/recaps/${m.id}`} className="card block p-5 transition hover:border-violet-dim">
                 <div className="mb-2 flex items-center justify-between text-xs text-fog"><span>{fmtDateTime(m.startTime, prefs.tz)} · {m.stage}</span>{r ? <span className="text-gold">Editorial</span> : <span>Auto summary</span>}</div>
-                <p className="display flex flex-wrap items-center gap-3 text-2xl"><TeamLogo team={m.teams[0]} size={30} />{m.teams[0].code} {m.teams[0].wins}<span className="text-fog">-</span>{m.teams[1].wins} {m.teams[1].code}<TeamLogo team={m.teams[1]} size={30} /></p>
-                <p className="mt-2 text-sm text-fog">{r?.title ?? autoSummary(m)}</p>
+                <p className="display flex flex-wrap items-center gap-3 text-2xl"><TeamLogo team={m.teams[0]} size={30} />{m.teams[0].code} {sp.hidden(m.id) ? "·" : m.teams[0].wins}<span className="text-fog">-</span>{sp.hidden(m.id) ? "·" : m.teams[1].wins} {m.teams[1].code}<TeamLogo team={m.teams[1]} size={30} /></p>
+                <p className="mt-2 text-sm text-fog">{sp.hidden(m.id) ? "Result hidden (spoiler-free mode). Open to reveal." : (r?.title ?? autoSummary(m))}</p>
               </Link></li>
             );
           })}
@@ -45,10 +46,12 @@ export function RecapsList() {
 
 export function RecapDetail({ id }: { id: string }) {
   const { snap } = useSnapshot();
+  const sp = useSpoiler();
   const m = snap.matches.find((x) => x.id === id);
   if (!m || m.state !== "completed") return <div className="mt-10"><Empty title="Recap not available">Recaps exist only for confirmed finished series. <Link className="underline" href={`/matches/${id}`}>Open match page</Link></Empty></div>;
   const r = snap.recaps.find((x) => x.matchId === id);
   const stats = snap.gameStats[id] ?? [];
+  if (sp.hidden(id)) return <div className="mt-10"><Empty title="Result hidden (spoiler-free mode)"><button onClick={() => sp.reveal(id)} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">Show this recap</button></Empty></div>;
   return (
     <article className="pt-10">
       <p className="eyebrow mb-3"><Link href="/recaps" className="hover:underline">Recaps</Link> / {m.stage}</p>
@@ -83,6 +86,7 @@ export function StatsView() {
   const top = [...champs.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 10);
   const recs = computeRecords(snap.matches);
   return (
+    <SpoilerGate what="Statistics">
     <div className="mt-6 grid gap-6">
       <div className="grid gap-4 sm:grid-cols-4">{[["Series played", done.length], ["Games played", games], ["Sweeps", sweeps], ["Games with champion data", gamesWithData]].map(([l, v]) => <div key={l as string} className="card p-5"><p className="display text-4xl tabular-nums">{v}</p><p className="eyebrow !text-fog">{l}</p></div>)}</div>
       <section className="card p-6"><h2 className="display text-2xl">Most picked champions</h2>
@@ -91,5 +95,6 @@ export function StatsView() {
       <section className="card overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">Team records</caption><thead className="border-b border-line text-xs uppercase tracking-wider text-fog"><tr><th className="px-3 py-2 text-left">Team</th><th className="px-3 py-2 text-left">W-L</th><th className="px-3 py-2 text-left">Game diff</th></tr></thead>
         <tbody>{recs.map((r) => <tr key={r.code} className="border-b border-line/50 last:border-0"><td className="px-3 py-2"><Link className="hover:text-gold" href={`/teams/${r.code}`}><span className="flex items-center gap-2"><TeamLogo team={r} size={22} />{r.name}</span></Link></td><td className="px-3 py-2 tabular-nums">{r.w}-{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gw - r.gl > 0 ? "+" : ""}{r.gw - r.gl}</td></tr>)}{recs.length === 0 && <tr><td colSpan={3} className="px-3 py-4 text-fog">No completed matches yet.</td></tr>}</tbody></table></section>
     </div>
+    </SpoilerGate>
   );
 }

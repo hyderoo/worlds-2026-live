@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { useSnapshot } from "./providers";
-import { Empty, Pill, StateBadge, TeamLogo } from "./ui";
+import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
 import { computeRecords, hasTbd } from "@/lib/match-state";
 import { fmtDateTime } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
@@ -141,6 +141,7 @@ export function StandingsView() {
   return (
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Stage">{STAGES.map((s) => <Pill key={s} active={stage === s} onClick={() => setStage(s)}>{s}</Pill>)}</div>
+      <SpoilerGate what="Standings and results">
       {stage === "Swiss" ? <SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} />
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
         : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} /> : <Knockouts ms={ms} tz={prefs.tz} />}
@@ -149,6 +150,7 @@ export function StandingsView() {
         <tbody>{computeRecords(snap.matches, stage).map((r) => <tr key={r.code} className="border-b border-line/50 last:border-0"><td className="px-3 py-2"><Link className="flex items-center gap-2 hover:text-gold" href={`/teams/${r.code}`}><TeamLogo team={r} size={22} />{r.name}</Link></td><td className="px-3 py-2 tabular-nums">{r.w}</td><td className="px-3 py-2 tabular-nums">{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gw}-{r.gl}</td></tr>)}
           {computeRecords(snap.matches, stage).length === 0 && <tr><td colSpan={4} className="px-3 py-4 text-fog">No completed matches yet.</td></tr>}</tbody></table></div>}
       {ms.some(hasTbd) && <p className="mt-3 text-xs text-fog">TBD slots are filled automatically as official results arrive.</p>}
+      </SpoilerGate>
     </div>
   );
 }
