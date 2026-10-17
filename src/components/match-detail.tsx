@@ -84,10 +84,12 @@ export function MatchDetail({ id }: { id: string }) {
 
       <div className="mt-4 flex flex-wrap gap-2">
         {m.state === "scheduled" && <>
+          <Link href={`/matches/${m.id}/watch`} className="rounded-full border border-gold/60 px-4 py-2 text-sm text-gold hover:bg-gold/10">{tr("watch.open")}</Link>
           <button onClick={download} className="rounded-full border border-line px-4 py-2 text-sm hover:border-gold hover:text-gold">Add to calendar (.ics)</button>
           {perm !== "denied" && !reminded && <button onClick={remind} className="rounded-full border border-line px-4 py-2 text-sm hover:border-gold hover:text-gold">Remind me 10 min before</button>}
           {reminded && <span className="rounded-full border border-gold/40 px-4 py-2 text-sm text-gold">Reminder on (works while this tab stays open)</span>}
         </>}
+        {m.state === "live" && <Link href={`/matches/${m.id}/watch`} className="rounded-full border border-gold/60 px-4 py-2 text-sm text-gold hover:bg-gold/10">{tr("watch.open")}</Link>}
         {m.teams.every((t) => t.code !== "TBD") && <Link href={`/compare?a=${m.teams[0].code}&b=${m.teams[1].code}`} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">Head-to-head</Link>}
         <button onClick={() => share(false)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{shared ? tr("act.copied") : tr("act.share")}</button>
         {m.state === "completed" && <button onClick={() => share(true)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{tr("act.shareScore")}</button>}
