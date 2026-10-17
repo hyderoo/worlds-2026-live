@@ -17,11 +17,8 @@ const field = "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm
 const btn = "rounded-full border border-gold px-4 py-2 text-sm text-gold hover:bg-gold/10 disabled:opacity-50";
 
 function Notice() {
-  return (
-    <p className="mb-6 rounded-lg border border-line bg-white/[0.03] p-3 text-sm text-fog">
-      Opt-in and lightweight. There is no login: anyone with a league link can join with a display name, so only share it with people you trust. Picks are personal opinions for fun, not forecasts. Other members&apos; picks stay hidden until a match starts. Your picks are stored on the server for this league (unlike the private Predictions page).
-    </p>
-  );
+  const { t } = useT();
+  return <p className="mb-6 rounded-lg border border-line bg-white/[0.03] p-3 text-sm text-fog">{t("grp.notice")}</p>;
 }
 
 export function GroupsHome() {
@@ -75,6 +72,7 @@ export function GroupView({ id }: { id: string }) {
   const [err, setErr] = useState("");
   const [copied, setCopied] = useState(false);
   const [nowMs, setNowMs] = useState(0);
+  const [limit, setLimit] = useState(12);
 
   const load = useCallback(async () => {
     const c = readAll()[id];
@@ -108,7 +106,9 @@ export function GroupView({ id }: { id: string }) {
   if (state === "missing") return <div className="mt-10"><Empty title="League not found">Check the link, or <Link className="underline" href="/groups">create a new league</Link>.</Empty></div>;
   if (state === "error" || !data) return <div className="mt-10"><Empty title="Could not load this league">Try again in a moment.</Empty></div>;
 
-  const open = snap.matches.filter((m) => m.state === "scheduled" && m.teams.every((x) => x.code !== "TBD") && new Date(m.startTime).getTime() > nowMs).slice(0, 12);
+  const open = snap.matches.filter((m) => m.state === "scheduled" && m.teams.every((x) => x.code !== "TBD") && new Date(m.startTime).getTime() > nowMs).sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const shown = open.slice(0, limit);
+  const settled = snap.matches.filter((m) => m.state === "completed" && data.me?.picks[m.id] && m.teams.some((x) => x.outcome === "win")).sort((a, b) => b.startTime.localeCompare(a.startTime));
   const link = typeof window !== "undefined" ? `${window.location.origin}/groups/${id}` : "";
   const nameOf = (mid: string) => data.members.find((m) => m.id === mid)?.name ?? "?";
 
@@ -148,7 +148,7 @@ export function GroupView({ id }: { id: string }) {
           <h2 id="pk" className="display mb-3 text-2xl">Your picks</h2>
           {err && <p role="alert" className="mb-2 text-sm text-red-300">{err}</p>}
           {open.length === 0 ? <p className="text-sm text-fog">No upcoming matches with both teams known yet. Picks open when the official schedule names both teams.</p> : (
-            <ul className="grid gap-3 sm:grid-cols-2">{open.map((m) => {
+            <ul className="grid gap-3 sm:grid-cols-2">{shown.map((m) => {
               const mine = data.me!.picks[m.id];
               return (
                 <li key={m.id} className="card p-4">
@@ -158,6 +158,17 @@ export function GroupView({ id }: { id: string }) {
               );
             })}</ul>
           )}
+          {open.length > limit && <button className="mt-3 text-sm text-gold underline" onClick={() => setLimit((n) => n + 12)}>{t("pk.more")} ({open.length - limit})</button>}
+          <div className="mt-8"><h3 className="display mb-3 text-xl">{t("pk.myResults")}</h3>
+            <SpoilerGate>{settled.length === 0 ? <p className="text-sm text-fog">{t("pk.noSettled")}</p> : <ul className="grid gap-2 text-sm">{settled.map((m) => {
+              const mine = data.me!.picks[m.id]; const win = m.teams.find((x) => x.outcome === "win")?.code; const ok = mine === win;
+              return <li key={m.id} className="card flex items-center justify-between gap-3 p-3"><span>{m.teams[0].code} vs {m.teams[1].code} · <span className="text-fog">{mine}</span></span><span className={ok ? "text-gold" : "text-ember"}>{ok ? t("pk.right") : t("pk.wrong")}</span></li>;
+            })}</ul>}</SpoilerGate></div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <a className={btn} href={`/card/league/${id}?m=${data.me.id}`} target="_blank" rel="noopener noreferrer">{t("pk.card")}</a>
+            <a className={btn} href={`/card/league/${id}?m=${data.me.id}&score=1`} target="_blank" rel="noopener noreferrer">{t("pk.cardScore")}</a>
+          </div>
+          <p className="mt-2 text-xs text-fog">{t("pk.cardNote")}</p>
           {Object.keys(data.revealed).length > 0 && (
             <div className="mt-8"><h3 className="display mb-3 text-xl">Locked picks (match started)</h3>
               <SpoilerGate><ul className="grid gap-2 text-sm">{Object.entries(data.revealed).map(([mid, ps]) => {

@@ -1,5 +1,5 @@
-import { MORE as M1, MORE2, MORE3, MORE4, type MoreKey4, type MoreKey, type MoreKey2, type MoreKey3 } from "./i18n-more";
-const MORE: Record<string, Record<string, string>> = { ...M1, ...MORE2, ...MORE3, ...MORE4 };
+import { MORE as M1, MORE2, MORE3, MORE4, MORE5, MORE6, type MoreKey6, type MoreKey4, type MoreKey5, type MoreKey, type MoreKey2, type MoreKey3 } from "./i18n-more";
+const MORE: Record<string, Record<string, string>> = { ...M1, ...MORE2, ...MORE3, ...MORE4, ...MORE5, ...MORE6 };
 // Central UI strings. EN is the source text. Every other language is MACHINE-WRITTEN (not reviewed by a native speaker)
 // and covers the core interface only. Anything missing in a language falls back to English. Team and player names are never translated.
 export const LANGS = [
@@ -22,7 +22,7 @@ const en = {
   "grp.title": "Friends league", "grp.create": "Create a league", "grp.join": "Join", "grp.name": "Your display name", "grp.leagueName": "League name", "grp.leaderboard": "Leaderboard", "grp.share": "Share this link with friends",
   "pred.title": "My predictions",
 } as const;
-export type Key = keyof typeof en | MoreKey | MoreKey2 | MoreKey3 | MoreKey4;
+export type Key = keyof typeof en | MoreKey | MoreKey2 | MoreKey3 | MoreKey4 | MoreKey5 | MoreKey6;
 type Dict = Partial<Record<keyof typeof en, string>>;
 
 const id: Dict = {
