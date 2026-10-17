@@ -30,4 +30,10 @@ describe("buildIcs", () => {
     for (const l of f.split("\r\n")) expect(new TextEncoder().encode(l).length).toBeLessThanOrEqual(75);
     expect(f.replace(/\r\n /g, "")).toBe("DESCRIPTION:" + "x".repeat(200));
   });
+  it("keeps a match with one TBD side, titled with TBD", () => {
+    const tbd = m({ state: "scheduled", teams: [{ code: "TBD", name: "TBD", wins: null, outcome: null }, { code: "KC", name: "Karmine Corp", wins: null, outcome: null }] as unknown as Match["teams"] });
+    const s = buildIcs([tbd], "https://x.test");
+    expect(s).toContain("SUMMARY:TBD vs Karmine Corp (Worlds 2026)");
+    expect(s).toContain("UID:m1@worlds-2026-live");
+  });
 });

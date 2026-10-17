@@ -46,7 +46,7 @@ export function buildIcs(matches: Match[], siteUrlOrOpts: string | IcsOptions): 
     const end = new Date(start.getTime() + Math.min(m.bestOf, 5) * 3600_000);
     const modified = new Date(m.upstreamChangedAt || m.updatedAt || m.startTime);
     const seq = Math.max(0, Math.floor(modified.getTime() / 60_000));
-    const a = m.teams[0].name, b = m.teams[1].name;
+    const a = m.teams[0].code === "TBD" ? "TBD" : m.teams[0].name, b = m.teams[1].code === "TBD" ? "TBD" : m.teams[1].name;
     lines.push(
       "BEGIN:VEVENT",
       `UID:${m.id}@worlds-2026-live`,
@@ -56,7 +56,7 @@ export function buildIcs(matches: Match[], siteUrlOrOpts: string | IcsOptions): 
       `DTSTART:${stamp(start)}`,
       `DTEND:${stamp(end)}`,
       `SUMMARY:${esc(`${a} vs ${b} (Worlds 2026)`)}`,
-      `DESCRIPTION:${esc(`${m.stage}${m.block && m.block !== m.stage ? ` - ${m.block}` : ""} - Bo${m.bestOf}. Start time from the official schedule and can change. End time is an estimate. Fan-made, no scores here. ${o.siteUrl}/matches/${m.id}`)}`,
+      `DESCRIPTION:${esc(`${m.stage}${m.block && m.block !== m.stage ? ` - ${m.block}` : ""} - Bo${m.bestOf}. Start time from the official schedule and can change.${m.teams.some((t) => t.code === "TBD") ? " Opponent not decided yet, this event updates when it is." : ""} End time is an estimate. Fan-made, no scores here. ${o.siteUrl}/matches/${m.id}`)}`,
       `URL:${o.siteUrl}/matches/${m.id}`,
       "STATUS:CONFIRMED",
       "TRANSP:TRANSPARENT",

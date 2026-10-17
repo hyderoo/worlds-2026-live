@@ -40,7 +40,7 @@ export type Event = { key: string; kind: "soon" | "live" | "final"; match: Match
 export function dueEvents(matches: Match[], now: Date): Event[] {
   const out: Event[] = [];
   for (const m of matches) {
-    if (m.teams.some((t) => t.code === "TBD")) continue;
+    if (m.teams.every((t) => t.code === "TBD")) continue;
     const start = new Date(m.startTime).getTime();
     const mins = (start - now.getTime()) / 60_000;
     if (m.upstreamState === "unstarted" || m.state === "scheduled") {

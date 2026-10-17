@@ -18,7 +18,8 @@ describe("push", () => {
     const now = new Date("2026-10-23T16:50:00Z");
     expect(dueEvents([m({})], now).map((e) => e.kind)).toEqual(["soon"]);
     expect(dueEvents([m({ startTime: "2026-10-23T18:50:00Z" })], now)).toEqual([]);
-    expect(dueEvents([m({ teams: [{ code: "TBD", name: "TBD" }, teams[1]] })], now)).toEqual([]);
+    expect(dueEvents([m({ teams: [{ code: "TBD", name: "TBD" }, { code: "TBD", name: "TBD" }] })], now)).toEqual([]);
+    expect(dueEvents([m({ teams: [{ code: "TBD", name: "TBD" }, teams[1]] })], now).map((e) => e.kind)).toEqual(["soon"]);
     expect(dueEvents([m({ state: "live", upstreamState: "inProgress" })], now).map((e) => e.kind)).toEqual(["live"]);
     expect(dueEvents([m({ state: "completed", upstreamState: "completed" })], new Date("2026-10-23T18:10:00Z")).map((e) => e.kind)).toEqual(["final"]);
     expect(dueEvents([m({ state: "completed", upstreamState: "completed" })], new Date("2026-10-24T18:10:00Z"))).toEqual([]);

@@ -1,7 +1,6 @@
 import { buildSnapshot } from "@/lib/snapshot";
 import { config } from "@/lib/config";
 import { ALARM_CHOICES, buildIcs } from "@/lib/ics";
-import { hasTbd } from "@/lib/match-state";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +13,8 @@ export async function GET(req: Request) {
   const alarmRaw = Number(u.searchParams.get("alarm") ?? 0);
   const alarmMin = (ALARM_CHOICES as readonly number[]).includes(alarmRaw) ? alarmRaw : 0;
   const matches = snap.matches
-    .filter((m) => !hasTbd(m))
+    // A match is kept when at least one side is known; the other side shows as TBD and fills in later under the same UID.
+    .filter((m) => m.teams.some((t) => t.code !== "TBD"))
     .filter((m) => teams.length === 0 || m.teams.some((t) => teams.includes(t.code)))
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
   const siteUrl = config.siteUrl.startsWith("http") ? config.siteUrl.replace(/\/$/, "") : u.origin;
