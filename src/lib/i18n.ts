@@ -1,4 +1,5 @@
-import { MORE, type MoreKey } from "./i18n-more";
+import { MORE as M1, MORE2, type MoreKey, type MoreKey2 } from "./i18n-more";
+const MORE: Record<string, Record<string, string>> = { ...M1, ...MORE2 };
 // Central UI strings. EN is the source text. Every other language is MACHINE-WRITTEN (not reviewed by a native speaker)
 // and covers the core interface only. Anything missing in a language falls back to English. Team and player names are never translated.
 export const LANGS = [
@@ -21,7 +22,7 @@ const en = {
   "grp.title": "Friends league", "grp.create": "Create a league", "grp.join": "Join", "grp.name": "Your display name", "grp.leagueName": "League name", "grp.leaderboard": "Leaderboard", "grp.share": "Share this link with friends",
   "pred.title": "My predictions",
 } as const;
-export type Key = keyof typeof en | MoreKey;
+export type Key = keyof typeof en | MoreKey | MoreKey2;
 type Dict = Partial<Record<keyof typeof en, string>>;
 
 const id: Dict = {
@@ -148,7 +149,7 @@ const pt: Dict = {
 const DICTS: Record<Lang, Dict> = { id, ms, en, ja, ko, zh, fr, es, pt };
 
 export function translate(lang: string, key: Key): string {
-  if (key in MORE) { const e = MORE[key as MoreKey] as Record<string, string>; return e[lang] ?? e.en!; }
+  if (key in MORE) { const e = MORE[key]!; return e[lang] ?? e.en!; }
   const k = key as keyof typeof en;
   return (DICTS[lang as Lang] ?? {})[k] ?? en[k];
 }

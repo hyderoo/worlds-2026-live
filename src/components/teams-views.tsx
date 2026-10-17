@@ -10,6 +10,7 @@ import { ROLE_LABEL } from "@/lib/champions";
 import type { Match, Team } from "@/lib/types";
 import { NotifyPanel } from "@/components/notify-panel";
 import { TeamDetails } from "@/components/team-details";
+import { MatchupPanel, TeamForm } from "@/components/form-panel";
 
 const involves = (m: Match, code: string) => m.teams.some((t) => t.code === code);
 
@@ -70,6 +71,7 @@ export function TeamProfile({ code }: { code: string }) {
           <div key={l as string} className="card p-5"><p className="display text-4xl tabular-nums">{v}</p><p className="eyebrow !text-fog">{l}</p></div>
         ))}
       </div></SpoilerGate></div>
+      <TeamForm code={code} />
       {t.players && t.players.length > 0 && (
         <Section eyebrow="Roster" title="Players">
           <ul className="grid gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card p-4"><p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
@@ -117,9 +119,7 @@ export function CompareView({ a: ia, b: ib }: { a?: string; b?: string }) {
             <Stat label="Games won" a={recs.get(a)?.gw ?? 0} b={recs.get(b)?.gw ?? 0} />
             <Stat label="Games lost" a={recs.get(a)?.gl ?? 0} b={recs.get(b)?.gl ?? 0} />
           </div>
-          <Section title="Head-to-head at Worlds 2026" eyebrow="Meetings">
-            {h2h.length === 0 ? <Empty title="No meetings in this tournament yet">Past-year head-to-head is not included because it is not in the verified data set.</Empty> : <div className="grid gap-4 sm:grid-cols-2">{h2h.map((m) => <MatchCard key={m.id} m={m} tz={prefs.tz} />)}</div>}
-          </Section>
+          <MatchupPanel a={a} b={b} />
         </SpoilerGate>
       )}
     </div>

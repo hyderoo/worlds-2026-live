@@ -10,6 +10,7 @@ import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
 import { hasTbd } from "@/lib/match-state";
+import { MatchupPanel } from "@/components/form-panel";
 
 export function MatchDetail({ id }: { id: string }) {
   const { snap } = useSnapshot();
@@ -92,6 +93,8 @@ export function MatchDetail({ id }: { id: string }) {
         {m.state === "completed" && <button onClick={() => share(true)} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{tr("act.shareScore")}</button>}
         <a href={`/card/${m.id}${m.state === "completed" ? "?score=1" : ""}`} download={`worlds2026-${m.teams[0].code}-vs-${m.teams[1].code}.png`} className="rounded-full border border-line px-4 py-2 text-sm hover:border-violet hover:text-violet">{tr("act.downloadCard")}</a>
       </div>
+
+      {!hasTbd(m) && <MatchupPanel a={m.teams[0].code} b={m.teams[1].code} />}
 
       {m.state !== "completed" && !hasTbd(m) && (
         <section className="card mt-6 p-6" aria-labelledby="pred">
