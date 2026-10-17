@@ -32,25 +32,40 @@ export function Splash() {
 
   if (!champ) return null;
   return (
-    <div aria-hidden data-testid="splash" className={`pointer-events-none fixed inset-0 z-[100] overflow-hidden bg-[#0b0a10] transition-opacity duration-500 ${out ? "opacity-0" : "opacity-100"}`}>
+    <div aria-hidden data-testid="splash" onClick={() => setOut(true)} className={`fixed inset-0 z-[100] overflow-hidden bg-[#0b0a10] transition-opacity duration-500 ${out ? "pointer-events-none opacity-0" : "opacity-100"}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ}_0.jpg`} alt="" className="splash-art absolute inset-0 size-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
+      <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ}_0.jpg`} alt="" className="splash-art absolute -inset-[6%] size-[112%] max-w-none object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b0a10]/70 via-[#1a1438]/40 to-[#0b0a10]/95" />
-      <div className="splash-rise absolute inset-x-0 bottom-[22%] flex flex-col items-center gap-3 text-center">
-        <svg viewBox="0 0 300 340" className="h-24 drop-shadow-[0_0_18px_rgba(246,227,161,.5)]">
-          <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f6e3a1" /><stop offset=".5" stopColor="#d6a840" /><stop offset="1" stopColor="#8a6420" /></linearGradient>
-            <linearGradient id="sb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7fd3ff" /><stop offset="1" stopColor="#3a63d8" /></linearGradient></defs>
-          <path d="M95 318h110l-8-26H103z" fill="url(#sg)" /><rect x="88" y="318" width="124" height="12" rx="4" fill="#8a6420" />
-          <path d="M136 292c2-26 4-46 0-70h28c-4 24-2 44 0 70z" fill="url(#sg)" />
-          <path d="M82 70c-38 2-46 42-14 62 14 9 34 12 52 8" fill="none" stroke="url(#sg)" strokeWidth="11" strokeLinecap="round" />
-          <path d="M218 70c38 2 46 42 14 62-14 9-34 12-52 8" fill="none" stroke="url(#sg)" strokeWidth="11" strokeLinecap="round" />
-          <path d="M76 52h148c0 78-26 150-74 170C102 202 76 130 76 52z" fill="url(#sg)" /><path d="M94 62h112c-2 66-22 122-56 142C116 184 96 128 94 62z" fill="url(#sb)" opacity=".85" />
-          <ellipse cx="150" cy="52" rx="74" ry="11" fill="#f6e3a1" /><path d="M150 96l9 20 22 2-17 14 6 22-20-12-20 12 6-22-17-14 22-2z" fill="#fff6d1" />
-        </svg>
-        <div className="display text-5xl leading-none text-white">Worlds <span className="text-gold">2026</span></div>
-        <div className="text-[11px] uppercase tracking-[0.25em] text-white/70">League of Legends World Championship</div>
+      <div className="absolute inset-x-0 bottom-[20%] flex flex-col items-center gap-4 text-center">
+        <MetalCup />
+        <div className="font-[family-name:var(--nf-bold)] text-[3.6rem] uppercase leading-none tracking-[0.02em] text-white" aria-label="Worlds 2026">
+          {"Worlds".split("").map((c, i) => <span key={i} className="splash-letter" style={{ animationDelay: `${0.55 + i * 0.05}s` }}>{c}</span>)}
+          <span className="splash-letter">&nbsp;</span>
+          {"2026".split("").map((c, i) => <span key={i} className="splash-letter text-gold" style={{ animationDelay: `${0.9 + i * 0.07}s` }}>{c}</span>)}
+        </div>
+        <div className="splash-rise text-[11px] uppercase tracking-[0.25em] text-white/70" style={{ animationDelay: "1.15s" }}>League of Legends World Championship</div>
       </div>
       <div className="absolute inset-x-0 bottom-4 text-center text-[10px] text-white/45">Splash art: {champ} © Riot Games, via Data Dragon. Fan-made, unofficial.</div>
     </div>
+  );
+}
+
+/** Original SVG recreation of a chrome Summoner's Cup crest (not Riot artwork): bevelled metal rim, copper reflections, light sweep. */
+function MetalCup() {
+  const d = "M10 62 L38 22 L62 54 L100 14 L138 54 L162 22 L190 62 L190 112 Q190 152 100 178 Q10 152 10 112 Z";
+  const inner = "M26 70 L40 48 L64 76 L100 40 L136 76 L160 48 L174 70 L174 110 Q174 140 100 162 Q26 140 26 110 Z";
+  return (
+    <svg viewBox="0 0 200 190" className="splash-cup h-28 drop-shadow-[0_6px_22px_rgba(0,0,0,.7)]">
+      <defs>
+        <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f4f4f6" /><stop offset=".22" stopColor="#6b6d75" /><stop offset=".4" stopColor="#15151a" /><stop offset=".55" stopColor="#c9c9d0" /><stop offset=".72" stopColor="#8a5a3a" /><stop offset=".85" stopColor="#1a1a20" /><stop offset="1" stopColor="#e6e6ea" /></linearGradient>
+        <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".95" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+        <mask id="ring"><path d={d} fill="#fff" /><path d={inner} fill="#000" /></mask>
+      </defs>
+      <path d={d} fill="url(#chrome)" />
+      <path d={inner} fill="#07070b" />
+      <path d={d} fill="none" stroke="#fff" strokeOpacity=".75" strokeWidth="1.6" strokeLinejoin="round" pathLength={1} className="splash-draw" />
+      <path d={inner} fill="none" stroke="#c98a5a" strokeOpacity=".7" strokeWidth="1.2" strokeLinejoin="round" />
+      <g mask="url(#ring)"><rect x="-80" y="0" width="60" height="190" fill="url(#sweep)" transform="skewX(-20)" className="splash-sweep" /></g>
+    </svg>
   );
 }

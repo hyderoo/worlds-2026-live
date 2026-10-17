@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Anton, Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Splash } from "@/components/splash";
@@ -8,6 +8,7 @@ import { buildSnapshot } from "@/lib/snapshot";
 import { config } from "@/lib/config";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--nf-display", axes: ["opsz"] });
+const bold = Anton({ subsets: ["latin"], weight: "400", variable: "--nf-bold" });
 const sans = Inter({ subsets: ["latin"], variable: "--nf-sans" });
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export const viewport: Viewport = { themeColor: "#0d0c11", colorScheme: "dark" }
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const snap = await buildSnapshot();
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${bold.variable}`}>
       <body>
         <Providers initial={snap}>
           <Splash />
