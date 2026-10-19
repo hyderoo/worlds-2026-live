@@ -94,8 +94,8 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
                   return (
                     <div key={g.key} className="relative rounded-xl border border-line bg-white/[0.02] p-2.5">
                       <div className="mb-2 flex items-center justify-between">
-                        <span className="rounded-full border border-violet-dim/60 bg-violet/15 px-2 py-0.5 text-xs font-semibold tabular-nums">{g.key}</span>
-                        <span className="text-[0.68rem] text-fog">{ms.length}/{g.slots} {id ? "resmi" : "official"}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",")}` : ""}</span>
+                        <span className="shrink-0 whitespace-nowrap rounded-full border border-violet-dim/60 bg-violet/15 px-2 py-0.5 text-xs font-semibold tabular-nums">{g.key}</span>
+                        <span className="truncate pl-2 text-[0.68rem] text-fog">{ms.length}/{g.slots} {id ? "resmi" : "official"}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",").replace(/^\w+ /, "")}` : ""}</span>
                       </div>
                       <div className="grid gap-1.5">
                         {ms.map((m) => (
