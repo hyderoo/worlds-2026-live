@@ -1,6 +1,7 @@
 import seedTeams from "@/data/teams-seed.json";
 import seedGames from "@/data/games-seed.json";
 import { normalizeState } from "./match-state";
+import { canonicalCode } from "./upstream";
 import { runSync } from "./sync";
 import { getStore, type Override, type Store } from "./store";
 import { config } from "./config";
@@ -93,7 +94,8 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
   const now = new Date();
   const { matches, stale } = applyOverrides(raw, overrides);
   const live = matches
-    .map((m) => ({ ...m, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
+    // Stored rows predate code aliases (e.g. Riot's TL -> TLAW rename): serve canonical codes even before the next sync rewrites them.
+    .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
   if (live.some((m) => m.state === "unverified")) notes.push("Some matches report a status that does not fit their schedule. They are shown as unverified until the source confirms them.");
