@@ -11,7 +11,7 @@ import { LANGS, type Key } from "@/lib/i18n";
 
 type Item = readonly [string, Key];
 const MATCH_MENU: readonly Item[] = [["/matches", "nav.matches"], ["/today", "nav.today"], ["/daily", "nav.daily"], ["/predictions", "nav.predictions"], ["/groups", "nav.groups"], ["/calendar", "nav.calendar"]];
-const TOURNAMENT_MENU: readonly Item[] = [["/standings", "nav.standings"], ["/teams", "nav.teams"], ["/recaps", "nav.recaps"], ["/stats", "nav.stats"]];
+const TOURNAMENT_MENU: readonly Item[] = [["/standings", "nav.standings"], ["/predictor", "nav.predictor"], ["/teams", "nav.teams"], ["/recaps", "nav.recaps"], ["/stats", "nav.stats"]];
 const PALETTE_PAGES: readonly Item[] = [["/", "nav.home"], ...MATCH_MENU, ...TOURNAMENT_MENU];
 const inGroup = (path: string, items: readonly Item[]) => items.some(([h]) => path === h || path.startsWith(h + "/"));
 

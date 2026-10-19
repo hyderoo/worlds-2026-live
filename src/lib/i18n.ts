@@ -10,7 +10,7 @@ export const DEFAULT_LANG: Lang = "id";
 export const LANG_CODES = LANGS.map((l) => l[0]) as string[];
 
 const en = {
-  "nav.today": "Today", "nav.tournament": "Tournament", "hdr.settings": "Settings", "nav.home": "Home", "nav.matches": "Matches", "nav.standings": "Standings", "nav.teams": "Teams", "nav.recaps": "Recaps", "nav.stats": "Statistics", "nav.predictions": "Predictions", "nav.groups": "Friends league",
+  "nav.today": "Today", "nav.predictor": "Predictor", "nav.tournament": "Tournament", "hdr.settings": "Settings", "nav.home": "Home", "nav.matches": "Matches", "nav.standings": "Standings", "nav.teams": "Teams", "nav.recaps": "Recaps", "nav.stats": "Statistics", "nav.predictions": "Predictions", "nav.groups": "Friends league",
   "hdr.search": "Search", "hdr.menu": "Menu", "hdr.skip": "Skip to content", "hdr.spoilersHidden": "Spoilers hidden", "hdr.spoilersShown": "Spoilers shown", "hdr.language": "Language", "hdr.timezone": "Time zone", "hdr.moreMatches": "More in Matches",
   "state.live": "Live", "state.final": "Final", "state.scheduled": "Upcoming", "state.tbd": "To be decided",
   "flt.all": "All", "flt.live": "Live", "flt.upcoming": "Upcoming", "flt.completed": "Completed", "flt.list": "List", "flt.calendar": "Calendar", "flt.myTeams": "My teams",
