@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Pill, TeamLogo } from "./ui";
 import { hasTbd } from "@/lib/match-state";
+import { metEarlier, officialSwissMeetings, pairKey } from "@/lib/rematch";
 import { dayKey, fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
 
@@ -27,6 +28,7 @@ export function PredictorView() {
   const [mine, setMine] = useState<Series[]>([]);
   const [ready, setReady] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
+  const [rematch, setRematch] = useState<{ a: string; b: string } | null>(null);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMine(load()); setReady(true); }, []);
   useEffect(() => { if (ready) { try { localStorage.setItem(KEY, JSON.stringify(mine)); } catch { /* storage full or blocked */ } } }, [mine, ready]);
@@ -59,6 +61,13 @@ export function PredictorView() {
   }, [r1, mine]);
 
   const swiss = all.filter((s) => s.stage === "swiss");
+  // Swiss rematch rule: official meetings by matchday index, plus this run's own series.
+  const officialMet = useMemo(() => officialSwissMeetings(snap.matches, prefs.tz), [snap, prefs.tz]);
+  const metBefore = (a: string, b: string, round: number) => {
+    if (metEarlier(swiss, a, b, round)) return true;
+    const r = officialMet.get(pairKey(a, b));
+    return r !== undefined && r < round;
+  };
   const field = useMemo(() => [...new Set(r1.flatMap((m) => m.teams.map((t) => t.code)))], [r1]);
   const rec = (code: string, upto: number) => {
     let w = 0, l = 0;
@@ -80,25 +89,30 @@ export function PredictorView() {
     setWinner(s.id, code);
     setMine((cur) => cur.filter((x) => x.id === s.id || x.id.startsWith("off-") || x.stage !== s.stage || x.round <= s.round));
     setSel(null);
+    setRematch(null);
   };
   const pair = (stage: "swiss" | "ko", round: number, code: string) => {
+    setRematch(null);
     if (sel === null) { setSel(`${stage}:${round}:${code}`); return; }
     const [st, r, a] = sel.split(":");
     if (st !== stage || Number(r) !== round) { setSel(`${stage}:${round}:${code}`); return; }
     if (a === code) { setSel(null); return; }
+    // Swiss only: two teams that already met cannot be paired again. Knockouts stay free.
+    if (stage === "swiss" && metBefore(a!, code, round)) { setRematch({ a: a!, b: code }); return; }
     setMine((cur) => [...cur, { id: `u-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, stage, round, a: a!, b: code }]);
     setSel(null);
   };
-  const unpair = (sid: string) => { setMine((cur) => { const s = cur.find((x) => x.id === sid); return cur.filter((x) => x.id !== sid && !(s && x.stage === s.stage && x.round > s.round)); }); setSel(null); };
-  const reset = () => { if (window.confirm(tx("Clear all your predictions?", "Hapus semua prediksi lu?"))) { setMine([]); setSel(null); } };
+  const unpair = (sid: string) => { setMine((cur) => { const s = cur.find((x) => x.id === sid); return cur.filter((x) => x.id !== sid && !(s && x.stage === s.stage && x.round > s.round)); }); setSel(null); setRematch(null); };
+  const reset = () => { if (window.confirm(tx("Clear all your predictions?", "Hapus semua prediksi lu?"))) { setMine([]); setSel(null); setRematch(null); } };
 
   const qualified = field.filter((c) => rec(c, 5).w >= 3).sort();
   const out = field.filter((c) => rec(c, 5).l >= 3);
 
-  const chip = (c: string, active = false, onClick?: () => void) => (
-    <button key={c} type="button" onClick={onClick} disabled={!onClick} aria-pressed={active}
-      className={clsx("flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs", active ? "border-gold bg-gold/15 text-gold" : "border-line hover:text-gold", !onClick && "cursor-default hover:text-inherit")}>
-      <TeamLogo team={tm(c)} size={18} />{c}
+  const chip = (c: string, active = false, onClick?: () => void, blocked = false) => (
+    <button key={c} type="button" onClick={onClick} disabled={!onClick} aria-pressed={active} aria-disabled={blocked || undefined}
+      title={blocked ? tx("Already met in this Swiss run - rematches are not allowed", "Udah pernah ketemu di Swiss ini - rematch gak boleh") : undefined}
+      className={clsx("flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs", active ? "border-gold bg-gold/15 text-gold" : blocked ? "border-line opacity-40" : "border-line hover:text-gold", !onClick && "cursor-default hover:text-inherit")}>
+      <TeamLogo team={tm(c)} size={18} /><span className={clsx(blocked && "line-through")}>{c}</span>
     </button>
   );
 
@@ -152,7 +166,20 @@ export function PredictorView() {
                   {free.length > 0 && (
                     <div className="mt-2 rounded-lg border border-dashed border-line p-2">
                       <p className="mb-1.5 text-[0.68rem] text-fog">{tx("Pairing: waiting for the official draw. Tap two teams to make your own pairing.", "Pairing: menunggu undian resmi. Tap dua tim untuk bikin pairing sendiri.")}</p>
-                      <div className="flex flex-wrap gap-1.5">{free.map((c) => chip(c, sel === `swiss:${round}:${c}`, () => pair("swiss", round, c)))}</div>
+                      {(() => {
+                        const selCode = sel?.startsWith(`swiss:${round}:`) ? sel.split(":")[2]! : null;
+                        return (
+                          <>
+                            {selCode && free.some((c) => c !== selCode && metBefore(selCode, c, round)) && (
+                              <p className="mb-1.5 text-[0.68rem] text-ember/80">{tx(`Crossed out: already met ${selCode} in this Swiss run (no rematches).`, `Dicoret: udah pernah lawan ${selCode} di Swiss ini (gak boleh rematch).`)}</p>
+                            )}
+                            <div className="flex flex-wrap gap-1.5">{free.map((c) => {
+                              const blocked = selCode !== null && c !== selCode && metBefore(selCode, c, round);
+                              return chip(c, sel === `swiss:${round}:${c}`, () => (blocked ? setRematch({ a: selCode, b: c }) : pair("swiss", round, c)), blocked);
+                            })}</div>
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -197,7 +224,12 @@ export function PredictorView() {
 
       {tab === "swiss" ? (
         <>
-          <p className="mb-3 text-sm text-fog">{tx("Round 1 is the official draw from the schedule. For later rounds your picks fill the record groups (1-0, 0-1, 2-1 and so on). The official pairing rules are not applied, so you choose who plays whom.", "Ronde 1 dari undian resmi di jadwal. Untuk ronde berikutnya pilihan lu mengisi grup rekor (1-0, 0-1, 2-1 dst). Aturan pairing resmi gak dipakai, jadi lu yang nentuin siapa lawan siapa.")}</p>
+          <p className="mb-3 text-sm text-fog">{tx("Round 1 is the official draw from the schedule. For later rounds your picks fill the record groups (1-0, 0-1, 2-1 and so on). The official pairing rules are not applied, so you choose who plays whom. One rule is enforced: teams that already met cannot be paired again (no rematches).", "Ronde 1 dari undian resmi di jadwal. Untuk ronde berikutnya pilihan lu mengisi grup rekor (1-0, 0-1, 2-1 dst). Aturan pairing resmi gak dipakai, jadi lu yang nentuin siapa lawan siapa. Satu aturan tetap dipakai: tim yang udah pernah ketemu gak bisa dipasangkan lagi (no rematch).")}</p>
+          {rematch && (
+            <p role="alert" className="mb-3 rounded-lg border border-ember/50 bg-ember/10 px-3 py-2 text-sm text-ember">
+              {tx(`${rematch.a} and ${rematch.b} already met in this Swiss run - rematches are not allowed. Pick a different opponent.`, `${rematch.a} dan ${rematch.b} udah pernah ketemu di Swiss ini - rematch gak boleh. Pilih lawan lain.`)}
+            </p>
+          )}
           {r1.length > 0 && <p className="mb-3 text-xs text-fog">{tx("Round 1 time:", "Jadwal ronde 1:")} {fmtDateTime(r1[0]!.startTime, prefs.tz)}{r1.some((m) => officialWinner(m)) ? tx(" · official results exist, see Standings", " · hasil resmi sudah ada, lihat Klasemen") : ""}</p>}
           <div role="region" aria-label="Swiss predictor" tabIndex={0} className="overflow-x-auto pb-3">
             <div className="flex gap-3">
