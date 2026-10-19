@@ -47,41 +47,90 @@ function Zoomable({ children, label }: { children: React.ReactNode; label: strin
 
 
 
-/** Official Swiss schedule grouped by matchday. A day shows pairings only once the schedule names both teams of every series. */
-function SwissMatchups({ all, tz }: { all: Match[]; tz: string }) {
+/** Bucket structure of a 16-team Swiss (3 wins advance, 3 losses out): derived from the rules, not from any pairing guess. */
+const SWISS_ROUNDS: { key: string; slots: number }[][] = [
+  [{ key: "0-0", slots: 8 }],
+  [{ key: "1-0", slots: 4 }, { key: "0-1", slots: 4 }],
+  [{ key: "2-0", slots: 2 }, { key: "1-1", slots: 4 }, { key: "0-2", slots: 2 }],
+  [{ key: "2-1", slots: 3 }, { key: "1-2", slots: 3 }],
+  [{ key: "2-2", slots: 3 }],
+];
+
+/** Swiss as a bracket: one column per round, one lane per W-L record. Only official pairings are filled; the rest are placeholders. */
+function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
   const { lang } = useT();
   const id = lang === "id";
   const swiss = all.filter((m) => m.stage === "Swiss").sort((a, b) => a.startTime.localeCompare(b.startTime));
   if (swiss.length === 0) return null;
-  const days = new Map<string, Match[]>();
-  for (const m of swiss) { const k = dayKey(m.startTime, tz); days.set(k, [...(days.get(k) ?? []), m]); }
-  const list = [...days.entries()];
+  const done = swiss.filter((m) => m.state === "completed");
+  const rec = (code: string, before: string) => {
+    let w = 0, l = 0;
+    for (const m of done) { if (m.startTime >= before) continue; const t = m.teams.find((x) => x.code === code); if (t?.outcome === "win") w++; else if (t?.outcome === "loss") l++; }
+    return `${w}-${l}`;
+  };
+  const lane = new Map<string, Match[]>();
+  for (const m of swiss) {
+    if (hasTbd(m)) continue;
+    const k = rec(m.teams[0]!.code, m.startTime);
+    lane.set(k, [...(lane.get(k) ?? []), m]);
+  }
+  const names = [id ? "Ronde 1" : "Round 1", id ? "Ronde 2" : "Round 2", id ? "Ronde 3" : "Round 3", id ? "Ronde 4" : "Round 4", id ? "Ronde 5" : "Round 5"];
+  const sub = (k: string) => { const [w, l] = k.split("-").map(Number) as [number, number]; return { win: w + 1 === 3 ? "3-" + l + (id ? " lolos" : " qualified") : `${w + 1}-${l}`, lose: l + 1 === 3 ? w + "-3" + (id ? " tersingkir" : " out") : `${w}-${l + 1}` }; };
   return (
     <section className="mb-8" aria-labelledby="sw-matchups">
-      <h2 id="sw-matchups" className="display mb-1 text-2xl">{id ? "Jadwal dan lawan Swiss" : "Swiss matchups"}</h2>
-      <p className="mb-4 text-sm text-fog">{id ? "Hanya dari jadwal resmi lolesports. Pairing ronde berikutnya baru muncul setelah resmi diumumkan, tidak ada yang ditebak." : "Official lolesports schedule only. Later pairings appear once officially published; nothing is guessed."}</p>
-      <div className="grid gap-5">
-        {list.map(([k, ms], i) => {
-          const known = ms.filter((m) => !hasTbd(m));
-          const first = ms[0]!;
-          const title = i === 0 ? (id ? "Ronde 1" : "Round 1") : (id ? `Hari ${i + 1}` : `Matchday ${i + 1}`);
-          return (
-            <div key={k}>
-              <p className="eyebrow mb-2">{title} · {fmtDateTime(first.startTime, tz).split(",").slice(0, 2).join(",")} · {known.length}/{ms.length} {id ? "lawan diumumkan" : "pairings published"}</p>
-              {known.length === 0
-                ? <div className="card p-3 text-sm text-fog">{id ? `Belum diumumkan. Jadwal resmi punya ${ms.length} seri, tim akan terisi setelah ronde sebelumnya selesai.` : `Not announced yet. The official schedule has ${ms.length} series; teams fill in after the previous round.`}</div>
-                : <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                  {known.map((m) => (
-                    <Link key={m.id} href={`/matches/${m.id}`} className="card block p-3 text-sm transition hover:border-violet-dim">
-                      <div className="mb-2 flex items-center justify-between text-[0.7rem] text-fog"><span>{fmtDateTime(m.startTime, tz)}</span><span>Bo{m.bestOf}</span></div>
-                      <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><TeamLogo team={m.teams[0]!} size={22} />{m.teams[0]!.code}</span><span className="text-xs text-fog">vs</span><span className="flex items-center gap-2">{m.teams[1]!.code}<TeamLogo team={m.teams[1]!} size={22} /></span></div>
-                    </Link>
-                  ))}
-                  {ms.length > known.length && <div className="card p-3 text-sm text-fog">{id ? `${ms.length - known.length} seri lain belum diumumkan` : `${ms.length - known.length} more series not announced yet`}</div>}
-                </div>}
+      <h2 id="sw-matchups" className="display mb-1 text-2xl">{id ? "Bracket Swiss" : "Swiss bracket"}</h2>
+      <p className="mb-4 text-sm text-fog">{id ? "Hanya pairing resmi dari lolesports yang diisi. Slot kosong menunggu hasil ronde sebelumnya, tidak ada yang ditebak. Jumlah slot per rekor dihitung dari aturan 16 tim, 3 menang lolos, 3 kalah tersingkir." : "Only official lolesports pairings are filled in. Open slots wait for the previous round; nothing is guessed. Slot counts per record follow from the 16-team, 3-win, 3-loss rules."}</p>
+      <div role="region" aria-label="Swiss bracket" tabIndex={0} className="-mx-4 snap-x overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
+        <div className="flex min-w-max items-stretch gap-0">
+          {SWISS_ROUNDS.map((round, ri) => (
+            <div key={ri} className="relative flex w-[15.5rem] shrink-0 snap-start flex-col pr-9 sm:w-64">
+              <p className="eyebrow mb-3">{names[ri]}</p>
+              <div className="flex flex-1 flex-col justify-around gap-4">
+                {round.map((g) => {
+                  const ms = lane.get(g.key) ?? [];
+                  const ghosts = Math.max(0, g.slots - ms.length);
+                  const { win, lose } = sub(g.key);
+                  const start = ms[0]?.startTime;
+                  return (
+                    <div key={g.key} className="relative rounded-xl border border-line bg-white/[0.02] p-2.5">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="rounded-full border border-violet-dim/60 bg-violet/15 px-2 py-0.5 text-xs font-semibold tabular-nums">{g.key}</span>
+                        <span className="text-[0.68rem] text-fog">{ms.length}/{g.slots} {id ? "resmi" : "official"}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",")}` : ""}</span>
+                      </div>
+                      <div className="grid gap-1.5">
+                        {ms.map((m) => (
+                          <Link key={m.id} href={`/matches/${m.id}`} className="block rounded-lg border border-line bg-ink/40 px-2 py-1.5 text-sm transition hover:border-violet-dim">
+                            {m.teams.map((t, i) => (
+                              <div key={i} className={clsx("flex items-center justify-between py-0.5", m.state === "completed" && t.outcome === "loss" && "opacity-50")}>
+                                <span className="flex items-center gap-2"><TeamLogo team={t} size={18} /><span className={clsx(t.outcome === "win" && "text-gold")}>{t.code}</span></span>
+                                <span className="text-xs tabular-nums text-fog">{m.state === "completed" || m.state === "live" ? t.wins ?? 0 : i === 0 ? fmtDateTime(m.startTime, tz).split(",").slice(-1)[0]!.trim() : ""}</span>
+                              </div>
+                            ))}
+                          </Link>
+                        ))}
+                        {ghosts > 0 && (
+                          <div className="flex items-center justify-between rounded-lg border border-dashed border-line px-2 py-1.5 text-xs text-fog">
+                            <span>{ms.length === 0 ? (id ? "Belum diumumkan" : "Not announced yet") : (id ? "Belum diumumkan" : "Not announced")}</span>
+                            <span className="tabular-nums">{ghosts} {id ? "seri" : ghosts === 1 ? "series" : "series"}</span>
+                          </div>
+                        )}
+                      </div>
+                      {ri < 4 && (
+                        <div className="mt-2 flex justify-between text-[0.65rem] text-fog"><span className="text-gold/80">W → {win}</span><span>L → {lose}</span></div>
+                      )}
+                      {ri < 4 && <span aria-hidden className="absolute -right-9 top-1/2 h-px w-9 bg-gradient-to-r from-violet-dim to-line" />}
+                    </div>
+                  );
+                })}
+              </div>
+              {ri < 4 && <span aria-hidden className="absolute right-0 top-10 bottom-4 w-px bg-line" />}
             </div>
-          );
-        })}
+          ))}
+          <div className="flex w-44 shrink-0 flex-col justify-center gap-4 pl-2 pt-8">
+            <div className="rounded-xl border border-gold/50 bg-gold/5 p-3 text-sm"><p className="text-xs uppercase tracking-wider text-gold">{id ? "Lolos ke knockout" : "Advance to knockouts"}</p><p className="mt-1 text-xs text-fog">3-0, 3-1, 3-2</p></div>
+            <div className="rounded-xl border border-line p-3 text-sm opacity-80"><p className="text-xs uppercase tracking-wider text-fog">{id ? "Tersingkir" : "Eliminated"}</p><p className="mt-1 text-xs text-fog">0-3, 1-3, 2-3</p></div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -249,7 +298,7 @@ export function StandingsView() {
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Stage">{STAGES.map((s) => <Pill key={s} active={stage === s} onClick={() => setStage(s)}>{s}</Pill>)}</div>
       <SpoilerGate what="Standings and results">
-      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissMatchups all={snap.matches} tz={prefs.tz} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
+      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissBracket all={snap.matches} tz={prefs.tz} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
         : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} /> : <Knockouts ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} />}
       {stage !== "Swiss" && <div className="card mt-8 overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">{stage} records</caption>
