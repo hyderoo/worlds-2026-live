@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
 import { computeRecords, hasTbd } from "@/lib/match-state";
-import { fmtDateTime } from "@/lib/format";
+import { dayKey, fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
 import type { Match } from "@/lib/types";
 
@@ -46,6 +46,47 @@ function Zoomable({ children, label }: { children: React.ReactNode; label: strin
 }
 
 
+
+/** Official Swiss schedule grouped by matchday. A day shows pairings only once the schedule names both teams of every series. */
+function SwissMatchups({ all, tz }: { all: Match[]; tz: string }) {
+  const { lang } = useT();
+  const id = lang === "id";
+  const swiss = all.filter((m) => m.stage === "Swiss").sort((a, b) => a.startTime.localeCompare(b.startTime));
+  if (swiss.length === 0) return null;
+  const days = new Map<string, Match[]>();
+  for (const m of swiss) { const k = dayKey(m.startTime, tz); days.set(k, [...(days.get(k) ?? []), m]); }
+  const list = [...days.entries()];
+  return (
+    <section className="mb-8" aria-labelledby="sw-matchups">
+      <h2 id="sw-matchups" className="display mb-1 text-2xl">{id ? "Jadwal dan lawan Swiss" : "Swiss matchups"}</h2>
+      <p className="mb-4 text-sm text-fog">{id ? "Hanya dari jadwal resmi lolesports. Pairing ronde berikutnya baru muncul setelah resmi diumumkan, tidak ada yang ditebak." : "Official lolesports schedule only. Later pairings appear once officially published; nothing is guessed."}</p>
+      <div className="grid gap-5">
+        {list.map(([k, ms], i) => {
+          const known = ms.filter((m) => !hasTbd(m));
+          const first = ms[0]!;
+          const title = i === 0 ? (id ? "Ronde 1" : "Round 1") : (id ? `Hari ${i + 1}` : `Matchday ${i + 1}`);
+          return (
+            <div key={k}>
+              <p className="eyebrow mb-2">{title} · {fmtDateTime(first.startTime, tz).split(",").slice(0, 2).join(",")} · {known.length}/{ms.length} {id ? "lawan diumumkan" : "pairings published"}</p>
+              {known.length === 0
+                ? <div className="card p-3 text-sm text-fog">{id ? `Belum diumumkan. Jadwal resmi punya ${ms.length} seri, tim akan terisi setelah ronde sebelumnya selesai.` : `Not announced yet. The official schedule has ${ms.length} series; teams fill in after the previous round.`}</div>
+                : <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                  {known.map((m) => (
+                    <Link key={m.id} href={`/matches/${m.id}`} className="card block p-3 text-sm transition hover:border-violet-dim">
+                      <div className="mb-2 flex items-center justify-between text-[0.7rem] text-fog"><span>{fmtDateTime(m.startTime, tz)}</span><span>Bo{m.bestOf}</span></div>
+                      <div className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><TeamLogo team={m.teams[0]!} size={22} />{m.teams[0]!.code}</span><span className="text-xs text-fog">vs</span><span className="flex items-center gap-2">{m.teams[1]!.code}<TeamLogo team={m.teams[1]!} size={22} /></span></div>
+                    </Link>
+                  ))}
+                  {ms.length > known.length && <div className="card p-3 text-sm text-fog">{id ? `${ms.length - known.length} seri lain belum diumumkan` : `${ms.length - known.length} more series not announced yet`}</div>}
+                </div>}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 /** Swiss progress board: where each team sits by official W-L record. No pairings are invented; they appear once the schedule names both teams. */
 function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name: string; entry?: string; image?: string | null }[] }) {
   const swiss = all.filter((m) => m.stage === "Swiss");
@@ -74,7 +115,7 @@ function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name:
           );
         }))}
       </div></div>
-      <p className="mt-3 text-sm text-fog">{known.length > 0 ? `${known.length} upcoming Swiss series with both teams known are listed under Matches.` : `Pairings: not published. The official schedule lists ${tbd} Swiss series with teams still to be decided, and pairings are only drawn after each round. Nothing is guessed here.`}</p>
+      <p className="mt-3 text-sm text-fog">{known.length > 0 ? `${known.length} upcoming Swiss series with both teams known are listed below under Swiss matchups; the rest are not announced yet.` : `Pairings: not published. The official schedule lists ${tbd} Swiss series with teams still to be decided, and pairings are only drawn after each round. Nothing is guessed here.`}</p>
       <p className="mt-1 text-xs text-fog">Format (5-round Swiss, 3 wins advance, Play-In winner joins) is from <a className="underline" href="https://liquipedia.net/leagueoflegends/World_Championship/2026" target="_blank" rel="noreferrer">Liquipedia</a> (unofficial, CC-BY-SA 3.0). Records come from official results only.</p>
     </section>
   );
@@ -208,7 +249,7 @@ export function StandingsView() {
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Stage">{STAGES.map((s) => <Pill key={s} active={stage === s} onClick={() => setStage(s)}>{s}</Pill>)}</div>
       <SpoilerGate what="Standings and results">
-      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
+      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissMatchups all={snap.matches} tz={prefs.tz} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
         : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} /> : <Knockouts ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} />}
       {stage !== "Swiss" && <div className="card mt-8 overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">{stage} records</caption>
