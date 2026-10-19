@@ -18,7 +18,7 @@ const SOCIALS_TTL_MS = 7 * 24 * 3600_000;
 export const NAME_TO_CODE: Record<string, string> = {
   "gen.g esports": "GEN", "hanwha life esports": "HLE", "t1": "T1", "dplus": "DK", "dplus kia": "DK", "anyone's legend": "AL",
   "bilibili gaming": "BLG", "top esports": "TES", "invictus gaming": "IG", "g2 esports": "G2", "movistar koi": "MKOI",
-  "team liquid": "TL", "lyon": "LYON", "secret whales": "TSW", "team secret whales": "TSW", "ctbc flying oyster": "CFO", "los": "LOS",
+  "team liquid": "TL", "team liquid alienware": "TL", "lyon": "LYON", "secret whales": "TSW", "team secret whales": "TSW", "ctbc flying oyster": "CFO", "los": "LOS",
   "karmine corp": "KC", "cloud9": "C9", "mvk esports": "MVK", "furia": "FUR",
 };
 

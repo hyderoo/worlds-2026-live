@@ -61,10 +61,13 @@ async function get(path: string, params: Record<string, string>, fetcher: typeof
 
 const https = (u?: string | null) => (u ? u.replace(/^http:\/\//, "https://") : null);
 
+/** Feed code -> canonical code when Riot renames a team mid-season (seed data, bundled logos /logos/<CODE>.png and team pages keep the canonical one). */
+const CODE_ALIAS: Record<string, string> = { TLAW: "TL" }; // Team Liquid -> Team Liquid Alienware, same club
+
 function side(t: z.infer<typeof TeamRaw>): TeamSide {
   const outcome = t.result?.outcome === "win" || t.result?.outcome === "loss" ? t.result.outcome : null;
   return {
-    code: t.code,
+    code: CODE_ALIAS[t.code] ?? t.code,
     name: t.name,
     ...(t.id ? { id: t.id } : {}),
     image: https(t.image),
