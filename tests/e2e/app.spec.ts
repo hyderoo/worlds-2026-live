@@ -48,8 +48,8 @@ test.describe("core flows", () => {
     const unpressed = page.locator('button[aria-pressed="false"]').filter({ hasNotText: /Swiss|Knockout/ });
     await expect(unpressed.first()).toBeVisible();
     // pin the team by its code - the state selector re-resolves to the next unpressed button after a click
-    const team = (await unpressed.first().innerText()).split("\n")[0].trim();
-    expect(team.length).toBeGreaterThan(0);
+    const team = (await unpressed.first().innerText()).split("\n").at(0)?.trim() ?? "";
+    expect(team).not.toBe("");
     const teamBtn = page.locator("button").filter({ hasText: team }).first();
     await teamBtn.click();
     await expect(teamBtn).toHaveAttribute("aria-pressed", "true");
