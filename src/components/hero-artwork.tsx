@@ -21,17 +21,14 @@ export function HeroArtwork() {
   return (
     <>
       <div className="relative mx-auto aspect-square w-full max-w-sm select-none overflow-hidden rounded-2xl border border-line shadow-[0_18px_60px_-18px_rgba(255,110,199,0.35)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img src="/kda-firestarter.jpg" alt="" aria-hidden
           className="absolute inset-0 size-full object-cover opacity-60 blur-md"
           animate={reduce ? undefined : { scale: [1.12, 1.24] }}
           transition={{ duration: 26, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }} />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img src="/kda-firestarter.jpg" alt="K/DA FIRESTARTER key art: the group on stage above a concert crowd"
           className="absolute inset-0 size-full object-cover"
           animate={reduce ? undefined : { scale: [1, 1.06], x: [0, -6] }}
           transition={{ duration: 18, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }} />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img src="/kda-firestarter-crowd.png" alt="" aria-hidden
           className="absolute -bottom-1 -left-[4%] w-[108%] max-w-none"
           animate={reduce ? undefined : { x: [0, 12] }}
@@ -59,7 +56,7 @@ export function HeroArtwork() {
               className="shrink-0 rounded px-1 text-fog transition hover:text-snow focus:outline-none focus-visible:ring-2 focus-visible:ring-gold">✕</button>
           </div>
           <iframe className="aspect-video w-full" title="K/DA - FIRESTARTER (Official Music Video)"
-            src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0`}
+            src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?rel=0`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen />
         </div>
