@@ -6,7 +6,7 @@ import { Countdown, Empty, MatchCard, Section, StateBadge, TeamLogo } from "./ui
 import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-state";
 import { fmtDateTime, tzLabel } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
-import { HeroTrophy } from "@/components/hero-trophy";
+import { HeroArtwork } from "@/components/hero-artwork";
 import { PrizePoolCard } from "@/components/prize-pool";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"];
@@ -41,7 +41,7 @@ export function HomeView() {
             })}
           </div>
           </div>
-          <div className="order-first mx-auto w-56 lg:order-none lg:w-full"><HeroTrophy /></div>
+          <div className="order-first mx-auto w-56 lg:order-none lg:w-full"><HeroArtwork /></div>
         </motion.div>
       </section>
 

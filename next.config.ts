@@ -14,6 +14,8 @@ const csp = [
   "worker-src 'self'",
   "manifest-src 'self'",
   "media-src 'self'",
+  // K/DA FIRESTARTER official MV embed on the home hero (user-initiated); video frames come from YouTube's privacy-enhanced host.
+  "frame-src https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

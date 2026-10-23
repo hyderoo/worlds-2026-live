@@ -237,7 +237,7 @@ export function Footer() {
   return (
     <footer className="mt-12 border-t border-line sm:mt-24">
       <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 text-sm text-fog sm:grid-cols-2">
-        <p>Fan-made tracker. Not affiliated with or endorsed by Riot Games. League of Legends and Worlds are trademarks of Riot Games, Inc. Champion icons and favicon: Riot Data Dragon. Trophy is an original illustration.</p>
+        <p>Fan-made tracker. Not affiliated with or endorsed by Riot Games. League of Legends and Worlds are trademarks of Riot Games, Inc. Champion icons via Riot Data Dragon. Music plays from the official K/DA video on YouTube.</p>
         <p className="sm:text-right">Match data: Riot Games LoL Esports. Optional extras may cite Liquipedia (CC-BY-SA 3.0) and are always labeled unofficial. <Link href="/about" className="underline hover:text-snow">Data and sync</Link></p>
         <div><InstallApp /></div>
       </div>
