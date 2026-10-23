@@ -30,7 +30,7 @@ for (const width of [1280, 375, 320]) {
     expect(video!.x + video!.width).toBeLessThanOrEqual(art!.x + art!.width + 1);
     expect(video!.y + video!.height).toBeLessThanOrEqual(art!.y + art!.height + 1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ animations: "disabled", path: `/downloads/worlds-inline-music-${width}.png` });
+    await page.screenshot({ animations: "disabled", path: `test-results/worlds-inline-music-${width}.png` });
     await page.getByRole("button", { name: "Close music video" }).click();
     await expect(frame).toHaveCount(0);
     await expect(play).toBeFocused();
