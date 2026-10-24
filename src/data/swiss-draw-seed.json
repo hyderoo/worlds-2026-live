@@ -1,5 +1,5 @@
 {
-  "note": "Swiss Round 2 pairings as reported by unofficial trackers (worlds2026.live/swiss-stage, ggez.gg/worlds/bracket) after the post-R1 draw on Sat 24 Oct 2026 WIB; Riot's lolesports schedule feed had not published them at seed time. Applied only while the feed slot is still TBD; the feed wins automatically once published.",
+  "note": "Swiss Round 2 pairings verified against broadcast footage of the post-R1 Swiss Round 2 draw show (Sat 24 Oct 2026 WIB). Riot publishes no standalone draw VOD; footage inspected via VOD-library capture of the draw show broadcast: https://www.youtube.com/watch?v=jjV_I2NlWCM (1-0 pool drawn ~2:20-2:40 incl. LYON-KC completion, 0-1 pool complete ~5:32). Two further independent captures (-NxUUpUZnuM, WeGwIFlACwg) and trackers worlds2026.live/ggez.gg agree; the user also confirmed the draw took place. Riot's schedule feed had not published them at seed time. Applied only while the feed slot is still TBD; the feed wins automatically once published.",
   "matches": {
     "2026-10-24T17:00:00Z": [
       "DK",
