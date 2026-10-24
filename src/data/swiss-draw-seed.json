@@ -1,0 +1,13 @@
+{
+  "note": "Swiss Round 2 pairings from the official draw show broadcast after Round 1 (Sat 24 Oct 2026, WIB), pending publication in the lolesports schedule feed. Corroborated independently by worlds2026.live/swiss-stage and ggez.gg/worlds/bracket. Applied only while the feed still lists these slots as TBD; the feed wins automatically once published.",
+  "matches": {
+    "2026-10-24T17:00:00Z": ["DK", "T1"],
+    "2026-10-24T18:00:00Z": ["CFO", "MKOI"],
+    "2026-10-24T19:00:00Z": ["HLE", "GEN"],
+    "2026-10-24T20:00:00Z": ["LYON", "KC"],
+    "2026-10-24T21:00:00Z": ["G2", "LOS"],
+    "2026-10-24T22:00:00Z": ["IG", "TSW"],
+    "2026-10-24T23:00:00Z": ["TES", "AL"],
+    "2026-10-25T00:00:00Z": ["TLAW", "BLG"]
+  }
+}

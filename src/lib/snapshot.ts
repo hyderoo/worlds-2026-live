@@ -1,6 +1,7 @@
 import seedTeams from "@/data/teams-seed.json";
 import seedGames from "@/data/games-seed.json";
-import { normalizeState } from "./match-state";
+import drawSeed from "@/data/swiss-draw-seed.json";
+import { hasTbd, normalizeState } from "./match-state";
 import { canonicalCode } from "./upstream";
 import { runSync } from "./sync";
 import { getStore, type Override, type Store } from "./store";
@@ -29,6 +30,34 @@ export function applyOverrides(matches: Match[], overrides: Override[]): { match
     return { ...m, teams, startTime: p.startTime ?? m.startTime, bestOf: p.bestOf ?? m.bestOf, source: "manual" as const };
   });
   return { matches: out, stale };
+}
+
+/**
+ * Pairings announced on the official draw show but not yet in the lolesports feed (src/data/swiss-draw-seed.json).
+ * Applied only while the upstream slot is still TBD: the moment Riot publishes, the feed wins untouched and
+ * this seed stops applying. Never writes to the store - a presentation-layer merge only.
+ */
+export function applyDrawSeed(matches: Match[]): { matches: Match[]; applied: boolean } {
+  const slots = drawSeed.matches as Record<string, string[]>;
+  const img = new Map<string, string>();
+  for (const m of matches) for (const t of m.teams) if (t.image && t.code !== "TBD") img.set(t.code, t.image);
+  const name = new Map(seedTeamList().map((t) => [t.code, t.name]));
+  let applied = false;
+  const out = matches.map((m) => {
+    if (m.stage !== "Swiss" || m.state === "completed" || !hasTbd(m)) return m;
+    const codes = slots[m.startTime];
+    if (!codes || codes.length !== 2) return m;
+    applied = true;
+    const teams = codes.map((code) => ({
+      code,
+      name: name.get(code) ?? code,
+      image: img.get(code) ?? null,
+      wins: null,
+      outcome: null,
+    })) as Match["teams"];
+    return { ...m, teams, source: "seed" as const };
+  });
+  return { matches: out, applied };
 }
 
 function seedTeamList(): Team[] {
@@ -92,12 +121,14 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     [raw, overrides, recaps, stats, runs, extras] = await load();
   }
   const now = new Date();
-  const { matches, stale } = applyOverrides(raw, overrides);
+  const { matches: overridden, stale } = applyOverrides(raw, overrides);
+  const { matches, applied: drawSeeded } = applyDrawSeed(overridden);
   const live = matches
     // Stored rows predate code aliases (e.g. Riot's TL -> TLAW rename): serve canonical codes even before the next sync rewrites them.
     .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
+  if (drawSeeded) notes.push("Swiss Round 2 pairings are from the official draw show broadcast (Sat 24 Oct, WIB); the lolesports schedule feed has not published them yet. The feed replaces them automatically once it catches up.");
   if (live.some((m) => m.state === "unverified")) notes.push("Some matches report a status that does not fit their schedule. They are shown as unverified until the source confirms them.");
   const reason = (store as { degradedReason?: string | null }).degradedReason;
   if (reason) notes.push("The shared database is not ready (" + reason + "). Running in cache-only mode with live official data.");
