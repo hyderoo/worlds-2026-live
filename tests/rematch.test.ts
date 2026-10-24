@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { metEarlier, officialSwissMeetings, pairKey } from "@/lib/rematch";
+import { metEarlier, officialSwissMeetings, pairKey, swissOfficialFlow } from "@/lib/rematch";
 import type { Match, TeamSide } from "@/lib/types";
 
-const t = (code: string): TeamSide => ({ code, name: code, wins: null, outcome: null });
-const mk = (id: string, a: string, b: string, startTime: string): Match => ({
-  id, startTime, stage: "Swiss", block: "Swiss", previous: [], bestOf: 1, state: "scheduled",
-  upstreamState: "unstarted", teams: [t(a), t(b)], games: [], source: "lolesports", updatedAt: "", upstreamChangedAt: "",
+const t = (code: string, outcome: "win" | "loss" | null = null): TeamSide => ({ code, name: code, wins: null, outcome });
+const mk = (id: string, a: string, b: string, startTime: string, state: "scheduled" | "completed" = "scheduled", wa?: "a" | "b"): Match => ({
+  id, startTime, stage: "Swiss", block: "Swiss", previous: [], bestOf: 1, state,
+  upstreamState: state === "completed" ? "completed" : "unstarted",
+  teams: state === "completed" && wa ? [t(a, wa === "a" ? "win" : "loss"), t(b, wa === "a" ? "loss" : "win")] : [t(a), t(b)],
+  games: [], source: "lolesports", updatedAt: "", upstreamChangedAt: "",
 });
 
 describe("pairKey", () => {
@@ -35,15 +37,43 @@ describe("metEarlier", () => {
   });
 });
 
-describe("officialSwissMeetings", () => {
-  const tz = "Asia/Jakarta";
-  it("maps matchdays to round indices and keeps the earliest", () => {
+describe("swissOfficialFlow", () => {
+  it("derives rounds from completed-series counts, not calendar days", () => {
     const ms = [
-      mk("r1", "GEN", "IG", "2026-10-23T17:00:00Z"), // 24 Oct 00:00 WIB -> round 0
-      mk("r2", "GEN", "DK", "2026-10-24T17:00:00Z"), // 25 Oct 00:00 WIB -> round 1
+      // both R1 series on the same UTC day, then R2 the next day: day-mapping would collapse the first two
+      mk("r1a", "GEN", "IG", "2026-10-23T17:00:00Z", "completed", "a"),
+      mk("r1b", "DK", "G2", "2026-10-23T18:00:00Z", "completed", "a"),
+      mk("r2a", "GEN", "DK", "2026-10-24T17:00:00Z"),
+      mk("r2b", "G2", "IG", "2026-10-24T18:00:00Z"),
+    ];
+    const { roundOf, recBefore } = swissOfficialFlow(ms);
+    expect(roundOf.get("r1a")).toBe(0);
+    expect(roundOf.get("r1b")).toBe(0);
+    expect(roundOf.get("r2a")).toBe(1);
+    expect(roundOf.get("r2b")).toBe(1);
+    expect(recBefore.get("r2a")).toEqual({ a: { w: 1, l: 0 }, b: { w: 1, l: 0 } });
+    expect(recBefore.get("r2b")).toEqual({ a: { w: 0, l: 1 }, b: { w: 0, l: 1 } });
+  });
+  it("keeps a midnight-straddling matchday in one round", () => {
+    const ms = [
+      mk("r1a", "GEN", "IG", "2026-10-23T23:00:00Z", "completed", "a"),
+      mk("r1b", "DK", "G2", "2026-10-24T01:00:00Z", "completed", "b"),
+    ];
+    const { roundOf } = swissOfficialFlow(ms);
+    expect(roundOf.get("r1a")).toBe(0);
+    expect(roundOf.get("r1b")).toBe(0);
+  });
+});
+
+describe("officialSwissMeetings", () => {
+  it("maps pairs to their earliest official round via the result flow", () => {
+    const ms = [
+      mk("r1", "GEN", "IG", "2026-10-23T17:00:00Z", "completed", "a"),
+      mk("r1b", "DK", "G2", "2026-10-23T18:00:00Z", "completed", "a"),
+      mk("r2", "GEN", "DK", "2026-10-24T17:00:00Z"),
       mk("r2b", "DK", "GEN", "2026-10-25T17:00:00Z"), // same pair again later, earliest kept
     ];
-    const met = officialSwissMeetings(ms, tz);
+    const met = officialSwissMeetings(ms);
     expect(met.get(pairKey("GEN", "IG"))).toBe(0);
     expect(met.get(pairKey("GEN", "DK"))).toBe(1);
   });
@@ -52,7 +82,7 @@ describe("officialSwissMeetings", () => {
       mk("tbd", "TBD", "GEN", "2026-10-23T17:00:00Z"),
       { ...mk("ko", "GEN", "DK", "2026-10-30T17:00:00Z"), stage: "Knockouts" },
     ];
-    const met = officialSwissMeetings(ms, tz);
+    const met = officialSwissMeetings(ms);
     expect(met.size).toBe(0);
   });
 });

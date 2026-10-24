@@ -4,13 +4,13 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Pill, TeamLogo } from "./ui";
 import { hasTbd } from "@/lib/match-state";
-import { metEarlier, officialSwissMeetings, pairKey } from "@/lib/rematch";
-import { dayKey, fmtDateTime } from "@/lib/format";
+import { metEarlier, officialSwissMeetings, pairKey, swissOfficialFlow } from "@/lib/rematch";
+import { buildPredictorSeries, type PredictorSeries } from "@/lib/predictor";
+import { fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
 
 type Team = { code: string; image?: string | null; name?: string };
-/** One user series. round is 0-based inside its stage. official=true only for pairings copied from the official schedule. */
-type Series = { id: string; stage: "swiss" | "ko"; round: number; a: string; b: string; w?: string; official?: boolean };
+type Series = PredictorSeries;
 const KEY = "worlds2026.predictor.v1";
 const KO_NAMES = ["Quarterfinals", "Semifinals", "Final"];
 
@@ -41,28 +41,21 @@ export function PredictorView() {
   }, [snap]);
   const tm = (c: string): Team => teamMap.get(c) ?? { code: c };
 
-  // Official round 1: the earliest Swiss matchday, only if every series on it names both teams.
+  // Official round 1: every Swiss series played before any team had completed one (record flow, not calendar days).
   const r1 = useMemo(() => {
-    const sw = snap.matches.filter((m) => m.stage === "Swiss").sort((a, b) => a.startTime.localeCompare(b.startTime));
-    if (!sw.length) return [];
-    const d = dayKey(sw[0]!.startTime, prefs.tz);
-    const day = sw.filter((m) => dayKey(m.startTime, prefs.tz) === d);
-    return day.some((m) => hasTbd(m)) ? [] : day;
-  }, [snap, prefs.tz]);
+    const { roundOf } = swissOfficialFlow(snap.matches);
+    return snap.matches
+      .filter((m) => m.stage === "Swiss" && !hasTbd(m) && roundOf.get(m.id) === 0)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
+  }, [snap]);
   const officialWinner = (m: (typeof r1)[number]) => m.state === "completed" ? m.teams.find((t) => t.outcome === "win")?.code : undefined;
 
-  const all: Series[] = useMemo(() => {
-    const off: Series[] = r1.map((m) => {
-      const key = `off-${m.id}`;
-      const saved = mine.find((s) => s.id === key);
-      return { id: key, stage: "swiss", round: 0, a: m.teams[0]!.code, b: m.teams[1]!.code, w: saved?.w, official: true };
-    });
-    return [...off, ...mine.filter((s) => !s.id.startsWith("off-"))];
-  }, [r1, mine]);
+  // Official pairings merge into the run once announced, wherever they fit the user's picks (see lib/predictor).
+  const all: Series[] = useMemo(() => buildPredictorSeries(snap.matches, mine), [snap, mine]);
 
   const swiss = all.filter((s) => s.stage === "swiss");
   // Swiss rematch rule: official meetings by matchday index, plus this run's own series.
-  const officialMet = useMemo(() => officialSwissMeetings(snap.matches, prefs.tz), [snap, prefs.tz]);
+  const officialMet = useMemo(() => officialSwissMeetings(snap.matches), [snap]);
   const metBefore = (a: string, b: string, round: number) => {
     if (metEarlier(swiss, a, b, round)) return true;
     const r = officialMet.get(pairKey(a, b));
@@ -159,13 +152,16 @@ export function PredictorView() {
             : buckets.map(([k, teams]) => {
               const bs = swiss.filter((s) => s.round === round && teams.includes(s.a) && teams.includes(s.b));
               const free = teams.filter((c) => !played(c, round));
+              const hasOfficial = bs.some((s) => s.official);
               return (
                 <div key={k}>
                   <p className="mb-1 text-[0.7rem] text-fog"><span className="font-semibold text-snow">{k}</span> · {teams.length} {tx("teams", "tim")}</p>
                   <div className="grid gap-2">{bs.map((s) => seriesCard(s))}</div>
                   {free.length > 0 && (
                     <div className="mt-2 rounded-lg border border-dashed border-line p-2">
-                      <p className="mb-1.5 text-[0.68rem] text-fog">{tx("Pairing: waiting for the official draw. Tap two teams to make your own pairing.", "Pairing: menunggu undian resmi. Tap dua tim untuk bikin pairing sendiri.")}</p>
+                      <p className="mb-1.5 text-[0.68rem] text-fog">{hasOfficial
+                        ? tx("No announced pairing fits these teams in your current run. Tap two teams to pair them yourself.", "Tim ini gak punya pairing resmi yang cocok di jalan prediksi lu. Tap dua tim untuk pasangkan sendiri.")
+                        : tx("Pairing: waiting for the official draw. Tap two teams to make your own pairing.", "Pairing: menunggu undian resmi. Tap dua tim untuk bikin pairing sendiri.")}</p>
                       {(() => {
                         const selCode = sel?.startsWith(`swiss:${round}:`) ? sel.split(":")[2]! : null;
                         return (
@@ -224,7 +220,7 @@ export function PredictorView() {
 
       {tab === "swiss" ? (
         <>
-          <p className="mb-3 text-sm text-fog">{tx("Round 1 is the official draw from the schedule. For later rounds your picks fill the record groups (1-0, 0-1, 2-1 and so on). The official pairing rules are not applied, so you choose who plays whom. One rule is enforced: teams that already met cannot be paired again (no rematches).", "Ronde 1 dari undian resmi di jadwal. Untuk ronde berikutnya pilihan lu mengisi grup rekor (1-0, 0-1, 2-1 dst). Aturan pairing resmi gak dipakai, jadi lu yang nentuin siapa lawan siapa. Satu aturan tetap dipakai: tim yang udah pernah ketemu gak bisa dipasangkan lagi (no rematch).")}</p>
+          <p className="mb-3 text-sm text-fog">{tx("Round 1 is the official draw from the schedule. Later rounds fill in automatically once official pairings are announced, as long as your picks match the official results so far; where your run diverges, you choose who plays whom. One rule is enforced: teams that already met cannot be paired again (no rematches).", "Ronde 1 dari undian resmi di jadwal. Ronde berikutnya keisi otomatis begitu pairing resmi diumumkan, selama pilihan lu sama dengan hasil resmi sejauh ini; kalau prediksi lu beda, lu yang nentuin siapa lawan siapa. Satu aturan tetap dipakai: tim yang udah pernah ketemu gak bisa dipasangkan lagi (no rematch).")}</p>
           {rematch && (
             <p role="alert" className="mb-3 rounded-lg border border-ember/50 bg-ember/10 px-3 py-2 text-sm text-ember">
               {tx(`${rematch.a} and ${rematch.b} already met in this Swiss run - rematches are not allowed. Pick a different opponent.`, `${rematch.a} dan ${rematch.b} udah pernah ketemu di Swiss ini - rematch gak boleh. Pilih lawan lain.`)}
