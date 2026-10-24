@@ -57,7 +57,7 @@ export function SpoilerGate({ children, what = "Results" }: { children: ReactNod
 
 export function MatchCard({ m, tz, compact }: { m: Match; tz: string; compact?: boolean }) {
   const sp = useSpoiler();
-  const { t: tr } = useT();
+  const { t: tr, lang } = useT();
   const hide = sp.hidden(m.id) && (m.state === "completed" || m.state === "live");
   const done = m.state === "completed" && !hide;
   return (
@@ -66,6 +66,7 @@ export function MatchCard({ m, tz, compact }: { m: Match; tz: string; compact?: 
         <span>{fmtDateTime(m.startTime, tz)}</span>
         <span className="flex items-center gap-2">
           <span>{m.block !== m.stage ? m.block : m.stage} · Bo{m.bestOf}</span>
+          {m.source === "seed" && <span title={lang === "id" ? "Dilaporkan tracker tidak resmi setelah draw; feed resmi lolesports belum memuatnya. Otomatis diganti begitu feed terbit." : "Reported by unofficial trackers after the draw; the official lolesports feed has not published it yet. Replaced automatically once the feed catches up."} className="rounded-full border border-dashed border-gold/50 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-gold/80">{lang === "id" ? "laporan draw" : "reported draw"}</span>}
           <StateBadge state={m.state} />
         </span>
       </div>

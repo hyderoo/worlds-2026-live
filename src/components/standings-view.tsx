@@ -79,7 +79,7 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
   return (
     <section className="mb-8" aria-labelledby="sw-matchups">
       <h2 id="sw-matchups" className="display mb-1 text-2xl">{id ? "Bracket Swiss" : "Swiss bracket"}</h2>
-      <p className="mb-4 text-sm text-fog">{id ? "Hanya pairing resmi dari lolesports yang diisi. Slot kosong menunggu hasil ronde sebelumnya, tidak ada yang ditebak. Jumlah slot per rekor dihitung dari aturan 16 tim, 3 menang lolos, 3 kalah tersingkir." : "Only official lolesports pairings are filled in. Open slots wait for the previous round; nothing is guessed. Slot counts per record follow from the 16-team, 3-win, 3-loss rules."}</p>
+      <p className="mb-4 text-sm text-fog">{id ? "Pairing diisi dari feed resmi lolesports. Kalau draw ronde terbaru baru dilaporkan tracker tidak resmi dan feed resminya belum memuatnya, slot itu ditandai 'laporan draw' dan otomatis diganti begitu feed resmi terbit. Slot kosong menunggu hasil ronde sebelumnya, tidak ada yang ditebak. Jumlah slot per rekor dihitung dari aturan 16 tim, 3 menang lolos, 3 kalah tersingkir." : "Pairings come from the official lolesports feed. When the latest round's draw has only been reported by unofficial trackers and the feed has not published it yet, those slots are marked 'reported draw' and replaced automatically once the official feed catches up. Open slots wait for the previous round; nothing is guessed. Slot counts per record follow from the 16-team, 3-win, 3-loss rules."}</p>
       <div role="region" aria-label="Swiss bracket" tabIndex={0} className="-mx-4 snap-x overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
         <div className="flex min-w-max items-stretch gap-0">
           {SWISS_ROUNDS.map((round, ri) => (
@@ -95,11 +95,14 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
                     <div key={g.key} className="relative rounded-xl border border-line bg-white/[0.02] p-2.5">
                       <div className="mb-2 flex items-center justify-between">
                         <span className="shrink-0 whitespace-nowrap rounded-full border border-violet-dim/60 bg-violet/15 px-2 py-0.5 text-xs font-semibold tabular-nums">{g.key}</span>
-                        <span className="truncate pl-2 text-[0.68rem] text-fog">{ms.length}/{g.slots} {id ? "resmi" : "official"}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",").replace(/^\w+ /, "")}` : ""}</span>
+                        <span className="truncate pl-2 text-[0.68rem] text-fog">{(() => { const seeded = ms.filter((m) => m.source === "seed").length; return seeded > 0
+                          ? <>{ms.length - seeded}/{g.slots} {id ? "resmi" : "official"} · {seeded} {id ? "laporan draw" : "reported draw"}</>
+                          : <>{ms.length}/{g.slots} {id ? "resmi" : "official"}</>; })()}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",").replace(/^\w+ /, "")}` : ""}</span>
                       </div>
                       <div className="grid gap-1.5">
                         {ms.map((m) => (
-                          <Link key={m.id} href={`/matches/${m.id}`} className="block rounded-lg border border-line bg-ink/40 px-2 py-1.5 text-sm transition hover:border-violet-dim">
+                          <Link key={m.id} href={`/matches/${m.id}`} className={clsx("block rounded-lg border bg-ink/40 px-2 py-1.5 text-sm transition hover:border-violet-dim", m.source === "seed" ? "border-dashed border-gold/40" : "border-line")}>
+                            {m.source === "seed" && <span className="block pb-0.5 text-[0.6rem] uppercase tracking-wider text-gold/70">{id ? "laporan draw - belum di feed resmi" : "reported draw - not in the official feed yet"}</span>}
                             {m.teams.map((t, i) => (
                               <div key={i} className={clsx("flex items-center justify-between py-0.5", m.state === "completed" && t.outcome === "loss" && "opacity-50")}>
                                 <span className="flex items-center gap-2"><TeamLogo team={t} size={18} /><span className={clsx(t.outcome === "win" && "text-gold")}>{t.code}</span></span>

@@ -128,7 +128,7 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
-  if (drawSeeded) notes.push("Swiss Round 2 pairings are from the official draw show broadcast (Sat 24 Oct, WIB); the lolesports schedule feed has not published them yet. The feed replaces them automatically once it catches up.");
+  if (drawSeeded) notes.push("Swiss Round 2 pairings are as reported by unofficial trackers after the draw (worlds2026.live, ggez.gg); Riot's lolesports feed has not published them yet. They are marked 'reported draw' and replaced automatically once the official feed catches up.");
   if (live.some((m) => m.state === "unverified")) notes.push("Some matches report a status that does not fit their schedule. They are shown as unverified until the source confirms them.");
   const reason = (store as { degradedReason?: string | null }).degradedReason;
   if (reason) notes.push("The shared database is not ready (" + reason + "). Running in cache-only mode with live official data.");

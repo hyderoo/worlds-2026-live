@@ -80,6 +80,7 @@ export function MatchDetail({ id }: { id: string }) {
         </div>
         {m.state === "scheduled" && !hasTbd(m) && <div className="mt-8 flex justify-center"><Countdown target={m.startTime} /></div>}
         {m.source === "manual" && <p className="mt-6 rounded-lg border border-gold/30 bg-gold/10 p-3 text-sm text-gold">This match includes a manual admin correction. It is replaced automatically if the official source changes.</p>}
+        {m.source === "seed" && <p className="mt-6 rounded-lg border border-gold/30 bg-gold/10 p-3 text-sm text-gold">This pairing was reported by unofficial trackers after the draw; Riot&apos;s official lolesports feed has not published it yet. It is replaced automatically once the feed catches up.</p>}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
