@@ -1,6 +1,6 @@
 // Worlds 2026 Live service worker: push notifications + a light offline cache.
 // Offline mode only shows the last data you loaded. It never invents anything and the app says when data may be old.
-const V = "w26-v3";
+const V = "w26-v4";
 const STATIC = `${V}-static`;
 const PAGES = `${V}-pages`;
 const MAX_PAGES = 30;
