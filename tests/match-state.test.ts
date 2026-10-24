@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeRecords, normalizeState, nextMatch } from "@/lib/match-state";
+import { computeRecords, normalizeState, nextMatch, playInWinner, swissField } from "@/lib/match-state";
 import type { Match, TeamSide } from "@/lib/types";
 
 const t = (code: string, wins: number | null, outcome: "win" | "loss" | null): TeamSide => ({ code, name: code, wins, outcome });
@@ -55,5 +55,47 @@ describe("nextMatch", () => {
     ];
     expect(nextMatch(ms, at("2026-10-17T11:00:00Z"))?.id).toBe("2");
     expect(nextMatch(ms, at("2026-10-17T14:00:00Z"))).toBeNull();
+  });
+});
+
+describe("playInWinner", () => {
+  const entries = [
+    { code: "KC", entry: "Play-In" },
+    { code: "C9", entry: "Play-In" },
+    { code: "GEN", entry: "Swiss" },
+  ];
+  it("is null while Play-Ins are undecided", () => {
+    expect(playInWinner([mk("1", t("KC", 0, null), t("C9", 0, null), "scheduled")], entries)).toBeNull();
+  });
+  it("takes the winner of the last completed Play-In series", () => {
+    const ms = [
+      mk("1", t("KC", 3, "win"), t("C9", 2, "loss"), "completed", "2026-10-15T18:00:00Z"),
+      mk("2", t("C9", 3, "win"), t("KC", 1, "loss"), "completed", "2026-10-16T18:00:00Z"),
+    ];
+    expect(playInWinner(ms, entries)).toBe("C9");
+  });
+  it("prefers the Play-In team Riot scheduled into a Swiss series", () => {
+    const swiss: Match = { ...mk("2", t("KC", 0, null), t("GEN", 0, null), "scheduled"), stage: "Swiss", block: "Swiss", bestOf: 1 };
+    expect(playInWinner([swiss], entries)).toBe("KC");
+  });
+  it("ignores TBD placeholders in Swiss series", () => {
+    const swiss: Match = { ...mk("2", t("TBD", 0, null), t("TBD", 0, null), "scheduled"), stage: "Swiss", block: "Swiss", bestOf: 1 };
+    expect(playInWinner([swiss], entries)).toBeNull();
+  });
+});
+
+describe("swissField", () => {
+  const entries = [
+    { code: "KC", entry: "Play-In" },
+    { code: "C9", entry: "Play-In" },
+    { code: "GEN", entry: "Swiss" },
+  ];
+  it("adds the decided Play-In winner to the Swiss field", () => {
+    const ms = [mk("1", t("KC", 3, "win"), t("C9", 0, "loss"), "completed")];
+    expect(swissField(ms, entries).map((e) => e.code)).toEqual(["KC", "GEN"]);
+  });
+  it("keeps the field at direct entries while the Play-In is undecided", () => {
+    const ms = [mk("1", t("KC", 0, null), t("C9", 0, null), "scheduled")];
+    expect(swissField(ms, entries).map((e) => e.code)).toEqual(["GEN"]);
   });
 });

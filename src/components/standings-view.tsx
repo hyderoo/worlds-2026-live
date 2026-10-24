@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
-import { computeRecords, hasTbd } from "@/lib/match-state";
+import { computeRecords, hasTbd, playInWinner, swissField } from "@/lib/match-state";
 import { dayKey, fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
 import type { Match } from "@/lib/types";
@@ -140,7 +140,8 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
 function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name: string; entry?: string; image?: string | null }[] }) {
   const swiss = all.filter((m) => m.stage === "Swiss");
   const recs = new Map(computeRecords(all, "Swiss").map((r) => [r.code, r]));
-  const field = teams.filter((t) => t.entry === "Swiss");
+  const winner = playInWinner(all, teams);
+  const field = swissField(all, teams);
   const cell = new Map<string, typeof field>();
   for (const t of field) { const r = recs.get(t.code); const k = `${r?.w ?? 0}-${r?.l ?? 0}`; cell.set(k, [...(cell.get(k) ?? []), t]); }
   const known = swiss.filter((m) => m.state !== "completed" && !hasTbd(m));
@@ -159,7 +160,7 @@ function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name:
             <div key={k} className={clsx("card min-h-20 p-2", advanced && "border-gold/50", out && "opacity-70")}>
               <p className={clsx("mb-1 text-[0.7rem] uppercase tracking-wider", advanced ? "text-gold" : "text-fog")}>{k}{advanced ? " advanced" : out ? " eliminated" : ""}</p>
               <div className="flex flex-wrap gap-1.5">{here.map((t) => <Link key={t.code} href={`/teams/${t.code}`} title={t.name} className="flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs hover:text-gold"><TeamLogo team={t} size={16} />{t.code}</Link>)}
-                {k === "0-0" && <span className="rounded-md border border-dashed border-line px-1.5 py-0.5 text-xs text-fog" title="Decided by the Play-In">Play-In winner (TBD)</span>}</div>
+                {k === "0-0" && !winner && <span className="rounded-md border border-dashed border-line px-1.5 py-0.5 text-xs text-fog" title="Decided by the Play-In">Play-In winner (TBD)</span>}</div>
             </div>
           );
         }))}
@@ -213,7 +214,7 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
   const [dir, setDir] = useState<1 | -1>(-1);
   const rows = useMemo(() => {
     const rec = new Map(computeRecords(all, "Swiss").map((r) => [r.code, r]));
-    const base = teams.filter((t) => t.entry === "Swiss").map((t) => {
+    const base = swissField(all, teams).map((t) => {
       const r = rec.get(t.code);
       return { code: t.code, name: t.name, image: t.image, w: r?.w ?? 0, l: r?.l ?? 0, gd: (r?.gw ?? 0) - (r?.gl ?? 0) };
     });

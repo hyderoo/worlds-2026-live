@@ -42,6 +42,30 @@ export function seriesWinsNeeded(bestOf: number): number {
   return Math.floor(bestOf / 2) + 1;
 }
 
+/**
+ * The Play-In winner joins the Swiss field as its 16th team. Official signals only:
+ * the Play-In team Riot actually scheduled into a Swiss series, else the winner of the
+ * last completed Play-In series (the qualifying final). Null while undecided.
+ */
+export function playInWinner(matches: Match[], entries: { code: string; entry?: string }[]): string | null {
+  const playIn = new Set(entries.filter((e) => e.entry === "Play-In").map((e) => e.code));
+  for (const m of matches) {
+    if (m.stage !== "Swiss") continue;
+    const t = m.teams.find((x) => playIn.has(x.code));
+    if (t) return t.code;
+  }
+  const lastCompleted = matches
+    .filter((m) => m.stage === "Play-Ins" && m.state === "completed")
+    .sort((a, b) => b.startTime.localeCompare(a.startTime))[0];
+  return lastCompleted?.teams.find((t) => t.outcome === "win")?.code ?? null;
+}
+
+/** Swiss field = direct Swiss entries plus the Play-In winner once decided. */
+export function swissField<T extends { code: string; entry?: string }>(matches: Match[], entries: T[]): T[] {
+  const w = playInWinner(matches, entries);
+  return entries.filter((e) => e.entry === "Swiss" || e.code === w);
+}
+
 /** Derive a W-L record per team using only completed, decided matches. */
 export function computeRecords(matches: Match[], stage?: string) {
   const rec = new Map<string, { code: string; name: string; image?: string | null; w: number; l: number; gw: number; gl: number }>();
