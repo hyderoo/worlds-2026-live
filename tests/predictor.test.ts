@@ -32,10 +32,11 @@ const pickWinners = (matches: Match[], winners: string[]): PredictorSeries[] =>
 const officialPicks = (matches: Match[]) => pickWinners(matches, r1Winners);
 
 describe("buildPredictorSeries", () => {
-  it("keeps later rounds empty until the user picks round 1 results", () => {
+  it("shows every announced round even before the user picks anything", () => {
     const out = buildPredictorSeries(fixture(), []);
-    expect(out).toHaveLength(8);
-    expect(out.every((s) => s.official && s.round === 0)).toBe(true);
+    expect(out).toHaveLength(16);
+    expect(out.every((s) => s.official)).toBe(true);
+    expect(out.filter((s) => s.round === 1)).toHaveLength(8);
   });
 
   it("auto-fills announced pairings once picks match official results", () => {
@@ -47,16 +48,16 @@ describe("buildPredictorSeries", () => {
     for (const [a, b] of r2) expect(round2.some((s) => s.a === a && s.b === b)).toBe(true);
   });
 
-  it("withholds official pairings where the run diverges from official results", () => {
+  it("still shows every official pairing when the run diverges from official results", () => {
     const matches = fixture();
     const diverged = [...r1Winners];
     diverged[0] = "IG"; // user says IG beat GEN; officially GEN won
     const out = buildPredictorSeries(matches, pickWinners(matches, diverged));
     const round2 = out.filter((s) => s.round === 1 && s.official);
     const pairs = round2.map((s) => [s.a, s.b].sort().join("-"));
-    expect(pairs).not.toContain("GEN-HLE"); // GEN sits at 0-1 in this run
-    expect(pairs).not.toContain("IG-TES"); // IG sits at 1-0 in this run
-    expect(round2).toHaveLength(6);
+    expect(pairs).toContain("GEN-HLE");
+    expect(pairs).toContain("IG-TES");
+    expect(round2).toHaveLength(8);
   });
 
   it("absorbs a manual pairing identical to the official one and carries the winner pick over", () => {
@@ -70,16 +71,16 @@ describe("buildPredictorSeries", () => {
     expect(out.filter((s) => s.round === 1)).toHaveLength(8);
   });
 
-  it("keeps a conflicting manual pairing and skips the official one", () => {
+  it("keeps a conflicting manual pairing saved but shadowed, official pairings all shown", () => {
     const matches = fixture();
     const manual: PredictorSeries = { id: "u-7", stage: "swiss", round: 1, a: "GEN", b: "T1", w: "GEN" };
     const out = buildPredictorSeries(matches, [...officialPicks(matches), manual]);
-    expect(out.some((s) => s.id === "u-7" && s.w === "GEN")).toBe(true);
+    expect(out.some((s) => s.id === "u-7" && s.w === "GEN" && s.shadowed)).toBe(true);
     const official2 = out.filter((s) => s.round === 1 && s.official);
     const pairs = official2.map((s) => [s.a, s.b].sort().join("-"));
-    expect(pairs).not.toContain("GEN-HLE");
-    expect(pairs).not.toContain("T1-LYON"); // T1 already paired by the user
-    expect(official2).toHaveLength(6);
+    expect(pairs).toContain("GEN-HLE");
+    expect(pairs).toContain("LYON-T1");
+    expect(official2).toHaveLength(8);
   });
 
   it("preserves a winner pick already saved under the official series id", () => {

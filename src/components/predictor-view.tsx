@@ -53,7 +53,9 @@ export function PredictorView() {
   // Official pairings merge into the run once announced, wherever they fit the user's picks (see lib/predictor).
   const all: Series[] = useMemo(() => buildPredictorSeries(snap.matches, mine), [snap, mine]);
 
-  const swiss = all.filter((s) => s.stage === "swiss");
+  const swiss = all.filter((s) => s.stage === "swiss" && !s.shadowed);
+  const shadowedCount = all.filter((s) => s.shadowed).length;
+  const flow = useMemo(() => swissOfficialFlow(snap.matches), [snap]);
   // Swiss rematch rule: official meetings by matchday index, plus this run's own series.
   const officialMet = useMemo(() => officialSwissMeetings(snap.matches), [snap]);
   const metBefore = (a: string, b: string, round: number) => {
@@ -140,7 +142,15 @@ export function PredictorView() {
 
   const swissColumn = (round: number) => {
     const buckets = bucketsFor(round);
-    const started = round === 0 || buckets.length > 0;
+    const offHere = swiss.filter((s) => s.round === round && s.official);
+    const started = round === 0 || buckets.length > 0 || offHere.length > 0;
+    const offGroups = new Map<string, Series[]>();
+    if (round > 0) for (const s of offHere) {
+      const r = flow.recBefore.get(s.id.slice(4))?.a;
+      const k = r ? `${r.w}-${r.l}` : "?";
+      offGroups.set(k, [...(offGroups.get(k) ?? []), s]);
+    }
+    const offSorted = [...offGroups.entries()].sort((x, y) => y[0].localeCompare(x[0]));
     return (
       <div key={round} className="card min-w-[15rem] shrink-0 p-3" style={{ width: "15.5rem" }}>
         <p className="eyebrow mb-2">{tx("Round", "Ronde")} {round + 1}</p>
@@ -149,10 +159,16 @@ export function PredictorView() {
         <div className="grid gap-3">
           {round === 0
             ? swiss.filter((s) => s.round === 0).map((s) => seriesCard(s))
-            : buckets.map(([k, teams]) => {
-              const bs = swiss.filter((s) => s.round === round && teams.includes(s.a) && teams.includes(s.b));
+            : [...offSorted.map(([k, list]) => (
+              <div key={`off-${k}`}>
+                <p className="mb-1 text-[0.7rem] text-fog"><span className="font-semibold text-snow">{k}</span> · {list.length * 2} {tx("teams", "tim")}</p>
+                <div className="grid gap-2">{list.map((s) => seriesCard(s))}</div>
+              </div>
+            )), ...buckets.map(([k, teams]) => {
+              const bs = swiss.filter((s) => s.round === round && !s.official && teams.includes(s.a) && teams.includes(s.b));
               const free = teams.filter((c) => !played(c, round));
-              const hasOfficial = bs.some((s) => s.official);
+              const hasOfficial = offHere.length > 0;
+              if (bs.length === 0 && free.length === 0) return null;
               return (
                 <div key={k}>
                   <p className="mb-1 text-[0.7rem] text-fog"><span className="font-semibold text-snow">{k}</span> · {teams.length} {tx("teams", "tim")}</p>
@@ -160,7 +176,7 @@ export function PredictorView() {
                   {free.length > 0 && (
                     <div className="mt-2 rounded-lg border border-dashed border-line p-2">
                       <p className="mb-1.5 text-[0.68rem] text-fog">{hasOfficial
-                        ? tx("No announced pairing fits these teams in your current run. Tap two teams to pair them yourself.", "Tim ini gak punya pairing resmi yang cocok di jalan prediksi lu. Tap dua tim untuk pasangkan sendiri.")
+                        ? tx("These teams have no announced pairing yet. Tap two teams to pair them yourself.", "Tim ini belum punya pairing resmi. Tap dua tim untuk pasangkan sendiri.")
                         : tx("Pairing: waiting for the official draw. Tap two teams to make your own pairing.", "Pairing: menunggu undian resmi. Tap dua tim untuk bikin pairing sendiri.")}</p>
                       {(() => {
                         const selCode = sel?.startsWith(`swiss:${round}:`) ? sel.split(":")[2]! : null;
@@ -180,7 +196,7 @@ export function PredictorView() {
                   )}
                 </div>
               );
-            })}
+            })]}
         </div>
       </div>
     );
@@ -220,7 +236,8 @@ export function PredictorView() {
 
       {tab === "swiss" ? (
         <>
-          <p className="mb-3 text-sm text-fog">{tx("Round 1 is the official draw from the schedule. Later rounds fill in automatically once official pairings are announced, as long as your picks match the official results so far; where your run diverges, you choose who plays whom. One rule is enforced: teams that already met cannot be paired again (no rematches).", "Ronde 1 dari undian resmi di jadwal. Ronde berikutnya keisi otomatis begitu pairing resmi diumumkan, selama pilihan lu sama dengan hasil resmi sejauh ini; kalau prediksi lu beda, lu yang nentuin siapa lawan siapa. Satu aturan tetap dipakai: tim yang udah pernah ketemu gak bisa dipasangkan lagi (no rematch).")}</p>
+          <p className="mb-3 text-sm text-fog">{tx("Every announced pairing shows up here automatically, in all rounds, even if your own picks differ from the official results. Your winner picks on them are saved. Rounds that are not announced yet stay open for your own simulated pairings. One rule is enforced: teams that already met cannot be paired again (no rematches).", "Semua pairing resmi yang sudah diumumkan masuk otomatis di semua ronde, walau pilihan lu beda dari hasil asli. Pilihan pemenang lu tetap tersimpan. Ronde yang belum diumumkan tetap bisa lu simulasikan sendiri. Satu aturan jalan: tim yang udah ketemu gak boleh dipasangkan lagi (no rematch).")}</p>
+          {shadowedCount > 0 && <p className="mb-3 text-xs text-fog">{tx(`${shadowedCount} of your own pairings are hidden because an official pairing now exists for those teams. They are still saved in this browser.`, `${shadowedCount} pairing buatan lu disembunyikan karena pairing resmi untuk tim itu sudah ada. Datanya tetap tersimpan di browser ini.`)}</p>}
           {rematch && (
             <p role="alert" className="mb-3 rounded-lg border border-ember/50 bg-ember/10 px-3 py-2 text-sm text-ember">
               {tx(`${rematch.a} and ${rematch.b} already met in this Swiss run - rematches are not allowed. Pick a different opponent.`, `${rematch.a} dan ${rematch.b} udah pernah ketemu di Swiss ini - rematch gak boleh. Pilih lawan lain.`)}
