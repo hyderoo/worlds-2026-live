@@ -128,7 +128,7 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
-  if (drawSeeded) notes.push("Swiss Round 2 pairings match the Swiss Round 2 draw show, verified against broadcast footage of the draw (Riot publishes no standalone draw VOD; Riot's schedule feed has not published the pairings yet). They are marked 'verified draw' and replaced automatically once the feed catches up.");
+  if (drawSeeded) notes.push("Swiss Round 2 pairings match the Swiss Round 2 draw show, verified against broadcast footage of the draw (viewed via VOD-library captures; no Riot-hosted standalone draw VOD was located). Riot's schedule feed has not published the pairings yet. They are marked 'verified draw' and replaced automatically once the feed catches up.");
   if (live.some((m) => m.state === "unverified")) notes.push("Some matches report a status that does not fit their schedule. They are shown as unverified until the source confirms them.");
   const reason = (store as { degradedReason?: string | null }).degradedReason;
   if (reason) notes.push("The shared database is not ready (" + reason + "). Running in cache-only mode with live official data.");
