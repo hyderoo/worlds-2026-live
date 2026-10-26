@@ -5,8 +5,9 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
 import { computeRecords, hasTbd, playInWinner, swissField } from "@/lib/match-state";
-import { dayKey, fmtDateTime } from "@/lib/format";
+import { fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
+import { swissStatus, waitingForSwissDraw } from "@/lib/swiss-progress";
 import type { Match } from "@/lib/types";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"] as const;
@@ -62,6 +63,9 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
   const id = lang === "id";
   const swiss = all.filter((m) => m.stage === "Swiss").sort((a, b) => a.startTime.localeCompare(b.startTime));
   if (swiss.length === 0) return null;
+  const records = computeRecords(all, "Swiss");
+  const qualified = records.filter((r) => swissStatus(r.w, r.l) === "qualified");
+  const eliminated = records.filter((r) => swissStatus(r.w, r.l) === "eliminated");
   const done = swiss.filter((m) => m.state === "completed");
   const rec = (code: string, before: string) => {
     let w = 0, l = 0;
@@ -90,27 +94,37 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
                   const ms = lane.get(g.key) ?? [];
                   const ghosts = Math.max(0, g.slots - ms.length);
                   const { win, lose } = sub(g.key);
-                  const start = ms[0]?.startTime;
+                  const waiting = waitingForSwissDraw(all, g.key, ms);
+                  // Published feed formats for named matches; later Swiss slots are all Bo3.
+                  const formats = [...new Set(ms.map((m) => m.bestOf))];
+                  const format = formats.length === 1 ? `BO${formats[0]}` : formats.length > 1 ? formats.map((n) => `BO${n}`).join(" / ") : ri >= 3 ? "BO3" : "";
                   return (
                     <div key={g.key} className="relative rounded-xl border border-line bg-white/[0.02] p-2.5">
                       <div className="mb-2 flex items-center justify-between">
                         <span className="shrink-0 whitespace-nowrap rounded-full border border-violet-dim/60 bg-violet/15 px-2 py-0.5 text-xs font-semibold tabular-nums">{g.key}</span>
                         <span className="truncate pl-2 text-[0.68rem] text-fog">{(() => { const seeded = ms.filter((m) => m.source === "seed").length; return seeded > 0
                           ? <>{ms.length - seeded}/{g.slots} {id ? "feed" : "feed"} · {seeded} {id ? "draw terverifikasi" : "verified draw"}</>
-                          : <>{ms.length}/{g.slots} {id ? "resmi" : "official"}</>; })()}{start ? ` · ${fmtDateTime(start, tz).split(",").slice(0, 2).join(",").replace(/^\w+ /, "")}` : ""}</span>
+                          : <>{ms.length}/{g.slots} {id ? "resmi" : "official"}</>; })()}</span>
                       </div>
+                      {format && <p className="mb-2 text-[0.68rem] font-semibold tracking-wide text-gold/90">{format}</p>}
                       <div className="grid gap-1.5">
                         {ms.map((m) => (
                           <Link key={m.id} href={`/matches/${m.id}`} className={clsx("block rounded-lg border bg-ink/40 px-2 py-1.5 text-sm transition hover:border-violet-dim", m.source === "seed" ? "border-dashed border-gold/40" : "border-line")}>
+                            <time dateTime={m.startTime} className="mb-1 block text-[0.68rem] leading-relaxed text-fog">{fmtDateTime(m.startTime, tz)} · BO{m.bestOf}</time>
                             {m.source === "seed" && <span className="block pb-0.5 text-[0.6rem] uppercase tracking-wider text-gold/70">{id ? "draw terverifikasi - belum di feed resmi" : "verified draw - not in the official feed yet"}</span>}
                             {m.teams.map((t, i) => (
                               <div key={i} className={clsx("flex items-center justify-between py-0.5", m.state === "completed" && t.outcome === "loss" && "opacity-50")}>
                                 <span className="flex items-center gap-2"><TeamLogo team={t} size={18} /><span className={clsx(t.outcome === "win" && "text-gold")}>{t.code}</span></span>
-                                <span className="text-xs tabular-nums text-fog">{m.state === "completed" || m.state === "live" ? t.wins ?? 0 : i === 0 ? fmtDateTime(m.startTime, tz).split(",").slice(-1)[0]!.trim() : ""}</span>
+                                <span className="text-xs tabular-nums text-fog">{m.state === "completed" || m.state === "live" ? t.wins ?? 0 : ""}</span>
                               </div>
                             ))}
                           </Link>
                         ))}
+                        {waiting.length > 0 && <div className="rounded-lg border border-dashed border-gold/30 bg-gold/5 p-2">
+                          <p className="mb-1.5 text-[0.65rem] leading-snug text-fog">{id ? "Sudah di rekor ini · menunggu draw" : "At this record · awaiting draw"}</p>
+                          <div className="flex flex-wrap gap-1.5">{waiting.map((r) => <Link key={r.code} href={`/teams/${r.code}`} title={r.name} className="flex items-center gap-1 rounded border border-line px-1.5 py-1 text-xs"><TeamLogo team={r} size={16} />{r.code}</Link>)}</div>
+                          <p className="mt-1.5 text-[0.6rem] leading-snug text-fog">{id ? "Lawan belum diumumkan, bukan pasangan match." : "Opponents not announced. These are not match pairings."}</p>
+                        </div>}
                         {ghosts > 0 && (
                           <div className="flex items-center justify-between rounded-lg border border-dashed border-line px-2 py-1.5 text-xs text-fog">
                             <span>{ms.length === 0 ? (id ? "Belum diumumkan" : "Not announced yet") : (id ? "Belum diumumkan" : "Not announced")}</span>
@@ -129,9 +143,9 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
               {ri < 4 && <span aria-hidden className="absolute right-0 top-10 bottom-4 w-px bg-line" />}
             </div>
           ))}
-          <div className="flex w-44 shrink-0 flex-col justify-center gap-4 pl-2 pt-8">
-            <div className="rounded-xl border border-gold/50 bg-gold/5 p-3 text-sm"><p className="text-xs uppercase tracking-wider text-gold">{id ? "Lolos ke knockout" : "Advance to knockouts"}</p><p className="mt-1 text-xs text-fog">3-0, 3-1, 3-2</p></div>
-            <div className="rounded-xl border border-line p-3 text-sm opacity-80"><p className="text-xs uppercase tracking-wider text-fog">{id ? "Tersingkir" : "Eliminated"}</p><p className="mt-1 text-xs text-fog">0-3, 1-3, 2-3</p></div>
+          <div className="flex w-56 shrink-0 flex-col justify-center gap-4 pl-2 pt-8">
+            <div className="rounded-xl border border-gold/50 bg-gold/5 p-3 text-sm"><p className="text-xs uppercase tracking-wider text-gold">{id ? "Lolos ke knockout" : "Advance to knockouts"}</p><p className="mt-1 text-xs text-fog">{qualified.length}/8 · 3-0, 3-1, 3-2</p><div className="mt-2 grid gap-2">{qualified.map((r) => <Link key={r.code} href={`/teams/${r.code}`} title={r.name} className="flex items-center justify-between gap-2 text-xs"><span className="flex items-center gap-1.5"><TeamLogo team={r} size={18} />{r.code}</span><span className="text-gold">{r.w}-{r.l} · {id ? "Lolos" : "Qualified"}</span></Link>)}{qualified.length === 0 && <p className="text-xs text-fog">{id ? "Belum ada tim lolos" : "No teams qualified yet"}</p>}</div></div>
+            <div className="rounded-xl border border-line p-3 text-sm opacity-80"><p className="text-xs uppercase tracking-wider text-fog">{id ? "Tersingkir" : "Eliminated"}</p><p className="mt-1 text-xs text-fog">0-3, 1-3, 2-3</p><div className="mt-2 grid gap-2">{eliminated.map((r) => <Link key={r.code} href={`/teams/${r.code}`} title={r.name} className="flex items-center justify-between gap-2 text-xs"><span className="flex items-center gap-1.5"><TeamLogo team={r} size={18} />{r.code}</span><span>{r.w}-{r.l}</span></Link>)}{eliminated.length === 0 && <p className="text-xs text-fog">{id ? "Belum ada tim tersingkir" : "No teams eliminated yet"}</p>}</div></div>
           </div>
         </div>
       </div>
@@ -213,6 +227,8 @@ function Knockouts({ ms, tz, hot, setHot }: { ms: Match[]; tz: string; hot: stri
 type SortKey = "w" | "l" | "gd" | "code";
 
 function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name: string; image?: string | null; entry?: string }[] }) {
+  const { lang } = useT();
+  const id = lang === "id";
   const [key, setKey] = useState<SortKey>("w");
   const [dir, setDir] = useState<1 | -1>(-1);
   const rows = useMemo(() => {
@@ -239,7 +255,7 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
         <table className="w-full text-sm">
           <caption className="sr-only">Swiss stage records</caption>
           <thead className="border-b border-line text-xs uppercase tracking-wider text-fog"><tr>
-            <th className="px-3 py-2 text-left font-medium">#</th>{head("code", "Team", "Sort by name")}{head("w", "W", "Series won")}{head("l", "L", "Series lost")}{head("gd", "Game diff", "Games won minus games lost")}
+            <th className="px-3 py-2 text-left font-medium">#</th>{head("code", "Team", "Sort by name")}{head("w", "W", "Series won")}{head("l", "L", "Series lost")}{head("gd", "Game diff", "Games won minus games lost")}<th scope="col" className="px-3 py-2 text-left font-medium">Status</th>
           </tr></thead>
           <tbody>
             {rows.map((r, i) => (
@@ -247,6 +263,7 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
                 <td className="px-3 py-2 text-fog">{i + 1}</td>
                 <td className="px-3 py-2"><Link href={`/teams/${r.code}`} className="flex items-center gap-2 hover:text-gold"><TeamLogo team={r} size={24} />{r.name}</Link></td>
                 <td className="px-3 py-2 tabular-nums">{r.w}</td><td className="px-3 py-2 tabular-nums">{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gd > 0 ? `+${r.gd}` : r.gd}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-xs">{swissStatus(r.w, r.l) === "qualified" ? <span className="rounded-full border border-gold/40 bg-gold/10 px-2 py-1 text-gold">{id ? "Lolos ke knockout" : "Qualified for knockouts"}</span> : swissStatus(r.w, r.l) === "eliminated" ? <span className="text-fog">{id ? "Tersingkir" : "Eliminated"}</span> : <span className="text-fog">{id ? "Masih di Swiss" : "In Swiss"}</span>}</td>
               </tr>
             ))}
           </tbody>
