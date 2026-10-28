@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { createMemoryStore } from "../src/lib/store";
-import { attachBans, champId, parseMatchPageDrafts, refreshBans, loadPages, type LpPage } from "../src/lib/lp-bans";
+import { LpHttpError, parseRetryAfter, attachBans, champId, parseMatchPageDrafts, refreshBans, loadPages, type LpPage } from "../src/lib/lp-bans";
 import type { GameStats } from "../src/lib/types";
 
 const bo1 = readFileSync(new URL("./fixtures/lp-match-bo1.html", import.meta.url), "utf8");
@@ -66,5 +66,24 @@ describe("liquipedia bans", () => {
     expect(await refreshBans(store, stats, { contact: "a@b.c", now: new Date(t0.getTime() + 90_000), fetchers })).toBe("complete");
     expect(calls).toEqual(["list", "Match:ID Wrd26Test 0001"]);
     expect(await refreshBans(store, stats, { now: t0 })).toBe("disabled");
+  });
+  it("honors Retry-After longer than the 30 minute cooldown and stops on rate limits", async () => {
+    expect(parseRetryAfter("120", 0)).toBe(120_000);
+    expect(parseRetryAfter("Wed, 21 Oct 2026 07:28:00 GMT", Date.parse("Wed, 21 Oct 2026 07:00:00 GMT"))).toBe(28 * 60_000);
+    expect(parseRetryAfter(null)).toBeNull();
+    const store = createMemoryStore();
+    let calls = 0;
+    const fetchers = { list: async () => { calls++; throw new LpHttpError(429, 3 * 3600_000); }, page: async () => bo1 };
+    const stats = { m1: [statsFrom(parseMatchPageDrafts(bo1)[0]!, "x")] };
+    const t0 = new Date("2026-10-29T00:00:00Z");
+    expect(await refreshBans(store, stats, { contact: "a@b.c", now: t0, fetchers })).toMatch(/error/);
+    // 2h later: still inside the server's 3h instruction, no request
+    expect(await refreshBans(store, stats, { contact: "a@b.c", now: new Date(t0.getTime() + 2 * 3600_000), fetchers })).toBe("backoff");
+    expect(calls).toBe(1);
+    // short Retry-After never shortens the 30 minute floor
+    const s2 = createMemoryStore();
+    const f2 = { list: async () => { throw new LpHttpError(429, 5_000); }, page: async () => bo1 };
+    await refreshBans(s2, stats, { contact: "a@b.c", now: t0, fetchers: f2 });
+    expect(await refreshBans(s2, stats, { contact: "a@b.c", now: new Date(t0.getTime() + 10 * 60_000), fetchers: f2 })).toBe("backoff");
   });
 });

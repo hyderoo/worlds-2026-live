@@ -74,8 +74,8 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     if (trigger !== "lazy" && !deps.fetchUpstream) await sendDueNotifications(store, [...[...existing.values()].map((e) => byId.get(e.id) ?? e), ...[...byId.values()].filter((m) => !existing.has(m.id))], d.now()).catch(() => undefined);
     // Unofficial secondary source, cron/manual ticks only; never affects the official sync result.
     if (trigger !== "lazy" && !deps.fetchUpstream) {
-      const bm = (await store.loadExtras().catch((): Record<string, unknown> => ({})))["__lpb_meta"] as { lastRequestAt?: string } | undefined;
-      const bansBusy = !!bm?.lastRequestAt && d.now().getTime() - Date.parse(bm.lastRequestAt) < 35_000;
+      const bm = (await store.loadExtras().catch((): Record<string, unknown> => ({})))["__lpb_meta"] as { lastRequestAt?: string; backoffUntil?: string } | undefined;
+      const bansBusy = (!!bm?.lastRequestAt && d.now().getTime() - Date.parse(bm.lastRequestAt) < 35_000) || (!!bm?.backoffUntil && Date.parse(bm.backoffUntil) > d.now().getTime());
       const lp = bansBusy ? "throttled" : await refreshLiquipedia(store).catch(() => "error");
       // Bans step only when the roster step made no request (combined rate stays under one request per 35 s).
       if (/^(throttled|backoff|up to date|disabled)/.test(lp)) await refreshBansFromStore(store);

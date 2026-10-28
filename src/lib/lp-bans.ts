@@ -80,9 +80,22 @@ export function attachBans(stats: GameStats[], pages: LpPage[]): GameStats[] {
   });
 }
 
+export class LpHttpError extends Error {
+  constructor(public status: number, public retryAfterMs: number | null) { super(`liquipedia ${status}`); }
+}
+/** Retry-After as milliseconds: delta-seconds or an HTTP date. null when absent or unreadable. */
+export function parseRetryAfter(v: string | null | undefined, now = Date.now()): number | null {
+  if (!v) return null;
+  const secs = Number(v);
+  if (Number.isFinite(secs) && secs >= 0) return secs * 1000;
+  const at = Date.parse(v);
+  return Number.isFinite(at) ? Math.max(0, at - now) : null;
+}
+export const BACKOFF_MS = 30 * 60_000;
+
 async function lpGet(params: string, contact: string): Promise<unknown> {
   const r = await fetch(`${API}?${params}&format=json`, { headers: { "User-Agent": `Worlds2026LiveTracker/1.0 (fan project; contact: ${contact})`, "Accept-Encoding": "gzip" }, signal: AbortSignal.timeout(15000) });
-  if (!r.ok) throw new Error(`liquipedia ${r.status}`);
+  if (!r.ok) throw new LpHttpError(r.status, parseRetryAfter(r.headers.get("retry-after")));
   return r.json();
 }
 export type LpFetchers = { list: (contact: string) => Promise<string[]>; page: (title: string, contact: string) => Promise<string> };
@@ -144,7 +157,12 @@ export async function refreshBans(store: Store, stats: Record<string, GameStats[
     return `page ok (${due.title})`;
   } catch (e) {
     const msg = e instanceof Error ? e.message : "error";
-    if (msg.includes("429")) { try { await store.saveExtra(META, { lastRequestAt: (opts.now ?? new Date()).toISOString(), backoffUntil: new Date((opts.now ?? new Date()).getTime() + 30 * 60_000).toISOString() }); } catch { /* best effort */ } }
+    const rate = (e instanceof LpHttpError && (e.status === 429 || e.status === 503)) || msg.includes("429");
+    if (rate) {
+      const wait = Math.max(BACKOFF_MS, e instanceof LpHttpError ? e.retryAfterMs ?? 0 : 0);
+      const at = opts.now ?? new Date();
+      try { await store.saveExtra(META, { lastRequestAt: at.toISOString(), backoffUntil: new Date(at.getTime() + wait).toISOString() }); } catch { /* best effort */ }
+    }
     return `error: ${msg.slice(0, 100)}`;
   }
 }
