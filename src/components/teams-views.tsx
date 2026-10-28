@@ -74,8 +74,8 @@ export function TeamProfile({ code }: { code: string }) {
       <TeamForm code={code} />
       {t.players && t.players.length > 0 && (
         <Section eyebrow="Roster" title="Players">
-          <ul className="grid gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card p-4"><p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
-          <p className="mt-2 text-xs text-fog">Roster from Riot team data; players marked unconfirmed are not verified as the starting five.</p>
+          <ul className="grid gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card overflow-hidden p-4">{p.photo ? <PlayerPhoto src={p.photo} name={p.name} /> : null}<p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
+          <p className="mt-2 text-xs text-fog">Roster and player photos from Riot team data (a player without a published photo shows none); players marked unconfirmed are not verified as the starting five.</p>
         </Section>
       )}
       <TeamDetails team={t} stats={snap.gameStats} />
@@ -126,3 +126,11 @@ export function CompareView({ a: ia, b: ib }: { a?: string; b?: string }) {
   );
 }
 export type { Team };
+
+/** Official Riot player photo. Hides itself if the image fails to load; the name stays on the card. */
+function PlayerPhoto({ src, name }: { src: string; name: string }) {
+  const [bad, setBad] = useState(false);
+  if (bad) return null;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt={`${name}, player photo`} width={392} height={310} loading="lazy" decoding="async" onError={() => setBad(true)} className="mb-3 aspect-[5/4] w-full rounded-lg bg-raise object-cover object-top" />;
+}

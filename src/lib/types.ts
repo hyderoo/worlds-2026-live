@@ -69,7 +69,7 @@ export const GameStatsSchema = z.object({
 });
 export type GameStats = z.infer<typeof GameStatsSchema>;
 
-export const PlayerSchema = z.object({ role: z.string(), name: z.string(), official: z.boolean().optional() });
+export const PlayerSchema = z.object({ role: z.string(), name: z.string(), official: z.boolean().optional(), photo: z.string().url().optional() });
 export const TeamSchema = z.object({
   code: z.string(),
   name: z.string(),
