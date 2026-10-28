@@ -386,7 +386,58 @@
      "result": "5th - 8th"
     }
    ],
-   "partial": true
+   "note": "From Liquipedia's Anyone's Legend results page, which lists no other Worlds.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/Anyone%27s_Legend/Results"
+   ]
+  },
+  "KC": {
+   "liquipediaName": "Karmine Corp",
+   "years": [],
+   "none": true,
+   "note": "Liquipedia's Karmine Corp results page lists no earlier World Championship.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/Karmine_Corp/Results"
+   ]
+  },
+  "FUR": {
+   "liquipediaName": "FURIA",
+   "years": [],
+   "none": true,
+   "note": "Liquipedia's FURIA results page lists no earlier World Championship.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/FURIA/Results"
+   ]
+  },
+  "LOS": {
+   "liquipediaName": "LOS",
+   "years": [],
+   "none": true,
+   "note": "Liquipedia's LOS results page lists no earlier World Championship.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/LOS/Results"
+   ]
+  },
+  "MVK": {
+   "liquipediaName": "MVK Esports",
+   "years": [
+    {
+     "year": 2024,
+     "result": "19th - 20th"
+    }
+   ],
+   "note": "From Liquipedia's MVK Esports results page, which lists no other Worlds.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/MVK_Esports/Results"
+   ]
+  },
+  "TSW": {
+   "liquipediaName": "Team Secret Whales",
+   "years": [],
+   "unavailable": "Liquipedia's Team Secret Whales page could not be read (access refused). Liquipedia says Secret Whales was created in December 2024 by a merger of Team Secret and Team Whales; Team Whales reached Worlds 2023 (17th - 18th). A merger is not counted as the same organization, so nothing is shown.",
+   "sources": [
+    "https://liquipedia.net/leagueoflegends/Team_Whales"
+   ]
   }
  }
 }

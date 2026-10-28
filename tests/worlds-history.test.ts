@@ -16,8 +16,10 @@ describe("worlds history", () => {
     }
   });
   it("does not invent history for teams not in the table", () => {
-    expect(historyFor("KC")).toBeNull();
-    expect(historyFor("FUR")).toBeNull();
+    expect(historyFor("TSW")!.years).toEqual([]);
+    expect(historyFor("TSW")!.unavailable).toMatch(/merger/);
+    expect(historyFor("KC")!.none).toBe(true);
+    expect(historyFor("MVK")!.years).toEqual([{ year: 2024, result: "19th - 20th" }]);
   });
   it("Movistar KOI carries the rebrand note", () => {
     expect(historyFor("MKOI")!.years.at(-1)).toMatchObject({ year: 2025, asName: "Movistar KOI" });

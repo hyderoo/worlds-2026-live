@@ -41,6 +41,9 @@ function WorldsHistory({ code }: { code: string }) {
   const h = historyFor(code);
   const credit = <p className="mt-2 text-xs text-fog">Unofficial: from Liquipedia&apos;s <a className="underline" href={HISTORY_SOURCE} target="_blank" rel="noreferrer noopener">World Championship results by year</a> (CC-BY-SA 3.0), read {HISTORY_RETRIEVED}. Not verified by Riot. Years not shown are years the team did not reach Worlds, or were not listed. Worlds 2026 results are on the schedule.</p>;
   if (!h) return <><p className="text-sm text-fog">Earlier Worlds appearances: not read for this team. Liquipedia&apos;s results table did not list this organization under a name we could match, so nothing is shown rather than a guess.</p>{credit}</>;
+  const src = h.sources && h.sources.length > 0 && <> Also read: {h.sources.map((u, i) => <a key={u} className="underline" href={u} target="_blank" rel="noreferrer noopener">{i === 0 ? "team page on Liquipedia" : `source ${i + 1}`}</a>)}.</>;
+  if (h.unavailable) return <><p className="text-sm text-fog">Earlier Worlds appearances: unavailable. {h.unavailable}</p><p className="mt-2 text-xs text-fog">{src}</p>{credit}</>;
+  if (h.none) return <><div className="card p-4"><p className="text-sm">No earlier Worlds appearance listed on Liquipedia.</p>{h.note && <p className="mt-2 text-xs text-fog">{h.note}</p>}</div><p className="mt-2 text-xs text-fog">{src}</p>{credit}</>;
   const s = summarize(h);
   return (
     <>
@@ -48,7 +51,7 @@ function WorldsHistory({ code }: { code: string }) {
         <p className="text-sm"><span className="font-semibold tabular-nums">{s.appearances}</span> earlier Worlds appearance{s.appearances === 1 ? "" : "s"}{s.titles.length > 0 && <> · <span className="font-semibold text-gold">{s.titles.length} title{s.titles.length === 1 ? "" : "s"}</span> ({s.titles.join(", ")})</>}{s.runnerUp.length > 0 && <> · runner-up {s.runnerUp.join(", ")}</>}</p>
         <ul className="mt-3 flex flex-wrap gap-1.5">{[...h.years].reverse().map((y) => <li key={y.year} className="rounded-md border border-line px-2 py-1 text-xs"><span className="tabular-nums text-fog">{y.year}</span> <span className={y.result === "1st" ? "font-semibold text-gold" : ""}>{y.result}</span>{y.asName && <span className="text-fog"> as {y.asName}</span>}</li>)}</ul>
         {h.note && <p className="mt-2 text-xs text-fog">{h.note}</p>}
-        {h.partial && <p className="mt-2 text-xs text-fog">Only the most recent appearance was read for this team.</p>}
+        {src && <p className="mt-2 text-xs text-fog">{src}</p>}
       </div>
       {credit}
     </>
