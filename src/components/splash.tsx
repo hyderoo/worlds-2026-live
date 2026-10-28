@@ -5,13 +5,10 @@ import { usePathname } from "next/navigation";
 /**
  * Short in-app intro for installed-app launches. Champion splash art comes straight from Riot's Data Dragon CDN
  * (hotlinked, not modified). The overlay sits on top of already-rendered content, so it never delays it.
- * Shown only in standalone (installed) mode on every app launch or full page load, and again when the app is brought back after 45s or more in the background (not on in-app navigation), skipped if reduced motion is on.
+ * Shown only in standalone (installed) mode on every app launch or full page load, and again each time the app returns to the foreground (not on in-app navigation), skipped if reduced motion is on.
  * `?splash=1` forces it for testing.
  */
 const CHAMPS = ["Ahri", "Jinx", "Yasuo", "Lux", "Ezreal", "Teemo", "Kaisa", "Sett", "Viego", "Akali", "Leona", "Thresh"];
-
-/** Away this long (while hidden) counts as leaving and reopening the app. */
-const RESUME_AFTER_MS = 45_000;
 
 export function Splash() {
   const [champ, setChamp] = useState<string | null>(null);
@@ -35,13 +32,14 @@ export function Splash() {
       timers.push(setTimeout(() => { setChamp(null); playing = false; }, 2000));
     };
     play();
-    // Resuming a backgrounded installed app does not reload the page, so replay after it has been away a while.
-    // A short absence (notification shade, app switcher peek, permission prompt) does not count as a new open.
-    let hiddenAt = 0;
+    // Bringing a backgrounded installed app back to the foreground does not reload the page, so each hidden -> visible
+    // change counts as a reopen. The browser cannot tell a real reopen from a brief hide (some phones also hide the page
+    // for the app switcher), so those can replay it too. Never starts a second intro while one is playing.
+    let wasHidden = false;
     const onVis = () => {
-      if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
-      if (hiddenAt && Date.now() - hiddenAt >= RESUME_AFTER_MS && location.pathname !== "/next") play();
-      hiddenAt = 0;
+      if (document.visibilityState === "hidden") { wasHidden = true; return; }
+      if (wasHidden && location.pathname !== "/next") play();
+      wasHidden = false;
     };
     document.addEventListener("visibilitychange", onVis);
     return () => { document.removeEventListener("visibilitychange", onVis); timers.forEach(clearTimeout); };
