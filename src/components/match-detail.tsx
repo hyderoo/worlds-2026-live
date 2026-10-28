@@ -7,7 +7,7 @@ import { fmtDateTime } from "@/lib/format";
 import { buildIcs } from "@/lib/ics";
 import { usePrefs, useSpoiler, useT } from "@/lib/prefs";
 import { ChampIcon, PlayerAvatar } from "@/components/champ";
-import { photoFor } from "@/lib/player-photo";
+import { bareName, photoFor } from "@/lib/player-photo";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { autoSummary } from "@/lib/recap-text";
 import { hasTbd } from "@/lib/match-state";
@@ -139,7 +139,7 @@ export function MatchDetail({ id }: { id: string }) {
                     <div className="grid gap-2 text-sm sm:grid-cols-2">
                       {([s.blue, s.red] as const).map((side, i) => (
                         <div key={i}><p className="mb-1 text-xs text-fog">{i === 0 ? "Blue" : "Red"} side · {side.team}</p>
-                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex items-center justify-between gap-2"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={champ} size={22} /> {champName(champ)}</span><span className="flex min-w-0 items-center gap-1.5 text-fog"><PlayerAvatar src={photoFor(snap.teams, side.team, player)} name={player} size={26} /><span className="truncate">{player}</span></span></li>)}</ul>
+                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex items-center justify-between gap-2"><span className="whitespace-nowrap"><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={champ} size={22} /> {champName(champ)}</span><span className="flex min-w-0 items-center gap-1.5 text-fog"><PlayerAvatar src={photoFor(snap.teams, side.team, player)} name={player} size={26} /><span className="truncate">{bareName(side.team, player)}</span></span></li>)}</ul>
                           <div className="mt-2" data-testid={`bans-${i === 0 ? "blue" : "red"}`}><p className="mb-1 text-xs text-fog">Bans</p>
                             {s.bans ? <ul className="flex flex-wrap gap-1.5" aria-label={`Bans, ${side.team}`}>{(i === 0 ? s.bans.blue : s.bans.red).map((c, k) => <li key={`${c}-${k}`} className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs text-fog"><ChampIcon id={c} size={18} />{champName(c)}</li>)}</ul> : <p className="text-xs text-fog">Not available for this game.</p>}
                           </div></div>
