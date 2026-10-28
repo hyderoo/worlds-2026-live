@@ -50,3 +50,6 @@ export function countdownParts(targetIso: string, now = Date.now()) {
 }
 
 export const matchTitle = (a: string, b: string) => `${a} vs ${b}`;
+
+/** Compact form for narrow screens: drops the weekday and comma ("30 Oct 03:00 WIB"), same timezone. */
+export const fmtDateTimeShort = (iso: string, tz: string) => fmtDateTime(iso, tz).replace(/^[^\d]*/, "").replace(",", "");

@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { useSnapshot } from "./providers";
 import { Countdown, Empty, MatchCard, Section, StateBadge, TeamLogo } from "./ui";
 import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-state";
-import { fmtDateTime, tzLabel } from "@/lib/format";
+import { fmtDateTime, fmtDateTimeShort, tzLabel } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
 import { HeroArtwork } from "@/components/hero-artwork";
 import { PrizePoolCard } from "@/components/prize-pool";
@@ -49,7 +49,7 @@ export function HomeView() {
       <PrizePoolCard prize={snap.prize} />
 
       <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-5 [&>*]:min-w-0">
-        <div className="card p-6 lg:col-span-3">
+        <div className="card p-4 sm:p-6 lg:col-span-3">
           {live.length > 0 ? (
             <>
               <p className="eyebrow mb-3 !text-ember">Live now</p>
@@ -76,15 +76,15 @@ export function HomeView() {
             <Empty title="No upcoming match with confirmed teams">Teams for the next rounds are decided by results. This updates automatically.</Empty>
           )}
         </div>
-        <div className="card p-6 lg:col-span-2">
+        <div className="card p-4 sm:p-6 lg:col-span-2">
           <p className="eyebrow mb-3">Coming up</p>
           <ul className="grid gap-3">
             {upcoming.length === 0 && <li className="text-sm text-fog">Nothing with confirmed teams yet.</li>}
             {upcoming.map((m) => (
               <li key={m.id}>
-                <Link href={`/matches/${m.id}`} className="flex items-center justify-between gap-3 rounded-lg p-2 hover:bg-white/5">
-                  <span className="flex items-center gap-2"><TeamLogo team={m.teams[0]} size={24} />{m.teams[0].code}<span className="text-fog">vs</span><TeamLogo team={m.teams[1]} size={24} />{m.teams[1].code}</span>
-                  <span className="text-xs text-fog">{fmtDateTime(m.startTime, tz)}</span>
+                <Link href={`/matches/${m.id}`} className="flex items-center justify-between gap-2 rounded-lg p-1.5 hover:bg-white/5 sm:gap-3 sm:p-2">
+                  <span className="flex min-w-0 items-center gap-2"><TeamLogo team={m.teams[0]} size={24} />{m.teams[0].code}<span className="text-fog">vs</span><TeamLogo team={m.teams[1]} size={24} />{m.teams[1].code}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs text-fog"><span className="sm:hidden">{fmtDateTimeShort(m.startTime, tz)}</span><span className="hidden sm:inline">{fmtDateTime(m.startTime, tz)}</span></span>
                 </Link>
               </li>
             ))}

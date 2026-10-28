@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import clsx from "clsx";
-import { countdownParts, fmtDateTime } from "@/lib/format";
+import { countdownParts, fmtDateTime, fmtDateTimeShort } from "@/lib/format";
 import { useSpoiler, useT } from "@/lib/prefs";
 import type { Match, MatchState, Team, TeamSide } from "@/lib/types";
 
@@ -63,8 +63,8 @@ export function MatchCard({ m, tz, compact }: { m: Match; tz: string; compact?: 
   return (
     <Link href={`/matches/${m.id}`} className={clsx("card group block p-4 transition hover:border-violet-dim hover:bg-white/[0.04]", m.state === "live" && "border-ember/50")}>
       <div className="mb-3 flex items-center justify-between gap-2 text-xs text-fog">
-        <span>{fmtDateTime(m.startTime, tz)}</span>
-        <span className="flex items-center gap-2">
+        <span className="whitespace-nowrap"><span className="sm:hidden">{fmtDateTimeShort(m.startTime, tz)}</span><span className="hidden sm:inline">{fmtDateTime(m.startTime, tz)}</span></span>
+        <span className="flex items-center gap-2 whitespace-nowrap">
           <span>{m.block !== m.stage ? m.block : m.stage} · Bo{m.bestOf}</span>
           {m.source === "seed" && <span title={lang === "id" ? "Pairing sesuai hasil draw show Swiss R2, diverifikasi dari rekaman broadcast; feed resmi lolesports belum memuatnya. Otomatis diganti begitu feed terbit." : "Pairing matches the Swiss R2 draw show, verified against broadcast footage; the official lolesports feed has not published it yet. Replaced automatically once the feed catches up."} className="rounded-full border border-dashed border-gold/50 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-gold/80">{lang === "id" ? "draw terverifikasi" : "verified draw"}</span>}
           <StateBadge state={m.state} />
