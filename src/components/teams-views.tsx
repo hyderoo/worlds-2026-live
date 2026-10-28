@@ -56,19 +56,20 @@ export function TeamProfile({ code }: { code: string }) {
   const rec = computeRecords(snap.matches).find((r) => r.code === code);
   const on = prefs.watch.includes(code);
   return (
-    <article className="pt-10">
-      <div className="card flex flex-wrap items-center gap-6 p-6 sm:p-10">
-        <TeamLogo team={t} size={96} />
-        <div className="flex-1">
+    <article className="pt-5 sm:pt-10">
+      <div className="card flex flex-wrap items-center gap-x-4 gap-y-3 p-4 sm:gap-6 sm:p-10">
+        <div className="shrink-0 sm:hidden"><TeamLogo team={t} size={64} /></div>
+        <div className="hidden shrink-0 sm:block"><TeamLogo team={t} size={96} /></div>
+        <div className="min-w-0 flex-1">
           <p className="eyebrow mb-1">{REGION_BY_LEAGUE[t.league ?? ""] ?? t.league} · {t.league}</p>
-          <h1 className="display text-4xl sm:text-6xl">{t.name}</h1>
-          <p className="mt-2 text-fog">Qualified into the {t.entry === "Play-In" ? "Play-In stage" : "Swiss stage"}.</p>
+          <h1 className="display text-3xl leading-tight sm:text-6xl">{t.name}</h1>
+          <p className="mt-1 text-sm text-fog sm:mt-2 sm:text-base">Qualified into the {t.entry === "Play-In" ? "Play-In stage" : "Swiss stage"}.</p>
         </div>
-        <button aria-pressed={on} onClick={() => toggleWatch(code)} className={`rounded-full border px-5 py-2 text-sm ${on ? "border-gold bg-gold/10 text-gold" : "border-line hover:text-gold"}`}>{on ? "Following" : "Follow team"}</button>
+        <button aria-pressed={on} onClick={() => toggleWatch(code)} className={`w-full rounded-full border px-5 py-2 text-sm sm:w-auto ${on ? "border-gold bg-gold/10 text-gold" : "border-line hover:text-gold"}`}>{on ? "Following" : "Follow team"}</button>
       </div>
-      <div className="mt-4"><SpoilerGate what="Records"><div className="grid gap-4 sm:grid-cols-4">
+      <div className="mt-4"><SpoilerGate what="Records"><div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {[["Series won", rec?.w ?? 0], ["Series lost", rec?.l ?? 0], ["Games won", rec?.gw ?? 0], ["Games lost", rec?.gl ?? 0]].map(([l, v]) => (
-          <div key={l as string} className="card p-5"><p className="display text-4xl tabular-nums">{v}</p><p className="eyebrow !text-fog">{l}</p></div>
+          <div key={l as string} className="card p-4 sm:p-5"><p className="display text-3xl tabular-nums sm:text-4xl">{v}</p><p className="eyebrow !text-fog">{l}</p></div>
         ))}
       </div></SpoilerGate></div>
       <TeamForm code={code} />
