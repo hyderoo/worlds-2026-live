@@ -5,11 +5,10 @@ import { usePathname } from "next/navigation";
 /**
  * Short in-app intro for installed-app launches. Champion splash art comes straight from Riot's Data Dragon CDN
  * (hotlinked, not modified). The overlay sits on top of already-rendered content, so it never delays it.
- * Shown only in standalone (installed) mode, skipped if shown in the last 30 minutes or if reduced motion is on.
+ * Shown only in standalone (installed) mode on every app launch or full page load (not on in-app navigation), skipped if reduced motion is on.
  * `?splash=1` forces it for testing.
  */
 const CHAMPS = ["Ahri", "Jinx", "Yasuo", "Lux", "Ezreal", "Teemo", "Kaisa", "Sett", "Viego", "Akali", "Leona", "Thresh"];
-const KEY = "w26.splash.at";
 
 export function Splash() {
   const [champ, setChamp] = useState<string | null>(null);
@@ -22,10 +21,6 @@ export function Splash() {
     const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!force && (!standalone || reduce)) return;
-    let last = 0;
-    try { last = Number(localStorage.getItem(KEY) || 0); } catch {}
-    if (!force && Date.now() - last < 30 * 60_000) return;
-    try { localStorage.setItem(KEY, String(Date.now())); } catch {}
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setChamp(CHAMPS[Math.floor(Math.random() * CHAMPS.length)] ?? "Teemo");
     const a = setTimeout(() => setOut(true), 1500);
