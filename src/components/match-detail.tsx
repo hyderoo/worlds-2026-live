@@ -130,7 +130,7 @@ export function MatchDetail({ id }: { id: string }) {
               const s = stats.find((x) => x.id === g.id || x.n === g.n);
               const vod = g.vods.find((v) => v.locale.startsWith("en")) ?? g.vods[0];
               return (
-                <div key={g.id} className="card p-4">
+                <div key={g.id} className="card p-3 sm:p-4">
                   <div className="mb-2 flex items-center justify-between"><strong>Game {g.n}</strong>
                     <span className="flex items-center gap-3 text-xs text-fog">{s?.patch && <span>Patch {s.patch.split(".").slice(0, 2).join(".")}</span>}{vod && <a className="text-gold underline" target="_blank" rel="noopener noreferrer" href={`https://www.youtube.com/watch?v=${encodeURIComponent(vod.parameter)}`}>Watch VOD</a>}<span>{g.state}</span></span>
                   </div>
