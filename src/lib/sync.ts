@@ -1,10 +1,9 @@
 import { fetchGameStats, fetchGames, fetchUpstream, fingerprint } from "./upstream";
 import { refreshLiquipedia } from "./liquipedia";
-import { refreshBans } from "./lp-bans";
-import seedGames from "@/data/games-seed.json";
+import { refreshBansFromStore } from "./lp-bans";
 import { sendDueNotifications } from "./push";
 import type { Store } from "./store";
-import type { GameStats, Match, SyncRun } from "./types";
+import type { Match, SyncRun } from "./types";
 
 export type SyncDeps = {
   fetchUpstream: typeof fetchUpstream;
@@ -75,12 +74,11 @@ export async function runSync(store: Store, trigger: string, deps: Partial<SyncD
     if (trigger !== "lazy" && !deps.fetchUpstream) await sendDueNotifications(store, [...[...existing.values()].map((e) => byId.get(e.id) ?? e), ...[...byId.values()].filter((m) => !existing.has(m.id))], d.now()).catch(() => undefined);
     // Unofficial secondary source, cron/manual ticks only; never affects the official sync result.
     if (trigger !== "lazy" && !deps.fetchUpstream) {
-      const lp = await refreshLiquipedia(store).catch(() => "error");
+      const bm = (await store.loadExtras().catch((): Record<string, unknown> => ({})))["__lpb_meta"] as { lastRequestAt?: string } | undefined;
+      const bansBusy = !!bm?.lastRequestAt && d.now().getTime() - Date.parse(bm.lastRequestAt) < 35_000;
+      const lp = bansBusy ? "throttled" : await refreshLiquipedia(store).catch(() => "error");
       // Bans step only when the roster step made no request (combined rate stays under one request per 35 s).
-      if (/^(throttled|backoff|up to date|disabled)/.test(lp)) {
-        const ex = await store.loadExtras().catch((): Record<string, unknown> => ({}));
-        await refreshBans(store, { ...(seedGames as unknown as Record<string, GameStats[]>), ...(await store.loadGameStats()) }, { lastOtherRequestAt: (ex["__lp_meta"] as { lastRequestAt?: string } | undefined)?.lastRequestAt }).catch(() => undefined);
-      }
+      if (/^(throttled|backoff|up to date|disabled)/.test(lp)) await refreshBansFromStore(store);
     }
   } catch (e) {
     run.error = e instanceof Error ? e.message.slice(0, 300) : "unknown error";

@@ -5,6 +5,7 @@ import { getStore } from "@/lib/store";
 import { buildSnapshot } from "@/lib/snapshot";
 import { sendDueNotifications } from "@/lib/push";
 import { runSync } from "@/lib/sync";
+import { refreshBansFromStore } from "@/lib/lp-bans";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -32,7 +33,9 @@ async function tick(req: Request) {
     const run = await runSync(getStore(), "tick");
     sync = { ran: true, ok: run.ok };
   }
-  return NextResponse.json({ ok: true, sent, sync }, { headers: { "cache-control": "no-store" } });
+  // Liquipedia bans backfill: self-throttled to one request per 35 s, no-op once every stored game has bans.
+  const bans = await refreshBansFromStore(getStore());
+  return NextResponse.json({ ok: true, sent, sync, bans }, { headers: { "cache-control": "no-store" } });
 }
 export const GET = tick;
 export const POST = tick;

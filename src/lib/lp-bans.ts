@@ -1,3 +1,4 @@
+import seedGames from "@/data/games-seed.json";
 import type { Store } from "./store";
 import type { GameBans, GameStats } from "./types";
 
@@ -152,4 +153,15 @@ export function attachAll(stats: Record<string, GameStats[]>, pages: LpPage[]): 
   const out: Record<string, GameStats[]> = {};
   for (const [id, gs] of Object.entries(stats)) out[id] = attachBans(gs, pages);
   return out;
+}
+
+/** Same as refreshBans, loading stored plus seeded game stats and the roster step's last request time itself. */
+export async function refreshBansFromStore(store: Store): Promise<string> {
+  try {
+    const [stored, extras] = await Promise.all([store.loadGameStats(), store.loadExtras()]);
+    const stats = { ...(seedGames as unknown as Record<string, GameStats[]>), ...stored };
+    return await refreshBans(store, stats, { lastOtherRequestAt: (extras["__lp_meta"] as { lastRequestAt?: string } | undefined)?.lastRequestAt });
+  } catch (e) {
+    return `error: ${e instanceof Error ? e.message.slice(0, 100) : "unknown"}`;
+  }
 }
