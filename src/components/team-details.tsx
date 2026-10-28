@@ -2,6 +2,7 @@
 import type { GameStats, Team } from "@/lib/types";
 import { ChampIcon } from "@/components/champ";
 import { ROLE_LABEL, champName } from "@/lib/champions";
+import { historyFor, summarize, HISTORY_SOURCE, HISTORY_RETRIEVED } from "@/lib/worlds-history";
 
 type Agg = { player: string; role: string; games: number; champs: Map<string, number> };
 
@@ -34,6 +35,24 @@ const cap = (s: string) => s.replace(/\b\w/g, (c) => c.toUpperCase());
 
 function Sec({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
   return <section className="mt-8"><p className="eyebrow mb-1">{eyebrow}</p><h2 className="display mb-3 text-2xl">{title}</h2>{children}</section>;
+}
+
+function WorldsHistory({ code }: { code: string }) {
+  const h = historyFor(code);
+  const credit = <p className="mt-2 text-xs text-fog">Unofficial: from Liquipedia&apos;s <a className="underline" href={HISTORY_SOURCE} target="_blank" rel="noreferrer noopener">World Championship results by year</a> (CC-BY-SA 3.0), read {HISTORY_RETRIEVED}. Not verified by Riot. Years not shown are years the team did not reach Worlds, or were not listed. Worlds 2026 results are on the schedule.</p>;
+  if (!h) return <><p className="text-sm text-fog">Earlier Worlds appearances: not read for this team. Liquipedia&apos;s results table did not list this organization under a name we could match, so nothing is shown rather than a guess.</p>{credit}</>;
+  const s = summarize(h);
+  return (
+    <>
+      <div className="card p-4">
+        <p className="text-sm"><span className="font-semibold tabular-nums">{s.appearances}</span> earlier Worlds appearance{s.appearances === 1 ? "" : "s"}{s.titles.length > 0 && <> · <span className="font-semibold text-gold">{s.titles.length} title{s.titles.length === 1 ? "" : "s"}</span> ({s.titles.join(", ")})</>}{s.runnerUp.length > 0 && <> · runner-up {s.runnerUp.join(", ")}</>}</p>
+        <ul className="mt-3 flex flex-wrap gap-1.5">{[...h.years].reverse().map((y) => <li key={y.year} className="rounded-md border border-line px-2 py-1 text-xs"><span className="tabular-nums text-fog">{y.year}</span> <span className={y.result === "1st" ? "font-semibold text-gold" : ""}>{y.result}</span>{y.asName && <span className="text-fog"> as {y.asName}</span>}</li>)}</ul>
+        {h.note && <p className="mt-2 text-xs text-fog">{h.note}</p>}
+        {h.partial && <p className="mt-2 text-xs text-fog">Only the most recent appearance was read for this team.</p>}
+      </div>
+      {credit}
+    </>
+  );
 }
 
 export function TeamDetails({ team, stats }: { team: Team; stats: Record<string, GameStats[]> }) {
@@ -69,7 +88,7 @@ export function TeamDetails({ team, stats }: { team: Team; stats: Record<string,
       </Sec>
 
       <Sec eyebrow="Tournament history" title="Worlds history">
-        <p className="text-sm text-fog">Worlds 2026 results are listed below from the official schedule. Earlier Worlds appearances and titles: unavailable (not in the official feed, and not read from the unofficial source).</p>
+        <WorldsHistory code={team.code} />
       </Sec>
 
       <Sec eyebrow="Social" title="Team links">

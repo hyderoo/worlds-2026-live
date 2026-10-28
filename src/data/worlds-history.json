@@ -1,0 +1,386 @@
+{
+ "source": "https://liquipedia.net/leagueoflegends/World_Championship",
+ "license": "CC-BY-SA 3.0",
+ "retrieved": "2026-10-29",
+ "teams": {
+  "GEN": {
+   "liquipediaName": "Gen.G Esports",
+   "years": [
+    {
+     "year": 2018,
+     "result": "13th - 16th"
+    },
+    {
+     "year": 2020,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2021,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2022,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2023,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2024,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2025,
+     "result": "3rd - 4th"
+    }
+   ]
+  },
+  "HLE": {
+   "liquipediaName": "Hanwha Life Esports",
+   "years": [
+    {
+     "year": 2021,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2024,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2025,
+     "result": "5th - 8th"
+    }
+   ]
+  },
+  "T1": {
+   "liquipediaName": "T1",
+   "years": [
+    {
+     "year": 2015,
+     "result": "1st"
+    },
+    {
+     "year": 2016,
+     "result": "1st"
+    },
+    {
+     "year": 2017,
+     "result": "2nd"
+    },
+    {
+     "year": 2019,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2021,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2022,
+     "result": "2nd"
+    },
+    {
+     "year": 2023,
+     "result": "1st"
+    },
+    {
+     "year": 2024,
+     "result": "1st"
+    },
+    {
+     "year": 2025,
+     "result": "1st"
+    }
+   ],
+   "note": "Liquipedia lists SK Telecom T1 K (2013 champion) as a separate row, so it is not counted here."
+  },
+  "DK": {
+   "liquipediaName": "Dplus",
+   "years": [
+    {
+     "year": 2019,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2020,
+     "result": "1st"
+    },
+    {
+     "year": 2021,
+     "result": "2nd"
+    },
+    {
+     "year": 2022,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2023,
+     "result": "9th - 11th"
+    },
+    {
+     "year": 2024,
+     "result": "9th - 11th"
+    }
+   ],
+   "note": "Row title on Liquipedia is Dplus."
+  },
+  "BLG": {
+   "liquipediaName": "Bilibili Gaming",
+   "years": [
+    {
+     "year": 2023,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2024,
+     "result": "2nd"
+    },
+    {
+     "year": 2025,
+     "result": "9th - 11th"
+    }
+   ]
+  },
+  "TES": {
+   "liquipediaName": "Top Esports",
+   "years": [
+    {
+     "year": 2020,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2022,
+     "result": "9th - 10th"
+    },
+    {
+     "year": 2024,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2025,
+     "result": "3rd - 4th"
+    }
+   ]
+  },
+  "IG": {
+   "liquipediaName": "Invictus Gaming",
+   "years": [
+    {
+     "year": 2012,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2015,
+     "result": "14th - 16th"
+    },
+    {
+     "year": 2018,
+     "result": "1st"
+    },
+    {
+     "year": 2019,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2025,
+     "result": "17th"
+    }
+   ]
+  },
+  "G2": {
+   "liquipediaName": "G2 Esports",
+   "years": [
+    {
+     "year": 2016,
+     "result": "13th - 16th"
+    },
+    {
+     "year": 2017,
+     "result": "9th - 11th"
+    },
+    {
+     "year": 2018,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2019,
+     "result": "2nd"
+    },
+    {
+     "year": 2020,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2022,
+     "result": "12th - 14th"
+    },
+    {
+     "year": 2023,
+     "result": "9th - 11th"
+    },
+    {
+     "year": 2024,
+     "result": "9th - 11th"
+    },
+    {
+     "year": 2025,
+     "result": "5th - 8th"
+    }
+   ]
+  },
+  "TL": {
+   "liquipediaName": "Team Liquid",
+   "years": [
+    {
+     "year": 2018,
+     "result": "9th - 12th"
+    },
+    {
+     "year": 2019,
+     "result": "9th - 12th"
+    },
+    {
+     "year": 2020,
+     "result": "9th - 12th"
+    },
+    {
+     "year": 2021,
+     "result": "12th - 13th"
+    },
+    {
+     "year": 2023,
+     "result": "15th - 16th"
+    },
+    {
+     "year": 2024,
+     "result": "9th - 11th"
+    }
+   ]
+  },
+  "CFO": {
+   "liquipediaName": "CTBC Flying Oyster",
+   "years": [
+    {
+     "year": 2022,
+     "result": "11th - 14th"
+    },
+    {
+     "year": 2023,
+     "result": "19th - 20th"
+    },
+    {
+     "year": 2025,
+     "result": "5th - 8th"
+    }
+   ]
+  },
+  "C9": {
+   "liquipediaName": "Cloud9",
+   "years": [
+    {
+     "year": 2013,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2014,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2015,
+     "result": "9th - 11th"
+    },
+    {
+     "year": 2016,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2017,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2018,
+     "result": "3rd - 4th"
+    },
+    {
+     "year": 2019,
+     "result": "9th - 12th"
+    },
+    {
+     "year": 2021,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2022,
+     "result": "15th - 16th"
+    },
+    {
+     "year": 2023,
+     "result": "12th - 14th"
+    }
+   ]
+  },
+  "LYON": {
+   "liquipediaName": "LYON",
+   "years": [
+    {
+     "year": 2017,
+     "result": "17th - 20th"
+    },
+    {
+     "year": 2020,
+     "result": "19th - 20th"
+    },
+    {
+     "year": 2023,
+     "result": "21st - 22nd"
+    },
+    {
+     "year": 2024,
+     "result": "17th - 18th"
+    }
+   ]
+  },
+  "MKOI": {
+   "liquipediaName": "MAD Lions KOI",
+   "years": [
+    {
+     "year": 2020,
+     "result": "19th - 20th"
+    },
+    {
+     "year": 2021,
+     "result": "5th - 8th"
+    },
+    {
+     "year": 2022,
+     "result": "17th - 18th"
+    },
+    {
+     "year": 2023,
+     "result": "12th - 14th"
+    },
+    {
+     "year": 2024,
+     "result": "15th - 16th"
+    },
+    {
+     "year": 2025,
+     "result": "9th - 11th",
+     "asName": "Movistar KOI"
+    }
+   ],
+   "note": "Listed by Liquipedia as MAD Lions KOI through 2024; Liquipedia's Movistar KOI page records the rebrand in December 2024."
+  },
+  "AL": {
+   "liquipediaName": "Anyone's Legend",
+   "years": [
+    {
+     "year": 2025,
+     "result": "5th - 8th"
+    }
+   ],
+   "partial": true
+  }
+ }
+}
