@@ -25,23 +25,24 @@ export function HomeView() {
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-6 py-14 sm:px-12 sm:py-20 mt-6">
+      <section className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-4 py-6 sm:px-12 sm:py-20 mt-4 sm:mt-6">
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-violet/20 blur-3xl" />
-        <motion.div className="relative grid items-center gap-10 lg:grid-cols-[1fr_20rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+        <motion.div className="relative grid items-center gap-5 sm:gap-10 lg:grid-cols-[1fr_20rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
           <div>
-          <p className="eyebrow mb-4">League of Legends World Championship</p>
-          <h1 className="display text-6xl sm:text-8xl">Worlds <span className="text-gold">2026</span></h1>
-          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3 text-sm">
+          <p className="eyebrow mb-2 sm:mb-4">League of Legends World Championship</p>
+          <h1 className="display text-5xl sm:text-8xl">Worlds <span className="text-gold">2026</span></h1>
+          <p className="mt-3 max-w-xl text-base text-fog sm:mt-5 sm:text-lg">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm sm:mt-8 sm:gap-3">
             <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
             {snap.prize && <span className="rounded-full border border-line px-3 py-1 text-fog">Prize pool: ${snap.prize.totalUsd.toLocaleString("en-US")} (unofficial)</span>}
             {STAGES.map((s) => {
               const p = stageProgress(snap.matches, s);
-              return <span key={s} className="rounded-full border border-line px-3 py-1 text-fog">{s}: {p.done}/{p.total} played</span>;
+              return <span key={s} className="hidden rounded-full border border-line px-3 py-1 text-fog sm:inline">{s}: {p.done}/{p.total} played</span>;
             })}
+            <p className="w-full text-xs text-fog sm:hidden">{STAGES.map((s) => { const p = stageProgress(snap.matches, s); return `${s} ${p.done}/${p.total}`; }).join(" · ")} played</p>
           </div>
           </div>
-          <div className="order-first mx-auto w-56 lg:order-none lg:w-full"><HeroArtwork /></div>
+          <div className="order-first mx-auto w-full max-w-sm lg:order-none"><HeroArtwork /></div>
         </motion.div>
       </section>
 

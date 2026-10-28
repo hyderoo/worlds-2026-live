@@ -91,7 +91,7 @@ export function Freshness() {
   const dot = status === "ok" ? "bg-emerald-400" : status === "degraded" ? "bg-gold" : status === "unknown" ? "bg-fog" : "bg-ember";
   const label = status === "ok" ? "Synced" : status === "degraded" ? "Source error, showing cached data" : status === "offline" ? "You are offline, showing last loaded data" : status === "down" ? "Source unavailable" : "Awaiting first sync";
   return (
-    <div className="group relative">
+    <div className={clsx("group relative", status === "ok" && "hidden sm:block")}>
       <button className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs text-fog hover:text-snow" aria-describedby="fresh-pop">
         <span className={clsx("size-2 rounded-full", dot, refreshing && "live-dot")} aria-hidden />
         <span className="hidden sm:inline">{label}</span>
