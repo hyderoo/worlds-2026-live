@@ -55,7 +55,11 @@ export const PickSchema = z.tuple([z.string(), z.string(), z.string()]);
 export const SideSumSchema = z.object({ gold: z.number(), kills: z.number(), towers: z.number(), barons: z.number(), dragons: z.array(z.string()), inhibitors: z.number().optional() });
 export const GameSumSchema = z.object({ at: z.string(), state: z.string(), blue: SideSumSchema, red: SideSumSchema });
 export type GameSum = z.infer<typeof GameSumSchema>;
+/** Champion bans per side, in ban order, as Data Dragon ids. Only set when read from a source and matched to this exact game. */
+export const GameBansSchema = z.object({ source: z.literal("liquipedia"), page: z.string(), fetchedAt: z.string(), blue: z.array(z.string()), red: z.array(z.string()) });
+export type GameBans = z.infer<typeof GameBansSchema>;
 export const GameStatsSchema = z.object({
+  bans: GameBansSchema.optional(),
   sum: GameSumSchema.optional(),
   n: z.number(),
   id: z.string(),

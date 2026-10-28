@@ -1,3 +1,4 @@
+import { attachAll, loadPages } from "./lp-bans";
 import seedTeams from "@/data/teams-seed.json";
 import seedGames from "@/data/games-seed.json";
 import drawSeed from "@/data/swiss-draw-seed.json";
@@ -137,7 +138,7 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
     generatedAt: now.toISOString(),
     matches: live,
     teams: buildTeams(live, extras),
-    gameStats: mergeStats(stats),
+    gameStats: attachAll(mergeStats(stats), loadPages(extras)),
     recaps,
     sync: deriveSync(runs, store.kind),
     staleOverrides: stale,

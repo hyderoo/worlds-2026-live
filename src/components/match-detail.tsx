@@ -122,7 +122,7 @@ export function MatchDetail({ id }: { id: string }) {
       {!(sp.hidden(m.id) && m.state !== "scheduled") && (m.games.length > 0 || stats.length > 0) && (
         <section className="mt-6" aria-labelledby="games">
           <h2 id="games" className="display mb-3 text-2xl">Games</h2>
-          <p className="mb-2 text-sm text-fog">Pick/ban order and bans: unavailable. Riot&apos;s public live stats feed does not include the draft, so none is shown.</p>
+          <p className="mb-2 text-sm text-fog">Bans come from Liquipedia (unofficial, CC-BY-SA 3.0) and are shown only when its draft for that game matches Riot&apos;s picks exactly. Riot&apos;s live stats feed has no draft data, so otherwise bans are marked not available, never guessed.</p>
           <p className="mb-4 text-sm text-fog">Per-game winners are not published in the official schedule feed, so only the series score is shown as a result. Champions come from Riot&apos;s live stats feed. VODs are official broadcasts on YouTube.</p>
           <div className="grid gap-3">
             {(m.games.length ? m.games : stats.map((s) => ({ n: s.n, id: s.id, state: "completed", vods: [] }))).map((g) => {
@@ -138,10 +138,14 @@ export function MatchDetail({ id }: { id: string }) {
                     <div className="grid gap-2 text-sm sm:grid-cols-2">
                       {([s.blue, s.red] as const).map((side, i) => (
                         <div key={i}><p className="mb-1 text-xs text-fog">{i === 0 ? "Blue" : "Red"} side · {side.team}</p>
-                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex items-center justify-between gap-2"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={champ} size={22} /> {champName(champ)}</span><span className="text-fog">{player}</span></li>)}</ul></div>
+                          <ul className="grid gap-0.5">{side.picks.map(([role, champ, player]) => <li key={role} className="flex items-center justify-between gap-2"><span><span className="inline-block w-14 text-fog">{ROLE_LABEL[role] ?? role}</span><ChampIcon id={champ} size={22} /> {champName(champ)}</span><span className="text-fog">{player}</span></li>)}</ul>
+                          <div className="mt-2" data-testid={`bans-${i === 0 ? "blue" : "red"}`}><p className="mb-1 text-xs text-fog">Bans</p>
+                            {s.bans ? <ul className="flex flex-wrap gap-1.5" aria-label={`Bans, ${side.team}`}>{(i === 0 ? s.bans.blue : s.bans.red).map((c, k) => <li key={`${c}-${k}`} className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs text-fog"><ChampIcon id={c} size={18} />{champName(c)}</li>)}</ul> : <p className="text-xs text-fog">Not available for this game.</p>}
+                          </div></div>
                       ))}
                     </div>
                   ) : <p className="text-sm text-fog">Champion data not available for this game yet.</p>}
+                  {s?.bans && <p className="mt-2 text-xs text-fog">Bans: <a className="text-gold underline" target="_blank" rel="noopener noreferrer" href={s.bans.page}>Liquipedia</a> (CC-BY-SA 3.0)</p>}
                 </div>
               );
             })}
