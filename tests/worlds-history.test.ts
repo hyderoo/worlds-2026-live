@@ -3,10 +3,10 @@ import { historyFor, summarize } from "@/lib/worlds-history";
 import seed from "@/data/teams-seed.json";
 
 describe("worlds history", () => {
-  it("T1 has the titles Liquipedia lists and keeps SK Telecom T1 K out", () => {
+  it("T1 has the titles Liquipedia lists and includes the 2013 SK Telecom T1 K title Liquipedia lists on the T1 page", () => {
     const s = summarize(historyFor("T1")!);
-    expect(s.titles).toEqual([2015, 2016, 2023, 2024, 2025]);
-    expect(historyFor("T1")!.note).toMatch(/separate/);
+    expect(s.titles).toEqual([2013, 2015, 2016, 2023, 2024, 2025]);
+    expect(historyFor("T1")!.note).toMatch(/formed out of/);
   });
   it("only keeps real placements", () => {
     for (const t of seed as { code: string }[]) {

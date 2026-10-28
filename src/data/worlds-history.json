@@ -34,7 +34,8 @@
      "year": 2025,
      "result": "3rd - 4th"
     }
-   ]
+   ],
+   "note": "Counted from the Gen.G Esports row (starts 2018, then KSV). Liquipedia says KSV acquired the Samsung Galaxy roster in 2017, which is a roster purchase, so Samsung Galaxy's 2016 and 2017 Worlds are not counted."
   },
   "HLE": {
    "liquipediaName": "Hanwha Life Esports",
@@ -56,6 +57,11 @@
   "T1": {
    "liquipediaName": "T1",
    "years": [
+    {
+     "year": 2013,
+     "result": "1st",
+     "asName": "SK Telecom T1 K"
+    },
     {
      "year": 2015,
      "result": "1st"
@@ -93,7 +99,7 @@
      "result": "1st"
     }
    ],
-   "note": "Liquipedia lists SK Telecom T1 K (2013 champion) as a separate row, so it is not counted here."
+   "note": "Liquipedia's T1 page says T1 was formed out of SK Telecom T1 K and SK Telecom T1 S, and lists the 2013 World Championship among T1's achievements. The SK Telecom T1 S row was not in the part of the results table that could be read, so this may be missing an appearance."
   },
   "DK": {
    "liquipediaName": "Dplus",
@@ -123,7 +129,7 @@
      "result": "9th - 11th"
     }
    ],
-   "note": "Row title on Liquipedia is Dplus."
+   "note": "Counted under Liquipedia's Dplus row as Liquipedia lists it."
   },
   "BLG": {
    "liquipediaName": "Bilibili Gaming",
@@ -370,7 +376,7 @@
      "asName": "Movistar KOI"
     }
    ],
-   "note": "Listed by Liquipedia as MAD Lions KOI through 2024; Liquipedia's Movistar KOI page records the rebrand in December 2024."
+   "note": "Liquipedia's Movistar KOI page records the rebrand from MAD Lions KOI in December 2024, so 2020-2024 are counted under the earlier name."
   },
   "AL": {
    "liquipediaName": "Anyone's Legend",
