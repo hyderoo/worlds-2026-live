@@ -74,7 +74,7 @@ export function TeamProfile({ code }: { code: string }) {
       <TeamForm code={code} />
       {t.players && t.players.length > 0 && (
         <Section eyebrow="Roster" title="Players">
-          <ul className="grid gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card overflow-hidden p-4">{p.photo ? <PlayerPhoto src={p.photo} name={p.name} /> : null}<p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-5">{t.players.map((p) => <li key={p.role} className="card overflow-hidden p-3 sm:p-4">{p.photo ? <PlayerPhoto src={p.photo} name={p.name} /> : null}<p className="eyebrow !text-fog">{ROLE_LABEL[p.role] ?? p.role}</p><p className="mt-1 font-medium">{p.name}</p>{p.official === false && <p className="text-xs text-fog">unconfirmed</p>}</li>)}</ul>
           <p className="mt-2 text-xs text-fog">Roster and player photos from Riot team data (a player without a published photo shows none); players marked unconfirmed are not verified as the starting five.</p>
         </Section>
       )}
