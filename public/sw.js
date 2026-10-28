@@ -1,6 +1,6 @@
 // Worlds 2026 Live service worker: push notifications + a light offline cache.
 // Offline mode only shows the last data you loaded. It never invents anything and the app says when data may be old.
-const V = "w26-v4";
+const V = "w26-v5";
 const STATIC = `${V}-static`;
 const PAGES = `${V}-pages`;
 const MAX_PAGES = 30;
@@ -66,7 +66,7 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("push", (event) => {
   let d = {};
   try { d = event.data ? event.data.json() : {}; } catch { /* ignore */ }
-  event.waitUntil(self.registration.showNotification(d.title || "Worlds 2026", { body: d.body || "", tag: d.tag, icon: "/icon-192.png", badge: "/icon-192.png", data: { url: d.url || "/" } }));
+  event.waitUntil(self.registration.showNotification(d.title || "Worlds 2026", { body: d.body || "", tag: d.tag, icon: "/icon-192.png?v=poro1", badge: "/icon-192.png?v=poro1", data: { url: d.url || "/" } }));
 });
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
