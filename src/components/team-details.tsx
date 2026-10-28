@@ -1,6 +1,7 @@
 "use client";
 import type { GameStats, Team } from "@/lib/types";
-import { ChampIcon } from "@/components/champ";
+import { ChampIcon, PlayerAvatar } from "@/components/champ";
+import { photoFor } from "@/lib/player-photo";
 import { ROLE_LABEL, champName } from "@/lib/champions";
 import { historyFor, summarize, HISTORY_SOURCE, HISTORY_RETRIEVED } from "@/lib/worlds-history";
 
@@ -72,7 +73,7 @@ export function TeamDetails({ team, stats }: { team: Team; stats: Record<string,
       <Sec eyebrow="Roster and staff" title="Squad, substitutes and coaches">
         {!ex ? <p className="text-fog">Substitutes, coaches and analysts: unavailable. The official Riot feed does not list them; the unofficial source has not been read yet.</p> : (
           <div className="card grid gap-6 p-5 sm:grid-cols-3">
-            <div><p className="eyebrow !text-fog mb-2">Starting five</p><ul className="grid gap-1 text-sm">{starters.map((p) => <li key={p.id} className="flex justify-between"><span>{p.id}{p.captain && <span className="ml-1 text-xs text-gold">C</span>}</span><span className="text-fog">{ROLE_LABEL[p.role] ?? p.role}</span></li>)}</ul></div>
+            <div><p className="eyebrow !text-fog mb-2">Starting five</p><ul className="grid gap-1 text-sm">{starters.map((p) => <li key={p.id} className="flex justify-between"><span className="flex items-center gap-2"><PlayerAvatar src={photoFor([team], team.code, p.id)} name={p.id} size={28} />{p.id}{p.captain && <span className="ml-1 text-xs text-gold">C</span>}</span><span className="text-fog">{ROLE_LABEL[p.role] ?? p.role}</span></li>)}</ul></div>
             <div><p className="eyebrow !text-fog mb-2">Substitutes</p>{subs.length === 0 ? <p className="text-sm text-fog">None listed.</p> : <ul className="grid gap-1 text-sm">{subs.map((p) => <li key={p.id} className="flex justify-between"><span>{p.id}</span><span className="text-fog">{ROLE_LABEL[p.role] ?? p.role}</span></li>)}</ul>}</div>
             <div><p className="eyebrow !text-fog mb-2">Coaches and analysts</p>{ex.staff.length === 0 ? <p className="text-sm text-fog">None listed.</p> : <ul className="grid gap-1 text-sm">{ex.staff.map((p) => <li key={p.id} className="flex justify-between"><span>{p.id}</span><span className="text-fog">{cap(p.role)}</span></li>)}</ul>}</div>
           </div>
@@ -84,7 +85,7 @@ export function TeamDetails({ team, stats }: { team: Team; stats: Record<string,
         {agg.games === 0 ? <p className="text-fog">No champion data for this team yet.</p> : (
           <div className="card overflow-x-auto p-2">
             <table className="w-full min-w-[32rem] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-fog"><tr><th className="p-2">Player</th><th className="p-2">Role</th><th className="p-2">Games</th><th className="p-2">Champions played</th></tr></thead>
-              <tbody>{agg.players.map((p) => <tr key={p.player} className="border-t border-line/50"><td className="p-2 font-medium">{p.player}</td><td className="p-2 text-fog">{ROLE_LABEL[p.role] ?? p.role}</td><td className="p-2 tabular-nums">{p.games}</td><td className="p-2"><span className="flex flex-wrap gap-1.5">{[...p.champs.entries()].sort((a, b) => b[1] - a[1]).map(([c, n]) => <span key={c} className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs"><ChampIcon id={c} size={18} />{champName(c)}{n > 1 && <span className="text-fog"> x{n}</span>}</span>)}</span></td></tr>)}</tbody></table>
+              <tbody>{agg.players.map((p) => <tr key={p.player} className="border-t border-line/50"><td className="p-2 font-medium"><span className="flex items-center gap-2"><PlayerAvatar src={photoFor([team], team.code, p.player)} name={p.player} size={28} />{p.player}</span></td><td className="p-2 text-fog">{ROLE_LABEL[p.role] ?? p.role}</td><td className="p-2 tabular-nums">{p.games}</td><td className="p-2"><span className="flex flex-wrap gap-1.5">{[...p.champs.entries()].sort((a, b) => b[1] - a[1]).map(([c, n]) => <span key={c} className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 text-xs"><ChampIcon id={c} size={18} />{champName(c)}{n > 1 && <span className="text-fog"> x{n}</span>}</span>)}</span></td></tr>)}</tbody></table>
           </div>
         )}
         <p className="mt-2 text-xs text-fog">From Riot live stats, {agg.games} game{agg.games === 1 ? "" : "s"} with champion data. KDA and per-game win/loss are not in the feed, so they are not shown. Small sample early in the tournament.</p>
