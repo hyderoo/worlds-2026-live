@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { Empty, Pill, SpoilerGate, StateBadge, TeamLogo } from "./ui";
-import { computeRecords, hasTbd, playInWinner, swissField } from "@/lib/match-state";
+import { sortStandingsRows, computeRecords, hasTbd, playInWinner, swissField, type StandingsSortKey } from "@/lib/match-state";
 import { fmtDateTime } from "@/lib/format";
 import { usePrefs, useT } from "@/lib/prefs";
 import { swissStatus, waitingForSwissDraw } from "@/lib/swiss-progress";
@@ -224,7 +224,7 @@ function Knockouts({ ms, tz, hot, setHot }: { ms: Match[]; tz: string; hot: stri
   );
 }
 
-type SortKey = "w" | "l" | "gd" | "code";
+type SortKey = StandingsSortKey;
 
 function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name: string; image?: string | null; entry?: string }[] }) {
   const { lang } = useT();
@@ -237,10 +237,7 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
       const r = rec.get(t.code);
       return { code: t.code, name: t.name, image: t.image, w: r?.w ?? 0, l: r?.l ?? 0, gd: (r?.gw ?? 0) - (r?.gl ?? 0) };
     });
-    return base.sort((a, b) => {
-      const v = key === "code" ? a.code.localeCompare(b.code) : a[key] - b[key];
-      return (v || a.code.localeCompare(b.code)) * (key === "code" ? -dir : dir);
-    });
+    return sortStandingsRows(base, key, dir);
   }, [all, teams, key, dir]);
   const head = (k: SortKey, label: string, tip: string) => (
     <th scope="col" className="px-3 py-2 text-left font-medium" aria-sort={key === k ? (dir === 1 ? "ascending" : "descending") : "none"}>

@@ -86,6 +86,27 @@ export function computeRecords(matches: Match[], stage?: string) {
   return [...rec.values()].sort((a, b) => b.w - a.w || a.l - b.l || b.gw - b.gl - (a.gw - a.gl) || a.code.localeCompare(b.code));
 }
 
+export type StandingsSortKey = "w" | "l" | "gd" | "code";
+
+/**
+ * Sort standings rows by one column. Ties on that column always fall back to
+ * standings order (more series wins, fewer series losses, better game
+ * differential, then team code) regardless of sort direction, so equal
+ * records never order by reversed name under a descending sort. This is a
+ * convenience sort for display, not Riot's official Swiss tiebreaker.
+ */
+export function sortStandingsRows<T extends { code: string; w: number; l: number; gd: number }>(
+  rows: T[],
+  key: StandingsSortKey,
+  dir: 1 | -1,
+): T[] {
+  return [...rows].sort((a, b) => {
+    const primary = key === "code" ? a.code.localeCompare(b.code) : a[key] - b[key];
+    if (primary !== 0) return key === "code" ? -dir * primary : dir * primary;
+    return b.w - a.w || a.l - b.l || b.gd - a.gd || a.code.localeCompare(b.code);
+  });
+}
+
 export function nextMatch(matches: Match[], now: Date = new Date()): Match | null {
   const upcoming = matches
     .filter((m) => m.state === "scheduled" && !hasTbd(m) && new Date(m.startTime).getTime() >= now.getTime())
