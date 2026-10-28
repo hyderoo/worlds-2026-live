@@ -5,10 +5,13 @@ import { usePathname } from "next/navigation";
 /**
  * Short in-app intro for installed-app launches. Champion splash art comes straight from Riot's Data Dragon CDN
  * (hotlinked, not modified). The overlay sits on top of already-rendered content, so it never delays it.
- * Shown only in standalone (installed) mode on every app launch or full page load (not on in-app navigation), skipped if reduced motion is on.
+ * Shown only in standalone (installed) mode on every app launch or full page load, and again when the app is brought back after 45s or more in the background (not on in-app navigation), skipped if reduced motion is on.
  * `?splash=1` forces it for testing.
  */
 const CHAMPS = ["Ahri", "Jinx", "Yasuo", "Lux", "Ezreal", "Teemo", "Kaisa", "Sett", "Viego", "Akali", "Leona", "Thresh"];
+
+/** Away this long (while hidden) counts as leaving and reopening the app. */
+const RESUME_AFTER_MS = 45_000;
 
 export function Splash() {
   const [champ, setChamp] = useState<string | null>(null);
@@ -21,11 +24,27 @@ export function Splash() {
     const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!force && (!standalone || reduce)) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setChamp(CHAMPS[Math.floor(Math.random() * CHAMPS.length)] ?? "Teemo");
-    const a = setTimeout(() => setOut(true), 1500);
-    const b = setTimeout(() => setChamp(null), 2000);
-    return () => { clearTimeout(a); clearTimeout(b); };
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let playing = false;
+    const play = () => {
+      if (playing) return;
+      playing = true;
+      setOut(false);
+      setChamp(CHAMPS[Math.floor(Math.random() * CHAMPS.length)] ?? "Teemo");
+      timers.push(setTimeout(() => setOut(true), 1500));
+      timers.push(setTimeout(() => { setChamp(null); playing = false; }, 2000));
+    };
+    play();
+    // Resuming a backgrounded installed app does not reload the page, so replay after it has been away a while.
+    // A short absence (notification shade, app switcher peek, permission prompt) does not count as a new open.
+    let hiddenAt = 0;
+    const onVis = () => {
+      if (document.visibilityState === "hidden") { hiddenAt = Date.now(); return; }
+      if (hiddenAt && Date.now() - hiddenAt >= RESUME_AFTER_MS && location.pathname !== "/next") play();
+      hiddenAt = 0;
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { document.removeEventListener("visibilitychange", onVis); timers.forEach(clearTimeout); };
   }, []);
 
   if (!champ || path === "/next") return null;
