@@ -35,7 +35,8 @@
      "result": "3rd - 4th"
     }
    ],
-   "note": "Counted from the Gen.G Esports row (starts 2018, then KSV). Liquipedia says KSV acquired the Samsung Galaxy roster in 2017, which is a roster purchase, so Samsung Galaxy's 2016 and 2017 Worlds are not counted."
+   "note": "Counted from the Gen.G Esports row (starts 2018, then KSV). Liquipedia says KSV acquired the Samsung Galaxy roster in 2017, which is a roster purchase, so Samsung Galaxy's 2016 and 2017 Worlds are not counted.",
+   "caveat": "Samsung Galaxy's Worlds are not counted (roster purchase, not a rebrand)."
   },
   "HLE": {
    "liquipediaName": "Hanwha Life Esports",
@@ -99,7 +100,8 @@
      "result": "1st"
     }
    ],
-   "note": "Liquipedia's T1 page says T1 was formed out of SK Telecom T1 K and SK Telecom T1 S, and lists the 2013 World Championship among T1's achievements. The SK Telecom T1 S row was not in the part of the results table that could be read, so this may be missing an appearance."
+   "note": "Liquipedia's T1 page says T1 was formed out of SK Telecom T1 K and SK Telecom T1 S and lists the 2013 World Championship among T1's achievements. Liquipedia's SK Telecom T1 S results page lists no World Championship (only IEM Season VII), so nothing is added for it.",
+   "caveat": "Includes 2013 as SK Telecom T1 K."
   },
   "DK": {
    "liquipediaName": "Dplus",
@@ -129,7 +131,8 @@
      "result": "9th - 11th"
     }
    ],
-   "note": "Counted under Liquipedia's Dplus row as Liquipedia lists it."
+   "note": "Counted under Liquipedia's Dplus row as Liquipedia lists it.",
+   "caveat": "Counted under Liquipedia's Dplus row only; earlier names were not checked separately."
   },
   "BLG": {
    "liquipediaName": "Bilibili Gaming",
@@ -376,7 +379,8 @@
      "asName": "Movistar KOI"
     }
    ],
-   "note": "Liquipedia's Movistar KOI page records the rebrand from MAD Lions KOI in December 2024, so 2020-2024 are counted under the earlier name."
+   "note": "Liquipedia's Movistar KOI page records the rebrand from MAD Lions KOI in December 2024, so 2020-2024 are counted under the earlier name.",
+   "caveat": "2020-2024 are as MAD Lions KOI (rebranded Dec 2024)."
   },
   "AL": {
    "liquipediaName": "Anyone's Legend",
@@ -434,10 +438,11 @@
   "TSW": {
    "liquipediaName": "Team Secret Whales",
    "years": [],
-   "unavailable": "Liquipedia's Team Secret Whales page could not be read (access refused). Liquipedia says Secret Whales was created in December 2024 by a merger of Team Secret and Team Whales; Team Whales reached Worlds 2023 (17th - 18th). A merger is not counted as the same organization, so nothing is shown.",
+   "unavailable": "Liquipedia's Team Secret Whales page could not be read (access refused).",
    "sources": [
     "https://liquipedia.net/leagueoflegends/Team_Whales"
-   ]
+   ],
+   "note": "Liquipedia says Secret Whales was created in December 2024 by a merger of Team Secret and Team Whales. Team Whales reached Worlds 2023 (17th - 18th). A merger is not counted as the same organization, so nothing is shown."
   }
  }
 }

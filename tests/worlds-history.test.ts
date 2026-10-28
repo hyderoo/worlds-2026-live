@@ -17,7 +17,7 @@ describe("worlds history", () => {
   });
   it("does not invent history for teams not in the table", () => {
     expect(historyFor("TSW")!.years).toEqual([]);
-    expect(historyFor("TSW")!.unavailable).toMatch(/merger/);
+    expect(historyFor("TSW")!.note).toMatch(/merger/);
     expect(historyFor("KC")!.none).toBe(true);
     expect(historyFor("MVK")!.years).toEqual([{ year: 2024, result: "19th - 20th" }]);
   });

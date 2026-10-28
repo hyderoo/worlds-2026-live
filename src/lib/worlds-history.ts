@@ -1,7 +1,7 @@
 import data from "@/data/worlds-history.json";
 
 export type HistoryYear = { year: number; result: string; asName?: string };
-export type TeamHistory = { liquipediaName: string; years: HistoryYear[]; note?: string; partial?: boolean; none?: boolean; unavailable?: string; sources?: string[] };
+export type TeamHistory = { liquipediaName: string; years: HistoryYear[]; note?: string; partial?: boolean; none?: boolean; unavailable?: string; sources?: string[]; caveat?: string };
 
 export const HISTORY_SOURCE = data.source;
 export const HISTORY_RETRIEVED = data.retrieved;
