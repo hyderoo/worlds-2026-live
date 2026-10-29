@@ -63,7 +63,7 @@ export function HeroArtwork() {
             animate={reduce ? { opacity: 0.5 } : { opacity: [0, 1, 0], y: [0, -64] }}
             transition={{ duration: 4.2, repeat: Infinity, delay: d, ease: "easeOut" }} />
         ))}
-        <div className="absolute bottom-3 left-3" style={playerOpen ? { display: "none" } : undefined}>
+        <div className="absolute inset-0 flex items-center justify-center" style={playerOpen ? { display: "none" } : undefined}>
           <FirestarterChip innerRef={playButton} onOpen={() => setPlayerOpen(true)} />
         </div>
       {playerOpen && (

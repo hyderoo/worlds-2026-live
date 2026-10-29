@@ -42,6 +42,23 @@ export function HomeView() {
         </motion.div>
       </section>
 
+      {/* Mobile schedule peek (approved mockup): stage progress at a glance + link, replacing the old prize card. */}
+      <section className="mt-4 rounded-3xl border border-line bg-surface/60 p-4 lg:hidden">
+        <p className="eyebrow mb-2 px-2">Schedule</p>
+        <ul className="divide-y divide-line/60 px-2 text-sm">
+          {STAGES.map((s) => {
+            const p = stageProgress(snap.matches, s);
+            return (
+              <li key={s} className="flex items-center justify-between py-2.5">
+                <span className="text-snow">{s}</span>
+                <span className="text-fog">{p.done}/{p.total} played</span>
+              </li>
+            );
+          })}
+        </ul>
+        <Link href="/matches" className="mt-2 inline-block px-2 text-sm font-medium text-gold transition hover:text-snow focus:outline-none focus-visible:ring-2 focus-visible:ring-gold">View schedule →</Link>
+      </section>
+
       {/* Desktop hero: full-bleed FIRESTARTER artwork with the tracker content over scrims. */}
       <section className="relative left-1/2 mt-6 hidden h-[600px] w-screen -translate-x-1/2 overflow-clip lg:block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
