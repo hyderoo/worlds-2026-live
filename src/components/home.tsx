@@ -33,7 +33,7 @@ export function HomeView() {
           <div className="px-2 pb-2 pt-5">
             <p className="eyebrow mb-2">League of Legends World Championship</p>
             <h1 className="display text-5xl">Worlds <span className="text-gold">2026</span></h1>
-            <p className="mt-3 text-base text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
+            <p className="mt-3 text-base text-fog">Schedule, results and recaps for League of Legends Worlds 2026, straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
               <span className="rounded-full border border-line px-3 py-1 text-fog">{stage}: {stageProgress(snap.matches, stage).done}/{stageProgress(snap.matches, stage).total} played</span>
@@ -69,7 +69,7 @@ export function HomeView() {
         <motion.div className="relative mx-auto flex h-full max-w-6xl flex-col justify-center px-4" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
           <p className="eyebrow mb-4">League of Legends World Championship</p>
           <h1 className="display text-8xl">Worlds <span className="text-gold">2026</span></h1>
-          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
+          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps for League of Legends Worlds 2026, straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
           <div className="mt-8 flex flex-wrap items-center gap-3 text-sm">
             <span className="rounded-full border border-gold/40 bg-ink/50 px-3 py-1 text-gold">Now: {stage}</span>
             {STAGES.map((s) => {

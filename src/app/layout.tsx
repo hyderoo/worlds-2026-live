@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.siteUrl),
-  title: { default: "Worlds 2026 Live: schedule, results and recaps", template: "%s | Worlds 2026 Live" },
+  title: { default: "Worlds 2026 Live: League of Legends schedule, results and recaps", template: "%s | Worlds 2026 Live" },
   description: "League of Legends Worlds 2026 schedule, live results, bracket, standings, team profiles and match recaps. Data from the official LoL Esports source.",
   openGraph: { type: "website", siteName: "Worlds 2026 Live", title: "Worlds 2026 Live", description: "Schedule, results, bracket and recaps for LoL Worlds 2026.", images: [{ url: "/og-cover.jpg", width: 480, height: 258, alt: "Worlds 2026 Live" }] },
   twitter: { card: "summary_large_image", images: ["/og-cover.jpg"] },
