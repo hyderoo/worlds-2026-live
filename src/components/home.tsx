@@ -6,7 +6,8 @@ import { Countdown, Empty, MatchCard, Section, StateBadge, TeamLogo } from "./ui
 import { currentStage, hasTbd, nextMatch, stageProgress } from "@/lib/match-state";
 import { fmtDateTime, fmtDateTimeShort, tzLabel } from "@/lib/format";
 import { usePrefs } from "@/lib/prefs";
-import { HeroArtwork } from "@/components/hero-artwork";
+import { HeroArtwork, HeroArtworkDesktop } from "@/components/hero-artwork";
+import { FirestarterSection } from "@/components/firestarter-section";
 import { PrizePoolCard } from "@/components/prize-pool";
 
 const STAGES = ["Play-Ins", "Swiss", "Knockouts"];
@@ -25,26 +26,49 @@ export function HomeView() {
 
   return (
     <>
-      <section className="relative overflow-clip rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-4 py-6 sm:px-12 sm:py-20 mt-4 sm:mt-6">
-        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-violet/20 blur-3xl" />
-        <motion.div className="relative grid items-center gap-5 sm:gap-10 lg:grid-cols-[1fr_20rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
-          <div>
-          <p className="eyebrow mb-2 sm:mb-4">League of Legends World Championship</p>
-          <h1 className="display text-5xl sm:text-8xl">Worlds <span className="text-gold">2026</span></h1>
-          <p className="mt-3 max-w-xl text-base text-fog sm:mt-5 sm:text-lg">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm sm:mt-8 sm:gap-3">
-            <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
-            {snap.prize && <span className="rounded-full border border-line px-3 py-1 text-fog">Prize pool: ${snap.prize.totalUsd.toLocaleString("en-US")} (unofficial)</span>}
-            {STAGES.map((s) => {
-              const p = stageProgress(snap.matches, s);
-              return <span key={s} className="hidden rounded-full border border-line px-3 py-1 text-fog sm:inline">{s}: {p.done}/{p.total} played</span>;
-            })}
-            <p className="w-full text-xs text-fog sm:hidden">{STAGES.map((s) => { const p = stageProgress(snap.matches, s); return `${s} ${p.done}/${p.total}`; }).join(" · ")} played</p>
+      {/* Mobile hero: compact card, artwork banner on top, chip plays the MV in the artwork (keeps f3c1ceb). */}
+      <section className="mt-4 rounded-3xl border border-line bg-surface/60 p-4 sm:mt-6 lg:hidden">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+          <HeroArtwork />
+          <div className="px-2 pb-2 pt-5">
+            <p className="eyebrow mb-2">League of Legends World Championship</p>
+            <h1 className="display text-5xl">Worlds <span className="text-gold">2026</span></h1>
+            <p className="mt-3 text-base text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+              <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-gold">Now: {stage}</span>
+              <span className="rounded-full border border-line px-3 py-1 text-fog">{stage}: {stageProgress(snap.matches, stage).done}/{stageProgress(snap.matches, stage).total} played</span>
+            </div>
           </div>
-          </div>
-          <div className="order-first mx-auto w-full max-w-sm lg:order-none"><HeroArtwork /></div>
         </motion.div>
       </section>
+
+      {/* Desktop hero: full-bleed FIRESTARTER artwork with the tracker content over scrims. */}
+      <section className="relative left-1/2 mt-6 hidden h-[600px] w-screen -translate-x-1/2 overflow-clip lg:block">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/firestarter-group.jpg" alt="" aria-hidden className="absolute inset-0 size-full object-cover object-[72%_center]" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />
+        <div aria-hidden className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-ink/70 to-transparent" />
+        <motion.div className="relative mx-auto flex h-full max-w-6xl flex-col justify-center px-4" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+          <p className="eyebrow mb-4">League of Legends World Championship</p>
+          <h1 className="display text-8xl">Worlds <span className="text-gold">2026</span></h1>
+          <p className="mt-5 max-w-xl text-lg text-fog">Schedule, results and recaps straight from the official LoL Esports feed. Times in {tzLabel(tz)}.</p>
+          <div className="mt-8 flex flex-wrap items-center gap-3 text-sm">
+            <span className="rounded-full border border-gold/40 bg-ink/50 px-3 py-1 text-gold">Now: {stage}</span>
+            {STAGES.map((s) => {
+              const p = stageProgress(snap.matches, s);
+              return <span key={s} className="rounded-full border border-line bg-ink/50 px-3 py-1 text-fog">{s}: {p.done}/{p.total} played</span>;
+            })}
+          </div>
+          <div className="mt-8 flex items-center gap-3">
+            <Link href="/matches" className="rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold">View schedule</Link>
+            <Link href="/standings" className="rounded-full border border-gold/50 px-5 py-2.5 text-sm text-gold transition hover:bg-gold/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold">Open bracket</Link>
+          </div>
+        </motion.div>
+        <HeroArtworkDesktop />
+      </section>
+
+      <FirestarterSection />
 
       <PrizePoolCard prize={snap.prize} />
 

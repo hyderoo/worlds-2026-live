@@ -62,3 +62,6 @@ html, body { overflow-x: clip; }
 @keyframes splash-drift { from { translate: 10px 0; } to { translate: -6px 0; } }
 .splash-rise { animation: splash-rise 0.7s 0.15s ease-out both; }
 @media (prefers-reduced-motion: reduce) { .splash-art, .splash-rise, .splash-cup, .splash-letter, .splash-draw, .splash-sweep { animation: none; } }
+@keyframes splash-loader { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.splash-loader { animation: splash-loader 1.1s linear both; transform-origin: left; }
+@media (prefers-reduced-motion: reduce) { .splash-loader { animation: none; } }
