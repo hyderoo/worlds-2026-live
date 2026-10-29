@@ -6,7 +6,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "https://worlds-2026-live.vercel.app",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "https://worlds2026.web.id",
   },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
 });
