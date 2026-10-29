@@ -25,7 +25,7 @@ export function HomeView() {
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-4 py-6 sm:px-12 sm:py-20 mt-4 sm:mt-6">
+      <section className="relative overflow-clip rounded-3xl border border-line bg-gradient-to-br from-night via-surface to-ink px-4 py-6 sm:px-12 sm:py-20 mt-4 sm:mt-6">
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-violet/20 blur-3xl" />
         <motion.div className="relative grid items-center gap-5 sm:gap-10 lg:grid-cols-[1fr_20rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
           <div>

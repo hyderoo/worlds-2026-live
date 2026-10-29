@@ -20,7 +20,7 @@ export function HeroArtwork() {
   const playButton = useRef<HTMLButtonElement>(null);
   const [playerOpen, setPlayerOpen] = useState(false);
   return (
-    <div className="relative mx-auto aspect-[16/9] w-full max-w-sm sm:aspect-square sm:min-h-[280px] select-none overflow-hidden rounded-2xl border border-line shadow-[0_18px_60px_-18px_rgba(255,110,199,0.35)]">
+    <div className={`relative mx-auto ${playerOpen ? "min-h-[280px]" : "aspect-[16/9]"} w-full max-w-sm sm:aspect-square sm:min-h-[280px] select-none overflow-hidden rounded-2xl border border-line shadow-[0_18px_60px_-18px_rgba(255,110,199,0.35)]`}>
         <motion.img src="/kda-firestarter.jpg" alt="" aria-hidden
           className="absolute inset-0 size-full object-cover opacity-60 blur-md"
           animate={reduce ? undefined : { scale: [1.12, 1.24] }}
