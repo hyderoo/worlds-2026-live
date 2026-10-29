@@ -17,6 +17,17 @@
       ],
       "destination": "https://worlds2026.web.id/:path*",
       "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "worlds-2026-live.vercel.app"
+        }
+      ],
+      "destination": "https://worlds2026.web.id",
+      "permanent": true
     }
   ]
 }
