@@ -14,7 +14,7 @@ const STAGES = ["Play-Ins", "Swiss", "Knockouts"] as const;
 
 function BracketCard({ m, tz, hot, setHot, note }: { m: Match; tz: string; hot: string | null; setHot: (c: string | null) => void; note?: string }) {
   return (
-    <div className="card block w-60 shrink-0 p-3 text-sm transition hover:border-violet-dim">
+    <div className="card block w-full shrink-0 p-3 text-sm sm:w-60 transition hover:border-violet-dim">
       <div className="mb-2 flex items-center justify-between text-[0.7rem] text-fog"><Link href={`/matches/${m.id}`} className="underline-offset-2 hover:underline">{fmtDateTime(m.startTime, tz)} ›</Link><StateBadge state={m.state} /></div>
       {m.teams.map((t, i) => (
         <button key={i} type="button" disabled={t.code === "TBD"} aria-pressed={hot === t.code} onClick={() => setHot(hot === t.code ? null : t.code)}
@@ -30,17 +30,19 @@ function BracketCard({ m, tz, hot, setHot, note }: { m: Match; tz: string; hot: 
 
 function Zoomable({ children, label }: { children: React.ReactNode; label: string }) {
   const [z, setZ] = useState(1);
+  const [full, setFull] = useState(false);
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 text-xs text-fog">
+      <button type="button" aria-pressed={full} onClick={() => setFull(!full)} className="mb-3 min-h-11 rounded-lg border border-line px-3 text-sm sm:hidden">{full ? "Read match list" : "View full bracket"}</button>
+      <div className={clsx("mb-2 items-center gap-2 text-xs text-fog", full ? "flex" : "hidden sm:flex")}>
         <span>Zoom</span>
         <button aria-label="Zoom out" className="rounded border border-line px-2 py-0.5 hover:text-snow" onClick={() => setZ((v) => Math.max(0.6, +(v - 0.1).toFixed(1)))}>−</button>
         <span className="tabular-nums">{Math.round(z * 100)}%</span>
         <button aria-label="Zoom in" className="rounded border border-line px-2 py-0.5 hover:text-snow" onClick={() => setZ((v) => Math.min(1.4, +(v + 0.1).toFixed(1)))}>+</button>
         <span className="ml-2">Scroll sideways to pan.</span>
       </div>
-      <div role="region" aria-label={label} tabIndex={0} className="overflow-x-auto rounded-xl border border-line p-4">
-        <div style={{ transform: `scale(${z})`, transformOrigin: "top left", width: `${100 / z}%` }} className="flex min-w-max gap-8">{children}</div>
+      <div role="region" aria-label={label} tabIndex={0} className={clsx("rounded-xl border border-line p-4", full ? "overflow-x-auto" : "sm:overflow-x-auto")}>
+        <div style={{ "--bracket-scale": z, "--bracket-width": `${100 / z}%` } as React.CSSProperties} className={clsx("bracket-layout flex gap-6 sm:gap-8", full ? "bracket-full min-w-max" : "flex-col sm:min-w-max sm:flex-row")}>{children}</div>
       </div>
     </div>
   );
@@ -61,6 +63,8 @@ const SWISS_ROUNDS: { key: string; slots: number }[][] = [
 function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
   const { lang } = useT();
   const id = lang === "id";
+  const [selectedRound, setSelectedRound] = useState<number | null>(null);
+  const [full, setFull] = useState(false);
   const swiss = all.filter((m) => m.stage === "Swiss").sort((a, b) => a.startTime.localeCompare(b.startTime));
   if (swiss.length === 0) return null;
   const records = computeRecords(all, "Swiss");
@@ -78,18 +82,28 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
     const k = rec(m.teams[0]!.code, m.startTime);
     lane.set(k, [...(lane.get(k) ?? []), m]);
   }
+  const latestRound = Math.max(0, ...SWISS_ROUNDS.map((round, i) => round.some((g) => (lane.get(g.key) ?? []).length > 0) ? i : 0));
+  const activeRound = selectedRound ?? latestRound;
   const names = [id ? "Ronde 1" : "Round 1", id ? "Ronde 2" : "Round 2", id ? "Ronde 3" : "Round 3", id ? "Ronde 4" : "Round 4", id ? "Ronde 5" : "Round 5"];
   const sub = (k: string) => { const [w, l] = k.split("-").map(Number) as [number, number]; return { win: w + 1 === 3 ? "3-" + l + (id ? " lolos" : " qualified") : `${w + 1}-${l}`, lose: l + 1 === 3 ? w + "-3" + (id ? " tersingkir" : " out") : `${w}-${l + 1}` }; };
   return (
     <section className="mb-8" aria-labelledby="sw-matchups">
       <h2 id="sw-matchups" className="display mb-1 text-2xl">{id ? "Bracket Swiss" : "Swiss bracket"}</h2>
-      <p className="mb-4 text-sm text-fog">{id ? "Pairing diisi dari feed resmi lolesports. Kalau draw ronde terbaru sudah berlangsung dan pairingnya kami verifikasi dari rekaman draw show, tapi feed resmi belum memuatnya, slot itu ditandai 'draw terverifikasi' dan otomatis diganti begitu feed terbit. Slot kosong menunggu hasil ronde sebelumnya, tidak ada yang ditebak. Jumlah slot per rekor dihitung dari aturan 16 tim, 3 menang lolos, 3 kalah tersingkir." : "Pairings come from the official lolesports feed. When the latest round's draw has taken place and we verified the pairings against draw show footage, but the official feed has not published them yet, those slots are marked 'verified draw' and replaced automatically once the feed catches up. Open slots wait for the previous round; nothing is guessed. Slot counts per record follow from the 16-team, 3-win, 3-loss rules."}</p>
-      <div role="region" aria-label="Swiss bracket" tabIndex={0} className="-mx-4 snap-x overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
-        <div className="flex min-w-max items-stretch gap-0">
+      <details className="mb-4 text-sm text-fog"><summary className="min-h-11 cursor-pointer py-2">{id ? "Tentang pairing dan format" : "About pairings and format"}</summary><p className="mt-2">{id ? "Pairing diisi dari feed resmi lolesports. Kalau draw ronde terbaru sudah berlangsung dan pairingnya kami verifikasi dari rekaman draw show, tapi feed resmi belum memuatnya, slot itu ditandai 'draw terverifikasi' dan otomatis diganti begitu feed terbit. Slot kosong menunggu hasil ronde sebelumnya, tidak ada yang ditebak. Jumlah slot per rekor dihitung dari aturan 16 tim, 3 menang lolos, 3 kalah tersingkir." : "Pairings come from the official lolesports feed. When the latest round's draw has taken place and we verified the pairings against draw show footage, but the official feed has not published them yet, those slots are marked 'verified draw' and replaced automatically once the feed catches up. Open slots wait for the previous round; nothing is guessed. Slot counts per record follow from the 16-team, 3-win, 3-loss rules."}</p></details>
+      <div className="mb-4 sm:hidden">
+        <div role="group" aria-label={id ? "Pilih ronde Swiss" : "Swiss round"} className="grid grid-cols-5 gap-1">
+          {names.map((name, i) => <button key={name} type="button" aria-label={name} aria-pressed={activeRound === i} onClick={() => { setSelectedRound(i); setFull(false); }} className={clsx("min-h-11 rounded-lg border text-sm", activeRound === i ? "border-gold bg-gold/10 text-gold" : "border-line text-fog")}>R{i + 1}</button>)}
+        </div>
+        <button type="button" aria-pressed={full} onClick={() => setFull(!full)} className="mt-2 min-h-11 w-full rounded-lg border border-line px-3 text-sm text-fog">{full ? (id ? "Kembali ke daftar pertandingan" : "Back to match list") : (id ? "Lihat bracket lengkap ↔" : "View full bracket ↔")}</button>
+        {full && <p className="mt-2 text-xs text-fog">{id ? "Geser ke samping untuk melihat ronde lain." : "Swipe sideways to see other rounds."}</p>}
+      </div>
+      <div role="region" aria-label={full ? "Swiss full bracket" : "Swiss bracket"} tabIndex={0} className={clsx("pb-3 sm:overflow-x-auto", full && "-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0")}>
+
+        <div className={clsx("flex gap-0 sm:min-w-max sm:items-stretch", full ? "min-w-max items-stretch" : "flex-col sm:flex-row")}>
           {SWISS_ROUNDS.map((round, ri) => (
-            <div key={ri} className="relative flex w-[15.5rem] shrink-0 snap-start flex-col pr-9 sm:w-64">
+            <div key={ri} className={clsx("relative shrink-0 flex-col sm:flex sm:w-64 sm:pr-9", full ? "flex w-[19rem] pr-9" : ri === activeRound ? "flex w-full" : "hidden")}>
               <p className="eyebrow mb-3">{names[ri]}</p>
-              <div className="flex flex-1 flex-col justify-around gap-4">
+              <div className={clsx("flex flex-col gap-4 sm:flex-1 sm:justify-around", full && "flex-1 justify-around")}>
                 {round.map((g) => {
                   const ms = lane.get(g.key) ?? [];
                   const ghosts = Math.max(0, g.slots - ms.length);
@@ -135,15 +149,15 @@ function SwissBracket({ all, tz }: { all: Match[]; tz: string }) {
                       {ri < 4 && (
                         <div className="mt-2 flex justify-between text-[0.65rem] text-fog"><span className="text-gold/80">W → {win}</span><span>L → {lose}</span></div>
                       )}
-                      {ri < 4 && <span aria-hidden className="absolute -right-9 top-1/2 h-px w-9 bg-gradient-to-r from-violet-dim to-line" />}
+                      {ri < 4 && <span aria-hidden className={clsx("absolute -right-9 top-1/2 h-px w-9 bg-gradient-to-r from-violet-dim to-line", !full && "hidden sm:block")} />}
                     </div>
                   );
                 })}
               </div>
-              {ri < 4 && <span aria-hidden className="absolute right-0 top-10 bottom-4 w-px bg-line" />}
+              {ri < 4 && <span aria-hidden className={clsx("absolute right-0 top-10 bottom-4 w-px bg-line", !full && "hidden sm:block")} />}
             </div>
           ))}
-          <div className="flex w-56 shrink-0 flex-col justify-center gap-4 pl-2 pt-8">
+          <div className={clsx("shrink-0 flex-col justify-center gap-4 pl-2 pt-8 sm:flex sm:w-56", full ? "flex w-56" : "hidden")}>
             <div className="rounded-xl border border-gold/50 bg-gold/5 p-3 text-sm"><p className="text-xs uppercase tracking-wider text-gold">{id ? "Lolos ke knockout" : "Advance to knockouts"}</p><p className="mt-1 text-xs text-fog">{qualified.length}/8 · 3-0, 3-1, 3-2</p><div className="mt-2 grid gap-2">{qualified.map((r) => <Link key={r.code} href={`/teams/${r.code}`} title={r.name} className="flex items-center justify-between gap-2 text-xs"><span className="flex items-center gap-1.5"><TeamLogo team={r} size={18} />{r.code}</span><span className="text-gold">{r.w}-{r.l} · {id ? "Lolos" : "Qualified"}</span></Link>)}{qualified.length === 0 && <p className="text-xs text-fog">{id ? "Belum ada tim lolos" : "No teams qualified yet"}</p>}</div></div>
             <div className="rounded-xl border border-line p-3 text-sm opacity-80"><p className="text-xs uppercase tracking-wider text-fog">{id ? "Tersingkir" : "Eliminated"}</p><p className="mt-1 text-xs text-fog">0-3, 1-3, 2-3</p><div className="mt-2 grid gap-2">{eliminated.map((r) => <Link key={r.code} href={`/teams/${r.code}`} title={r.name} className="flex items-center justify-between gap-2 text-xs"><span className="flex items-center gap-1.5"><TeamLogo team={r} size={18} />{r.code}</span><span>{r.w}-{r.l}</span></Link>)}{eliminated.length === 0 && <p className="text-xs text-fog">{id ? "Belum ada tim tersingkir" : "No teams eliminated yet"}</p>}</div></div>
           </div>
@@ -165,8 +179,8 @@ function SwissBoard({ all, teams }: { all: Match[]; teams: { code: string; name:
   const tbd = swiss.filter((m) => hasTbd(m)).length;
   const rows = [[0, 1, 2, 3], [0, 1, 2, 3]];
   return (
-    <section className="mb-6" aria-labelledby="sw-board">
-      <h2 id="sw-board" className="display mb-1 text-2xl">Swiss progress</h2>
+    <section className="mb-6" aria-label="Swiss progress">
+      <h2 className="display mb-1 text-2xl">Swiss progress</h2>
       <p className="mb-3 text-sm text-fog">Rows are series wins, columns are series losses. Three wins advance to the knockouts, three losses eliminate. The Play-In winner takes the 16th Swiss spot.</p>
       <div role="region" aria-label="Swiss record board" tabIndex={0} className="overflow-x-auto"><div className="grid min-w-[40rem] grid-cols-4 gap-2">
         {rows[0]!.flatMap((w) => rows[1]!.map((l) => {
@@ -248,7 +262,7 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
   return (
     <>
       {played === 0 && <p className="mb-3 rounded-lg border border-line bg-white/[0.03] p-3 text-sm text-fog">Swiss stage has not started. Every team shows 0-0 until official results arrive.</p>}
-      <div className="card overflow-x-auto">
+      <div className="card overflow-x-auto swiss-records">
         <table className="w-full text-sm">
           <caption className="sr-only">Swiss stage records</caption>
           <thead className="border-b border-line text-xs uppercase tracking-wider text-fog"><tr>
@@ -258,9 +272,9 @@ function SwissTable({ all, teams }: { all: Match[]; teams: { code: string; name:
             {rows.map((r, i) => (
               <tr key={r.code} className="border-b border-line/50 last:border-0 hover:bg-white/[0.03]">
                 <td className="px-3 py-2 text-fog">{i + 1}</td>
-                <td className="px-3 py-2"><Link href={`/teams/${r.code}`} className="flex items-center gap-2 hover:text-gold"><TeamLogo team={r} size={24} />{r.name}</Link></td>
+                <td className="px-3 py-2"><Link href={`/teams/${r.code}`} className="flex items-center gap-2 hover:text-gold"><TeamLogo team={r} size={24} /><span className="sm:hidden">{r.code}</span><span className="hidden sm:inline">{r.name}</span></Link></td>
                 <td className="px-3 py-2 tabular-nums">{r.w}</td><td className="px-3 py-2 tabular-nums">{r.l}</td><td className="px-3 py-2 tabular-nums">{r.gd > 0 ? `+${r.gd}` : r.gd}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-xs">{swissStatus(r.w, r.l) === "qualified" ? <span className="rounded-full border border-gold/40 bg-gold/10 px-2 py-1 text-gold">{id ? "Lolos ke knockout" : "Qualified for knockouts"}</span> : swissStatus(r.w, r.l) === "eliminated" ? <span className="text-fog">{id ? "Tersingkir" : "Eliminated"}</span> : <span className="text-fog">{id ? "Masih di Swiss" : "In Swiss"}</span>}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-xs">{swissStatus(r.w, r.l) === "qualified" ? <span className="rounded-full border border-gold/40 bg-gold/10 px-2 py-1 text-gold"><><span className="sm:hidden">{id ? "Lolos" : "Qualified"}</span><span className="hidden sm:inline">{id ? "Lolos ke knockout" : "Qualified for knockouts"}</span></></span> : swissStatus(r.w, r.l) === "eliminated" ? <span className="text-fog">{id ? "Tersingkir" : "Eliminated"}</span> : <span className="text-fog"><><span className="sm:hidden">Swiss</span><span className="hidden sm:inline">{id ? "Masih di Swiss" : "In Swiss"}</span></></span>}</td>
               </tr>
             ))}
           </tbody>
@@ -316,7 +330,7 @@ export function StandingsView() {
     <div className="mt-6">
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Stage">{STAGES.map((s) => <Pill key={s} active={stage === s} onClick={() => setStage(s)}>{s}</Pill>)}</div>
       <SpoilerGate what="Standings and results">
-      {stage === "Swiss" ? <><SwissBoard all={snap.matches} teams={snap.teams} /><SwissBracket all={snap.matches} tz={prefs.tz} /><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
+      {stage === "Swiss" ? <><div className="hidden sm:block"><SwissBoard all={snap.matches} teams={snap.teams} /></div><SwissBracket all={snap.matches} tz={prefs.tz} /><details className="mb-6 sm:hidden"><summary className="min-h-11 cursor-pointer rounded-lg border border-line px-3 py-3 text-sm">Swiss record overview</summary><div className="mt-3"><SwissBoard all={snap.matches} teams={snap.teams} /></div></details><SwissTable all={snap.matches} teams={snap.teams.map((t) => ({ ...t, image: t.image }))} /></>
         : ms.length === 0 ? <Empty title={`No ${stage} matches published yet`} />
         : stage === "Play-Ins" ? <PlayIns ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} /> : <Knockouts ms={ms} tz={prefs.tz} hot={pin} setHot={setPin} />}
       {stage !== "Swiss" && <div className="card mt-8 overflow-x-auto"><table className="w-full text-sm"><caption className="sr-only">{stage} records</caption>

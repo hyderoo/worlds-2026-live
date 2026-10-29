@@ -65,3 +65,15 @@ html, body { overflow-x: clip; }
 @keyframes splash-loader { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .splash-loader { animation: splash-loader 1.1s linear both; transform-origin: left; }
 @media (prefers-reduced-motion: reduce) { .splash-loader { animation: none; } }
+
+/* Mobile brackets are readable lists first; desktop retains the full diagram. */
+.bracket-full { transform: scale(var(--bracket-scale)); transform-origin: top left; width: var(--bracket-width); }
+@media (min-width: 640px) {
+  .bracket-layout { transform: scale(var(--bracket-scale)); transform-origin: top left; width: var(--bracket-width); }
+}
+@media (max-width: 639px) {
+  .swiss-records th, .swiss-records td { padding: .65rem .4rem; }
+  .swiss-records th { letter-spacing: 0; font-size: .65rem; }
+  .swiss-records td { font-size: .75rem; }
+  .swiss-records td:last-child > span { padding: .2rem .3rem; }
+}
