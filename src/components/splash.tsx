@@ -39,7 +39,7 @@ export function Splash() {
         </div>
         <div className="splash-rise relative w-full" style={{ animationDelay: "0.15s" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/firestarter-group.jpg" alt="" className="h-[42vh] w-full object-cover" />
+          <img src="/firestarter-group.jpg" alt="" className="w-full" />
           <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink/70 to-transparent" />
         </div>
         <p className="splash-rise text-[11px] uppercase tracking-[0.25em] text-fog" style={{ animationDelay: "0.35s" }}>K/DA · FIRESTARTER</p>
