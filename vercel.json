@@ -1,4 +1,22 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [{ "path": "/api/sync?trigger=vercel-cron", "schedule": "0 4 * * *" }]
+  "crons": [
+    {
+      "path": "/api/sync?trigger=vercel-cron",
+      "schedule": "0 4 * * *"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "worlds-2026-live.vercel.app"
+        }
+      ],
+      "destination": "https://worlds2026.web.id/:path*",
+      "permanent": true
+    }
+  ]
 }

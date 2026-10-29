@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(config.siteUrl),
   title: { default: "Worlds 2026 Live: schedule, results and recaps", template: "%s | Worlds 2026 Live" },
   description: "League of Legends Worlds 2026 schedule, live results, bracket, standings, team profiles and match recaps. Data from the official LoL Esports source.",
-  openGraph: { type: "website", siteName: "Worlds 2026 Live", title: "Worlds 2026 Live", description: "Schedule, results, bracket and recaps for LoL Worlds 2026." },
-  twitter: { card: "summary_large_image" },
+  openGraph: { type: "website", siteName: "Worlds 2026 Live", title: "Worlds 2026 Live", description: "Schedule, results, bracket and recaps for LoL Worlds 2026.", images: [{ url: "/og-cover.jpg", width: 480, height: 258, alt: "Worlds 2026 Live" }] },
+  twitter: { card: "summary_large_image", images: ["/og-cover.jpg"] },
   alternates: { canonical: "/" },
 };
 export const viewport: Viewport = { themeColor: "#0d0c11", colorScheme: "dark" };
