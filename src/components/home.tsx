@@ -62,8 +62,8 @@ export function HomeView() {
       {/* Desktop hero: full-bleed FIRESTARTER artwork with the tracker content over scrims. */}
       <section className="relative left-1/2 mt-6 hidden h-[600px] w-screen -translate-x-1/2 overflow-clip lg:block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/firestarter-group.jpg" alt="" aria-hidden className="absolute inset-0 size-full object-cover object-[72%_center]" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
+        <img src="/firestarter-group.jpg" alt="" aria-hidden className="absolute inset-0 size-full object-cover object-[58%_center]" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink/95 from-15% via-ink/55 via-45% to-transparent to-75%" />
         <div aria-hidden className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent" />
         <div aria-hidden className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-ink/70 to-transparent" />
         <motion.div className="relative mx-auto flex h-full max-w-6xl flex-col justify-center px-4" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
