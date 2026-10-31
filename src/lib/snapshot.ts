@@ -126,7 +126,7 @@ export async function buildSnapshot(opts: { refresh?: boolean } = {}): Promise<S
   const { matches, applied: drawSeeded } = applyDrawSeed(overridden);
   const live = matches
     // Stored rows predate code aliases (e.g. Riot's TL -> TLAW rename): serve canonical codes even before the next sync rewrites them.
-    .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now) }))
+    .map((m) => ({ ...m, teams: m.teams.map((t) => ({ ...t, code: canonicalCode(t.code) })) as typeof m.teams, state: normalizeState(m.upstreamState, m.startTime, m.teams, now, m.games) }))
     .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.id.localeCompare(b.id));
   const notes: string[] = [];
   if (drawSeeded) notes.push("Swiss Round 2 pairings match the Swiss Round 2 draw show, verified against broadcast footage of the draw (viewed via VOD-library captures; no Riot-hosted standalone draw VOD was located). Riot's schedule feed has not published the pairings yet. They are marked 'verified draw' and replaced automatically once the feed catches up.");

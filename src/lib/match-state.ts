@@ -10,6 +10,7 @@ export function normalizeState(
   startTime: string,
   teams: readonly TeamSide[],
   now: Date = new Date(),
+  games: readonly { state: string }[] = [],
 ): MatchState {
   const start = new Date(startTime).getTime();
   const nowMs = now.getTime();
@@ -19,7 +20,14 @@ export function normalizeState(
       return decided ? "completed" : "unverified";
     }
     case "inProgress": {
-      if (nowMs < start - EARLY_LIVE_TOLERANCE_MIN * 60_000) return "unverified";
+      if (nowMs < start - EARLY_LIVE_TOLERANCE_MIN * 60_000) {
+        // Listed start times are "not before" estimates: when the previous series ends early, Riot
+        // flips the next one to inProgress ahead of the listed time without rewriting startTime.
+        // Trust the early signal once the match's own game list (a second official endpoint)
+        // confirms a game has actually started; without that confirmation it stays unverified.
+        const confirmed = games.some((g) => g.state === "inProgress" || g.state === "completed");
+        return confirmed ? "live" : "unverified";
+      }
       if (nowMs > start + MAX_LIVE_HOURS * 3_600_000) return "unverified";
       return "live";
     }

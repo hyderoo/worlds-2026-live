@@ -16,6 +16,16 @@ describe("normalizeState", () => {
   it("flags inProgress hours before the scheduled start as unverified", () => {
     expect(normalizeState("inProgress", start, [t("A", 0, null), t("B", 0, null)], at("2026-10-17T10:00:00Z"))).toBe("unverified");
   });
+  it("trusts early inProgress once a game has actually started (early start after a short previous series)", () => {
+    const games = [{ state: "inProgress" }, { state: "unstarted" }];
+    expect(normalizeState("inProgress", start, [t("A", 0, null), t("B", 0, null)], at("2026-10-17T10:00:00Z"), games)).toBe("live");
+    const done = [{ state: "completed" }, { state: "inProgress" }];
+    expect(normalizeState("inProgress", start, [t("A", 1, null), t("B", 0, null)], at("2026-10-17T10:00:00Z"), done)).toBe("live");
+  });
+  it("keeps early inProgress unverified while every game is still unstarted", () => {
+    const games = [{ state: "unstarted" }, { state: "unstarted" }];
+    expect(normalizeState("inProgress", start, [t("A", 0, null), t("B", 0, null)], at("2026-10-17T10:00:00Z"), games)).toBe("unverified");
+  });
   it("flags a match stuck live for too long", () => {
     expect(normalizeState("inProgress", start, [t("A", 1, null), t("B", 0, null)], at("2026-10-18T10:00:00Z"))).toBe("unverified");
   });

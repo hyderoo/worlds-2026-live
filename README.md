@@ -6,7 +6,7 @@ Fan project. Not affiliated with or endorsed by Riot Games.
 
 ## What is real and what is not
 
-- Match, schedule, score and VOD data come from the LoL Esports service behind lolesports.com. Nothing is invented. A match that the source calls "live" far from its scheduled start is shown as **unverified**.
+- Match, schedule, score and VOD data come from the LoL Esports service behind lolesports.com. Nothing is invented. A match that the source calls "live" far from its scheduled start is shown as **unverified** until its own game list confirms play has begun (series often start early when the previous one ends quickly).
 - Champion picks per game come from Riot's live stats feed (ingested by the sync job for new games, with a seed in `src/data/games-seed.json`; winners per game are not in the feed).
 - Per-game winners and MVP are not in the official feed, so they are not shown.
 - Without Supabase the app still works in **cache-only mode** (live upstream data, short in-memory cache, no admin edits, no sync history).
