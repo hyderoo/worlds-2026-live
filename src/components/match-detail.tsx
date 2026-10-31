@@ -74,7 +74,7 @@ export function MatchDetail({ id }: { id: string }) {
             </div>
           ))}
           <div className="order-2 text-center">
-            <p className="display text-5xl tabular-nums sm:text-7xl">{(m.state === "completed" || m.state === "live") && !sp.hidden(m.id) ? `${m.teams[0].wins ?? 0} : ${m.teams[1].wins ?? 0}` : "vs"}</p>
+            <p className="display whitespace-nowrap text-5xl tabular-nums sm:text-7xl">{(m.state === "completed" || m.state === "live") && !sp.hidden(m.id) ? `${m.teams[0].wins ?? 0} : ${m.teams[1].wins ?? 0}` : "vs"}</p>
             {(m.state === "completed" || m.state === "live") && sp.hidden(m.id) && <button onClick={() => sp.reveal(m.id)} className="mt-3 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold hover:bg-gold/10">Show result</button>}
             {m.state === "unverified" && <p className="mt-2 text-xs text-fog">Score hidden until the source confirms the status</p>}
           </div>
