@@ -1,9 +1,12 @@
 // Worlds 2026 Live service worker: push notifications + a light offline cache.
 // Offline mode only shows the last data you loaded. It never invents anything and the app says when data may be old.
-const V = "w26-v5";
+const V = "w26-v6";
 const STATIC = `${V}-static`;
 const PAGES = `${V}-pages`;
 const MAX_PAGES = 30;
+/** A saved page older than this is not shown when offline: dates render on the device, so an old copy is
+ *  indistinguishable from today's data (it once showed a pre-draw bracket as current). Too old = offline page. */
+const PAGE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(PAGES).then((c) => c.addAll(["/offline.html", "/today", "/matches"]).catch(() => undefined)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => {
@@ -51,7 +54,11 @@ self.addEventListener("fetch", (event) => {
         const key = url.searchParams.has("__sim_offline") ? new Request(url.origin + p) : req;
         // Only the exact page you saved before. Never another page's HTML under this URL (that breaks hydration).
         const hit = await c.match(key);
-        if (hit) {
+        // Age comes from the stored response's own Date header (when the server produced it). If the age
+        // cannot be determined, keep the old behavior rather than locking out someone genuinely offline.
+        const hitDate = hit ? Date.parse(hit.headers.get("date") || "") : NaN;
+        const hitUsable = !!hit && (!Number.isFinite(hitDate) || Date.now() - hitDate <= PAGE_MAX_AGE_MS);
+        if (hitUsable && hit) {
           if (p !== "/api/public/snapshot") return hit;
           const h = new Headers(hit.headers); h.set("x-w26-offline", "1");
           return new Response(hit.body, { status: hit.status, headers: h });

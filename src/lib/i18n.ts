@@ -21,6 +21,7 @@ const en = {
   "notif.title": "Match notifications", "notif.turnOn": "Turn on notifications", "notif.turnOff": "Turn off", "notif.soon": "Starting soon", "notif.live": "Live", "notif.final": "Result",
   "grp.title": "Friends league", "grp.create": "Create a league", "grp.join": "Join", "grp.name": "Your display name", "grp.leagueName": "League name", "grp.leaderboard": "Leaderboard", "grp.share": "Share this link with friends",
   "pred.title": "My predictions",
+  "stale.banner": "Showing saved data that may be out of date - it refreshes automatically when the connection is back. Last loaded",
 } as const;
 export type Key = keyof typeof en | MoreKey | MoreKey2 | MoreKey3 | MoreKey4 | MoreKey5 | MoreKey6;
 type Dict = Partial<Record<keyof typeof en, string>>;
@@ -39,6 +40,7 @@ const id: Dict = {
   "notif.title": "Notifikasi pertandingan", "notif.turnOn": "Aktifkan notifikasi", "notif.turnOff": "Matikan", "notif.soon": "Segera mulai", "notif.live": "Live", "notif.final": "Hasil",
   "grp.title": "Liga teman", "grp.create": "Buat liga", "grp.join": "Gabung", "grp.name": "Nama tampilanmu", "grp.leagueName": "Nama liga", "grp.leaderboard": "Papan peringkat", "grp.share": "Bagikan tautan ini ke teman",
   "pred.title": "Prediksiku",
+  "stale.banner": "Menampilkan data tersimpan yang mungkin sudah kedaluwarsa - otomatis disegarkan begitu koneksi kembali. Terakhir dimuat",
 };
 const ms: Dict = {
   "nav.tournament": "Kejohanan", "hdr.settings": "Tetapan",
@@ -54,6 +56,7 @@ const ms: Dict = {
   "notif.title": "Pemberitahuan perlawanan", "notif.turnOn": "Hidupkan pemberitahuan", "notif.turnOff": "Matikan", "notif.soon": "Akan bermula", "notif.live": "Langsung", "notif.final": "Keputusan",
   "grp.title": "Liga rakan", "grp.create": "Cipta liga", "grp.join": "Sertai", "grp.name": "Nama paparan anda", "grp.leagueName": "Nama liga", "grp.leaderboard": "Papan pendahulu", "grp.share": "Kongsi pautan ini dengan rakan",
   "pred.title": "Ramalan saya",
+  "stale.banner": "Memaparkan data tersimpan yang mungkin sudah lapuk - disegarkan secara automatik apabila sambungan kembali. Kali terakhir dimuat",
 };
 const ja: Dict = {
   "nav.tournament": "大会", "hdr.settings": "設定",
@@ -69,6 +72,7 @@ const ja: Dict = {
   "notif.title": "試合通知", "notif.turnOn": "通知をオンにする", "notif.turnOff": "オフにする", "notif.soon": "まもなく開始", "notif.live": "ライブ", "notif.final": "結果",
   "grp.title": "フレンドリーグ", "grp.create": "リーグを作成", "grp.join": "参加", "grp.name": "表示名", "grp.leagueName": "リーグ名", "grp.leaderboard": "ランキング", "grp.share": "このリンクを友達に共有",
   "pred.title": "私の予想",
+  "stale.banner": "保存されたデータを表示しています。古い可能性があります。接続が復旧すると自動で更新されます。最終読み込み",
 };
 const ko: Dict = {
   "nav.tournament": "대회", "hdr.settings": "설정",
@@ -84,6 +88,7 @@ const ko: Dict = {
   "notif.title": "경기 알림", "notif.turnOn": "알림 켜기", "notif.turnOff": "끄기", "notif.soon": "곧 시작", "notif.live": "라이브", "notif.final": "결과",
   "grp.title": "친구 리그", "grp.create": "리그 만들기", "grp.join": "참가", "grp.name": "표시 이름", "grp.leagueName": "리그 이름", "grp.leaderboard": "순위표", "grp.share": "이 링크를 친구에게 공유하세요",
   "pred.title": "내 예측",
+  "stale.banner": "저장된 데이터를 표시하고 있습니다. 오래되었을 수 있으며 연결이 복구되면 자동으로 새로고침됩니다. 마지막 로드",
 };
 const zh: Dict = {
   "nav.tournament": "赛事", "hdr.settings": "设置",
@@ -99,6 +104,7 @@ const zh: Dict = {
   "notif.title": "比赛通知", "notif.turnOn": "开启通知", "notif.turnOff": "关闭", "notif.soon": "即将开始", "notif.live": "直播中", "notif.final": "结果",
   "grp.title": "好友联赛", "grp.create": "创建联赛", "grp.join": "加入", "grp.name": "您的显示名称", "grp.leagueName": "联赛名称", "grp.leaderboard": "排行榜", "grp.share": "把此链接分享给朋友",
   "pred.title": "我的预测",
+  "stale.banner": "正在显示已保存的数据，可能不是最新。连接恢复后将自动刷新。上次加载",
 };
 const fr: Dict = {
   "nav.tournament": "Tournoi", "hdr.settings": "Réglages",
@@ -114,6 +120,7 @@ const fr: Dict = {
   "notif.title": "Notifications de match", "notif.turnOn": "Activer les notifications", "notif.turnOff": "Désactiver", "notif.soon": "Bientôt", "notif.live": "En direct", "notif.final": "Résultat",
   "grp.title": "Ligue d'amis", "grp.create": "Créer une ligue", "grp.join": "Rejoindre", "grp.name": "Votre nom affiché", "grp.leagueName": "Nom de la ligue", "grp.leaderboard": "Classement", "grp.share": "Partagez ce lien avec vos amis",
   "pred.title": "Mes pronostics",
+  "stale.banner": "Données enregistrées affichées, elles peuvent être obsolètes - actualisation automatique au retour de la connexion. Dernier chargement",
 };
 const es: Dict = {
   "nav.tournament": "Torneo", "hdr.settings": "Ajustes",
@@ -129,6 +136,7 @@ const es: Dict = {
   "notif.title": "Notificaciones de partidos", "notif.turnOn": "Activar notificaciones", "notif.turnOff": "Desactivar", "notif.soon": "Empieza pronto", "notif.live": "En vivo", "notif.final": "Resultado",
   "grp.title": "Liga de amigos", "grp.create": "Crear una liga", "grp.join": "Unirse", "grp.name": "Tu nombre visible", "grp.leagueName": "Nombre de la liga", "grp.leaderboard": "Clasificación", "grp.share": "Comparte este enlace con tus amigos",
   "pred.title": "Mis pronósticos",
+  "stale.banner": "Mostrando datos guardados que pueden estar desactualizados - se actualizarán automáticamente cuando vuelva la conexión. Última carga",
 };
 const pt: Dict = {
   "nav.tournament": "Torneio", "hdr.settings": "Configurações",
@@ -144,6 +152,7 @@ const pt: Dict = {
   "notif.title": "Notificações de partidas", "notif.turnOn": "Ativar notificações", "notif.turnOff": "Desativar", "notif.soon": "Começa em breve", "notif.live": "Ao vivo", "notif.final": "Resultado",
   "grp.title": "Liga de amigos", "grp.create": "Criar uma liga", "grp.join": "Entrar", "grp.name": "Seu nome de exibição", "grp.leagueName": "Nome da liga", "grp.leaderboard": "Classificação", "grp.share": "Compartilhe este link com amigos",
   "pred.title": "Meus palpites",
+  "stale.banner": "Mostrando dados salvos que podem estar desatualizados - atualização automática quando a conexão voltar. Última carga",
 };
 
 const DICTS: Record<Lang, Dict> = { id, ms, en, ja, ko, zh, fr, es, pt };

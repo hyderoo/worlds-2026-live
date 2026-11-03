@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useSnapshot } from "./providers";
 import { TeamLogo } from "./ui";
 import { TIMEZONES, ago } from "@/lib/format";
+import { isSnapshotStale } from "@/lib/freshness";
 import { usePrefs, useSpoiler, useT } from "@/lib/prefs";
 import { LANGS, type Key } from "@/lib/i18n";
 
@@ -78,6 +79,22 @@ function SettingsMenu({ path }: { path: string }) {
         {sp.enabled && <span className="size-1.5 rounded-full bg-gold" aria-hidden />}{t("hdr.settings")}<span aria-hidden className="text-[0.65rem]">▾</span>
       </button>
       {open && <div role="dialog" aria-label={t("hdr.settings")} className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-line bg-surface p-4 shadow-2xl"><SettingsControls idp="d" /></div>}
+    </div>
+  );
+}
+
+export function StaleDataBanner() {
+  // Fires when the loaded snapshot itself is old (service-worker page cache, a session kept in memory,
+  // an offline fallback) - in that state dates render from the device clock, so without this banner
+  // days-old data looks like today's. Distinct from the Freshness badge, which tracks the sync upstream.
+  const { snap } = useSnapshot();
+  const { t } = useT();
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => { const a = setTimeout(() => setNow(Date.now()), 0); const id = setInterval(() => setNow(Date.now()), 30_000); return () => { clearTimeout(a); clearInterval(id); }; }, []);
+  if (now === null || !isSnapshotStale(snap.generatedAt, now)) return null;
+  return (
+    <div role="status" className="border-b border-gold/30 bg-gold/10">
+      <p className="mx-auto max-w-6xl px-4 py-2 text-xs leading-relaxed text-gold">{t("stale.banner")} · {ago(snap.generatedAt, now)}</p>
     </div>
   );
 }

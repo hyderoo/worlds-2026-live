@@ -3,7 +3,7 @@ import { Anton, Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Splash } from "@/components/splash";
-import { Footer, Header } from "@/components/shell";
+import { Footer, Header, StaleDataBanner } from "@/components/shell";
 import { buildSnapshot } from "@/lib/snapshot";
 import { config } from "@/lib/config";
 
@@ -31,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers initial={snap}>
           <Splash />
           <Header />
+          <StaleDataBanner />
           <main id="main" className="mx-auto max-w-6xl px-4 pb-8">{children}</main>
           <Footer />
         </Providers>
